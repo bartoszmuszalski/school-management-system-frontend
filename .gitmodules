@@ -1,0 +1,3 @@
+[submodule "my-first-react-app"]
+	path = my-first-react-app
+	url = https://github.com/bartoszmuszalski/school-management-system-frontend.git
