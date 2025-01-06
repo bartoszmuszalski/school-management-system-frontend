@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cf861db0-a7b2-4815-bedd-150ab105a501" name="Changes" comment="Snippet AuthPage,">
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/AuthForm/AuthForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AuthForm/AuthForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/AuthPage/AuthPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AuthPage/AuthPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/LoginPages.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/LoginPage.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +72,7 @@
       <workItem from="1736002087809" duration="5220000" />
       <workItem from="1736096386195" duration="5310000" />
       <workItem from="1736102152815" duration="769000" />
-      <workItem from="1736170298138" duration="4289000" />
+      <workItem from="1736170298138" duration="4969000" />
     </task>
     <task id="LOCAL-00001" summary="Snippet AuthPage,">
       <option name="closed" value="true" />

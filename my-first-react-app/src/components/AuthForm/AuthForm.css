@@ -1,0 +1,126 @@
+/* AuthForm.css */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom right,
+    rgb(106, 156, 119),
+    rgb(64, 15, 187)
+  );
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.header {
+  font-family: "Roboto", sans-serif; /* Bardziej nowoczesna czcionka */
+  padding: 25px 20px; /* Większy padding */
+  text-align: center;
+  color: white;
+  font-size: 1.8em; /* Większy rozmiar czcionki */
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-text {
+  margin-left: 8px;
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* Fill remaining space */
+}
+
+.styled-form {
+  background-color: #fff; /* Białe tło */
+  padding: 40px; /* Większy padding */
+  border-radius: 20px; /* Większe zaokrąglenie */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Mocniejszy cień */
+  width: 400px; /* Większa szerokość */
+  transition: transform 0.3s ease;
+}
+
+.styled-form:hover {
+  transform: translateY(-5px);
+}
+
+.styled-title {
+  text-align: center;
+  margin-bottom: 30px; /* Większy odstęp */
+  color: #333; /* Ciemniejszy kolor */
+  font-size: 2em;
+  font-weight: 500;
+}
+
+.form-group {
+  margin-bottom: 20px; /* Większy odstęp */
+}
+
+.styled-label {
+  display: block;
+  margin-bottom: 8px; /* Większy odstęp */
+  font-weight: bold;
+  color: #555; /* Ciemniejszy kolor */
+  font-size: 0.95em;
+}
+
+.styled-input {
+  width: 100%;
+  padding: 12px; /* Większy padding */
+  border: 2px solid #eee; /* Jaśniejsza ramka */
+  border-radius: 8px; /* Większe zaokrąglenie */
+  box-sizing: border-box;
+  margin-top: 4px;
+  font-size: 1em;
+  /* border-color: #787878; */
+  border-color: #bbb;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.styled-input:focus {
+  outline: none;
+  border: 1px solid black; /* Ciemniejsza ramka */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); /* Dodatkowy cień */
+}
+
+.styled-button {
+  background-color: #4caf50; /* Nowy kolor */
+  color: white;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  font-size: 1.1em;
+}
+
+.styled-button:hover {
+  background-color: #388e3c; /* Ciemniejszy kolor po najechaniu */
+  transform: scale(1.02); /* Efekt powiększenia */
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 1em;
+  color: #444;
+}
+
+.verification-message {
+  color: green;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 1em;
+}

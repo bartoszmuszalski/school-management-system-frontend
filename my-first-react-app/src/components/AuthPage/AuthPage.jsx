@@ -1,3 +1,4 @@
+// src/components/AuthPage/AuthPage.jsx
 import React, { useState } from "react";
 import AuthForm from "../AuthForm/AuthForm";
 
@@ -7,6 +8,7 @@ function AuthPage({
   submitButtonText,
   apiEndpoint,
   successMessage,
+  verificationMessage, // Dodaj odbiór verificationMessage
 }) {
   const [message, setMessage] = useState("");
 
@@ -47,6 +49,7 @@ function AuthPage({
       message={message}
       setMessage={setMessage}
       apiEndpoint={apiEndpoint}
+      verificationMessage={verificationMessage} // Dodaj przekazanie verificationMessage
     />
   );
 }

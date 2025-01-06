@@ -1,126 +1,7 @@
 import React, { useState } from "react";
-import styled, { keyframes } from "styled-components";
+import "./AuthForm.css"; // Import stylów
 import Modal from "./Modal";
 import { useNavigate } from "react-router-dom";
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background: linear-gradient(
-    to bottom right,
-    rgb(106, 156, 119),
-    rgb(64, 15, 187)
-  );
-  animation: ${fadeIn} 0.6s ease-in-out;
-`;
-
-const Header = styled.header`
-  font-family: "Roboto", sans-serif; /* Bardziej nowoczesna czcionka */
-  padding: 25px 20px; /* Większy padding */
-  text-align: center;
-  color: white;
-  font-size: 1.8em; /* Większy rozmiar czcionki */
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-const HeaderText = styled.span`
-  margin-left: 8px;
-`;
-
-const FormContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1; /* Fill remaining space */
-`;
-
-const StyledForm = styled.form`
-  background-color: #fff; /* Białe tło */
-  padding: 40px; /* Większy padding */
-  border-radius: 20px; /* Większe zaokrąglenie */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* Mocniejszy cień */
-  width: 400px; /* Większa szerokość */
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-`;
-
-const StyledTitle = styled.h2`
-  text-align: center;
-  margin-bottom: 30px; /* Większy odstęp */
-  color: #333; /* Ciemniejszy kolor */
-  font-size: 2em;
-  font-weight: 500;
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 20px; /* Większy odstęp */
-`;
-
-const StyledLabel = styled.label`
-  display: block;
-  margin-bottom: 8px; /* Większy odstęp */
-  font-weight: bold;
-  color: #555; /* Ciemniejszy kolor */
-  font-size: 0.95em;
-`;
-
-const StyledInput = styled.input`
-  width: 100%;
-  padding: 12px; /* Większy padding */
-  border: 2px solid #eee; /* Jaśniejsza ramka */
-  border-radius: 8px; /* Większe zaokrąglenie */
-  box-sizing: border-box;
-  margin-top: 4px;
-  font-size: 1em;
-  //border-color: #787878;
-  border-color: #bbb;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border: 1px solid black; /* Ciemniejsza ramka */
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); /* Dodatkowy cień */
-  }
-`;
-
-const StyledButton = styled.button`
-  background-color: #4caf50; /* Nowy kolor */
-  color: white;
-  padding: 14px 24px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: 100%;
-  font-size: 1.1em;
-
-  &:hover {
-    background-color: #388e3c; /* Ciemniejszy kolor po najechaniu */
-    transform: scale(1.02); /* Efekt powiększenia */
-  }
-`;
-
-const Message = styled.p`
-  margin-top: 20px; /* Większy odstęp */
-  text-align: center;
-  font-size: 1em;
-  color: #444;
-`;
 
 function AuthForm({
   title,
@@ -130,6 +11,7 @@ function AuthForm({
   message,
   setMessage,
   apiEndpoint,
+  verificationMessage,
 }) {
   const [fieldValues, setFieldValues] = useState(
     fields.reduce((acc, field) => ({ ...acc, [field.name]: "" }), {})
@@ -202,10 +84,12 @@ function AuthForm({
       const result = await response.json();
       console.log("handleVerifyToken: Odpowiedź z serwera:", result);
       if (result && result.status === "ok") {
-        setVerificationStatus("Email został pomyślnie zweryfikowany!");
         setShowModal(false);
         console.log("handleVerifyToken: Email zweryfikowany.");
-        navigate("/login");
+        const params = new URLSearchParams();
+        params.append("verificationSuccess", "true");
+
+        navigate(`/login?${params.toString()}`);
       } else {
         // W przypadku braku `status: ok`, sprawdzamy message
         if (result && result.message) {
@@ -222,47 +106,62 @@ function AuthForm({
   };
 
   return (
-    <MainContainer>
-      <Header>
-        <HeaderText>{title}</HeaderText>
-      </Header>
-      <FormContainer>
-        <StyledForm onSubmit={handleSubmit}>
-          <StyledTitle>{title}</StyledTitle>
+    <div className="main-container">
+      <header className="header">
+        <span className="header-text">{title}</span>
+      </header>
+      <div className="form-container">
+        <form className="styled-form" onSubmit={handleSubmit}>
+          <h2 className="styled-title">{title}</h2>
           {fields.map((field, index) => (
-            <FormGroup key={index}>
-              <StyledLabel htmlFor={field.name}>{field.label}:</StyledLabel>
-              <StyledInput
+            <div className="form-group" key={index}>
+              <label className="styled-label" htmlFor={field.name}>
+                {field.label}:
+              </label>
+              <input
+                className="styled-input"
                 type={field.type}
                 name={field.name}
                 value={fieldValues[field.name]}
                 onChange={(e) => handleChange(e, field.name)}
                 required={field.required}
               />
-            </FormGroup>
+            </div>
           ))}
-          <StyledButton type="submit">{submitButtonText}</StyledButton>
-          {message && <Message>{message}</Message>}
-          {verificationStatus && <Message>{verificationStatus}</Message>}
-        </StyledForm>
-      </FormContainer>
+          <button className="styled-button" type="submit">
+            {submitButtonText}
+          </button>
+          {verificationMessage && (
+            <p className="verification-message">{verificationMessage}</p>
+          )}
+          {message && <p className="message">{message}</p>}
+          {verificationStatus && (
+            <p className="message">{verificationStatus}</p>
+          )}
+        </form>
+      </div>
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
           <h2>Weryfikacja Email</h2>
           <p>Email: {userEmail}</p>
-          <StyledInput
+          <input
+            className="styled-input"
             type="text"
             placeholder="Wprowadź token"
             value={token}
             onChange={(e) => setToken(e.target.value)}
             required
           />
-          <StyledButton onClick={handleVerifyToken}>Zweryfikuj</StyledButton>
-          {verificationStatus && <Message>{verificationStatus}</Message>}
+          <button className="styled-button" onClick={handleVerifyToken}>
+            Zweryfikuj
+          </button>
+          {verificationStatus && (
+            <p className="message">{verificationStatus}</p>
+          )}
         </Modal>
       )}
-    </MainContainer>
+    </div>
   );
 }
 
