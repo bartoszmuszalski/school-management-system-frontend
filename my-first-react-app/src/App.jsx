@@ -1,21 +1,29 @@
-import React, { useState } from "react";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import GlobalStyle from "./GlobalStyle";
-import AuthForm from "./components/AuthForm/AuthForm";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import Navigation from "./components/Navigation";
 
 function App() {
-  const [message, setMessage] = useState("");
-
   return (
-    <div style={{ minHeight: "100vh" }}>
+    <Router>
       <GlobalStyle />
-      <AuthForm
-        title="Rejestracja"
-        submitButtonText="Zarejestruj się"
-        setMessage={setMessage}
-      />
-      {/* Wyświetlanie wiadomości tutaj */}
-      {message && <p>{message}</p>}
-    </div>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        {/* Dodaj inne trasy w razie potrzeby */}
+      </Routes>
+    </Router>
   );
 }
 

@@ -46,6 +46,7 @@ function AuthPage({
       onSubmit={handleAuth}
       message={message}
       setMessage={setMessage}
+      apiEndpoint={apiEndpoint}
     />
   );
 }
