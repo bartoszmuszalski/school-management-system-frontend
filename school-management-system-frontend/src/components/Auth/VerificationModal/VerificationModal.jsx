@@ -49,25 +49,25 @@ function VerificationModal({ email, onClose, onVerified }) {
   };
 
   return (
-    <div className="verification-modal">
-      <div className="verification-modal-content">
-        <h2>Weryfikacja Email</h2>
-        <p>Email: {email}</p>
-        <input
-          type="text"
-          placeholder="Wprowadź token"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          required
-        />
-        <button onClick={handleVerifyToken}>Zweryfikuj</button>
-        {apiError && <p className="error">{apiError}</p>}
-        {verificationStatus && <p className="success">{verificationStatus}</p>}
-        <button onClick={onClose} className="close-button">
-          Zamknij
-        </button>
+      <div className="verification-modal">
+        <div className="verification-modal-content">
+          <h2>Weryfikacja Email</h2>
+          <p>Email: {email}</p>
+          <input
+              type="text"
+              placeholder="Wprowadź token"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+              required
+          />
+          <button onClick={handleVerifyToken}>Zweryfikuj</button>
+          {apiError && <p className="error">{apiError}</p>}
+          {verificationStatus && <p className="success">{verificationStatus}</p>}
+          <button onClick={onClose} className="close-button">
+            Zamknij
+          </button>
+        </div>
       </div>
-    </div>
   );
 }
 

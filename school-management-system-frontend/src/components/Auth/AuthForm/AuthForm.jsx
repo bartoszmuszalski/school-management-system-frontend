@@ -39,6 +39,8 @@ function AuthForm({
       if (result && result.message) {
         setMessage(result.message);
         console.log("handleSubmit: Wiadomość z serwera:", result.message);
+        const token = result.token; // Token zwrócony z odpowiedzi serwera
+        localStorage.setItem("authToken", token); // Zapisz token w localStorage
         if (result.endpoint) {
           console.log(
             "handleSubmit: Pełny endpoint z odpowiedzi:",

@@ -49,9 +49,7 @@ function Navigation() {
         </>
       )}
     </NavBar>
-
   );
-  console.log("XD")
 }
 
 export default Navigation;
