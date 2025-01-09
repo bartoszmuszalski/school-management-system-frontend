@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import AuthPage from "../components/AuthPage/AuthPage";
+import AuthPage from "../../components/Auth/AuthPage/AuthPage";
 import { useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext"; // Import AuthContext
 
 function LoginPage() {
   const [verificationMessage, setVerificationMessage] = useState(null);
   const location = useLocation();
+  const { login } = useContext(AuthContext); // Access login from context
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -22,9 +25,16 @@ function LoginPage() {
     { name: "password", type: "password", label: "Hasło", required: true },
   ];
 
+  const handleLoginSuccess = (data) => {
+    const userData = {
+      firstName: data.user?.firstName || "Nieznane",
+      lastName: data.user?.lastName || "Nieznane",
+    };
+    login(userData, data.token); // Call the login function from context
+  };
+
   return (
     <div>
-      {/* Usunięcie stąd, będziemy wyświetlać w AuthForm */}
       <AuthPage
         title="Logowanie"
         fields={loginFields}
@@ -32,6 +42,7 @@ function LoginPage() {
         apiEndpoint="login"
         successMessage="Login successful"
         verificationMessage={verificationMessage} // Przekazujemy stan jako prop
+        onSuccess={handleLoginSuccess} // Pass onSuccess as a prop
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import AuthForm from '../components/AuthForm/AuthForm';
+import AuthForm from '../../components/Auth/AuthForm/AuthForm';
 import React, { useState } from 'react';
 
 function ResetPasswordPage() {

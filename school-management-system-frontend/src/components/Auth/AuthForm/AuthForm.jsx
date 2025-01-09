@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./AuthForm.css"; // Import stylów
-import Modal from "./Modal";
+import Modal from "../Shared/Modal";
 import { useNavigate } from "react-router-dom";
 
 function AuthForm({

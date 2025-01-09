@@ -1,5 +1,5 @@
 import React from "react";
-import AuthPage from "../components/AuthPage/AuthPage";
+import AuthPage from "../../components/Auth/AuthPage/AuthPage";
 
 function RegisterPage() {
   const registerFields = [
