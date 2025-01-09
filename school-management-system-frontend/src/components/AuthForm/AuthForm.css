@@ -124,3 +124,7 @@
   text-align: center;
   font-size: 1em;
 }
+/* Dodajemy styl dla błędów */
+.message.error {
+  color: red;
+}
