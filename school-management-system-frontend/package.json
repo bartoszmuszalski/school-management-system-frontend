@@ -11,18 +11,20 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.1",
+    "react-scripts": "^5.0.1",
     "styled-components": "^6.1.14",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "ajv": "^7.2.4",
-    "react-scripts": "^5.0.1"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
   },
   "overrides": {
     "svgo": "latest",
     "nth-check": "latest",
     "css-select": "latest",
-    "postcss": "latest",
     "resolve-url-loader": "latest",
     "@svgr/webpack": "latest",
     "@svgr/plugin-svgo": "latest"

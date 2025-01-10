@@ -12,12 +12,13 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(
+  background-color: white;
+  /* background: linear-gradient(
     to bottom right,
     rgb(106, 156, 119),
     rgb(64, 15, 187)
-  );
-  
+  ); */
+
   animation: fadeIn 0.6s ease-in-out;
 }
 
