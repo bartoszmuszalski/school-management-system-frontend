@@ -1,41 +1,60 @@
-// src/components/UserProfile.js
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../axiosInstance";
+import axios from "axios";
 
-const UserProfile = () => {
+function UserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Pobranie danych użytkownika
-    axiosInstance
-      .get("/user/me")
-      .then((response) => {
+    const fetchUserProfile = async () => {
+      const token = localStorage.getItem("jwt");
+
+      if (!token) {
+        setError("Brak tokena autoryzacji.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get("/api/v1/user/me", {
+          // Upewnij się, że to jest poprawny adres Twojego backendu
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUser(response.data);
+      } catch (error) {
+        console.error("Błąd pobierania profilu użytkownika:", error);
+        setError("Nie udało się pobrać profilu użytkownika.");
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Błąd podczas pobierania danych użytkownika:", error);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchUserProfile();
   }, []);
 
   if (loading) {
-    return <div>Ładowanie...</div>;
+    return <p>Ładowanie profilu użytkownika...</p>;
   }
 
-  if (!user) {
-    return <div>Nie znaleziono danych użytkownika</div>;
+  if (error) {
+    return <p>Błąd: {error}</p>;
   }
 
-  return (
-    <div>
-      <h1>Profil użytkownika</h1>
-      <p>ID: {user.id}</p>
-      <p>Email: {user.email}</p>
-      <p>Role: {user.roles.join(", ")}</p>
-    </div>
-  );
-};
+  if (user) {
+    return (
+      <div>
+        <h2>Profil Użytkownika</h2>
+        <p>ID: {user.id}</p>
+        <p>Email: {user.email}</p>
+        <p>Role: {user.roles.join(", ")}</p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default UserProfile;

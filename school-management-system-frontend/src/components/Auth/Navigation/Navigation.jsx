@@ -19,36 +19,39 @@ const NavLink = styled(Link)`
 `;
 
 function Navigation() {
-  const { auth, logout } = useContext(AuthContext); // Wyciągnięcie auth i logout z AuthContext
+  const context = useContext(AuthContext) || {}; // Default do pustego obiektu
+  const { isLoggedIn, user, logout } = context; // Destructuring z context
 
   return (
-    <NavBar>
-      {!auth.isLoggedIn ? (
-        <>
-          <NavLink to="/register">Rejestracja</NavLink>
-          <NavLink to="/login">Logowanie</NavLink>
-          <NavLink to="/reset-password">Resetowanie Hasła</NavLink>
-        </>
-      ) : (
-        <>
+      <NavBar>
+        {!isLoggedIn ? (
+            <>
+              <NavLink to="/register">Rejestracja</NavLink>
+              <NavLink to="/login">Logowanie</NavLink>
+              <NavLink to="/reset-password">Resetowanie Hasła</NavLink>
+            </>
+        ) : (
+            <>
           <span style={{ color: "white", marginRight: "1rem" }}>
-            Witaj, {auth.user?.email}
+            Witaj, {user?.firstName} {user?.lastName}
           </span>
-          <button
-            style={{
-              backgroundColor: "transparent",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-            onClick={logout}
-          >
-            Wyloguj
-          </button>
-        </>
-      )}
-    </NavBar>
+              <button
+                  style={{
+                    position: "absolute",
+                    right: "1rem",
+                    backgroundColor: "transparent",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={logout}
+              >
+                Wyloguj
+              </button>
+            </>
+        )}
+      </NavBar>
   );
 }
 

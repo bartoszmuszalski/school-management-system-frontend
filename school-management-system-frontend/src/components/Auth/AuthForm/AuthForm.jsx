@@ -31,14 +31,14 @@ function AuthForm({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    console.log("handleSubmit: Dane do wysłania:", fieldValues);
+    // console.log("handleSubmit: Dane do wysłania:", fieldValues);
 
     try {
       const result = await onSubmit(fieldValues);
-      console.log("handleSubmit: Odpowiedź z serwera:", result);
+      // console.log("handleSubmit: Odpowiedź z serwera:", result);
       if (result && result.message) {
         setMessage(result.message);
-        console.log("handleSubmit: Wiadomość z serwera:", result.message);
+        // console.log("handleSubmit: Wiadomość z serwera:", result.message);
         const token = result.token; // Token zwrócony z odpowiedzi serwera
         localStorage.setItem("authToken", token); // Zapisz token w localStorage
         if (result.endpoint) {
@@ -47,7 +47,7 @@ function AuthForm({
             result.endpoint
           );
         }
-        console.log("handleSubmit: apiEndpoint:", apiEndpoint);
+        // console.log("handleSubmit: apiEndpoint:", apiEndpoint);
         if (apiEndpoint === "register") {
           setUserEmail(fieldValues.email);
           setShowModal(true);
