@@ -16,13 +16,13 @@ function RegisterPage() {
   ];
 
   return (
-      <AuthPage
-          title="Register Form"
-          fields={registerFields}
-          submitButtonText="Register"
-          apiEndpoint="register"
-          successMessage="Registration successful"
-      />
+    <AuthPage
+      title="Register Form"
+      fields={registerFields}
+      submitButtonText="Register"
+      apiEndpoint="register"
+      successMessage="Registration successful"
+    />
   );
 }
 
