@@ -30,11 +30,11 @@ function ResetPasswordPage() {
 
     return (
         <AuthForm
-            title="Resetowanie hasła"
+            title="Reset Password"
             fields={[
                 { name: 'username', type: 'email', label: 'Email', required: true },
             ]}
-            submitButtonText="Resetuj hasło"
+            submitButtonText="Reset password"
             onSubmit={handleResetPassword}
             message={message}
             setMessage={setMessage}

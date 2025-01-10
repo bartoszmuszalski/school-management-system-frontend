@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import AuthPage from "../../components/Auth/AuthPage/AuthPage";
 import { useLocation } from "react-router-dom";
-import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
-function LoginPage() {
+function LoginPage({onLogin}) {
   const [verificationMessage, setVerificationMessage] = useState(null);
   const location = useLocation();
-  const { login } = useContext(AuthContext);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -22,12 +20,12 @@ function LoginPage() {
 
   const loginFields = [
     { name: "username", type: "email", label: "Email", required: true },
-    { name: "password", type: "password", label: "Hasło", required: true },
+    { name: "password", type: "password", label: "Password", required: true },
   ];
 
   const handleLoginSuccess = async (data) => {
+    console.log("Login Success Data:", data);
     const token = data.token;
-    // console.log(typeof token);
     try {
       const response = await fetch(`http://localhost/api/v1/user/me`, {
         method: "GET",
@@ -37,39 +35,32 @@ function LoginPage() {
         },
       });
 
-      // Wyświetlenie całej odpowiedzi przed parsowaniem na JSON
-      console.log("Response: ", response); // Możesz również wyświetlić response.status, response.ok itd.
-
       if (!response.ok) {
         const message = `Wystąpił błąd: ${response.status}`;
         throw new Error(message);
       }
 
-      // Parsowanie odpowiedzi jako JSON
       const userResponseData = await response.json();
+      onLogin(userResponseData, token);
 
-      // Wyświetlenie przetworzonej odpowiedzi w JSON
-      console.log("User Data: ", userResponseData);
 
-      login(userResponseData, token);
     } catch (error) {
       console.error("Błąd podczas pobierania danych użytkownika:", error);
-      // Obsłuż błąd
     }
   };
 
   return (
-    <div>
-      <AuthPage
-        title="Logowanie"
-        fields={loginFields}
-        submitButtonText="Zaloguj"
-        apiEndpoint="login"
-        successMessage="Login successful"
-        verificationMessage={verificationMessage}
-        onSuccess={handleLoginSuccess}
-      />
-    </div>
+      <div>
+        <AuthPage
+            title="Login"
+            fields={loginFields}
+            submitButtonText="Login"
+            apiEndpoint="login"
+            successMessage="Login successful"
+            verificationMessage={verificationMessage}
+            onSuccess={handleLoginSuccess}
+        />
+      </div>
   );
 }
 

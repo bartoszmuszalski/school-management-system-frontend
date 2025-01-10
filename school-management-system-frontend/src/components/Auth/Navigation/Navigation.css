@@ -1,0 +1,31 @@
+.nav-bar {
+    background-color: #333;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link {
+    color: white;
+    margin-right: 1rem;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.nav-user-info {
+    color: white;
+    margin-right: 1rem;
+}
+
+.nav-logout-button {
+    position: absolute;
+    right: 1rem;
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+}

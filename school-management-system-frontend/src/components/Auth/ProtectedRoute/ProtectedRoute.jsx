@@ -3,9 +3,14 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext";
 
 function ProtectedRoute({ children }) {
-  const { auth } = useContext(AuthContext);
+  const context = useContext(AuthContext) || {};
+  const { isLoggedIn } = context;
 
-  if (!auth.isLoggedIn) {
+  // Dodano warunek sprawdzający czy kontekst jest ładowany, aby nie przekierowywać za wcześnie.
+  if (context && (isLoggedIn === undefined)) {
+    return null; // lub jakiś spinner, loader
+  }
+  if (!isLoggedIn) {
     return <Navigate to="/login" />;
   }
 

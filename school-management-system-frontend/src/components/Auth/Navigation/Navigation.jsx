@@ -1,58 +1,32 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import { AuthContext } from "../../../contexts/AuthContext"; // Import AuthContext
+import "./Navigation.css"; // Import pliku CSS
 
-const NavBar = styled.nav`
-  background-color: #333;
-  padding: 1rem;
-`;
+function Navigation({ onLogout }) {
+    const context = useContext(AuthContext) || {};
+    const { isLoggedIn, user } = context;
 
-const NavLink = styled(Link)`
-  color: white;
-  margin-right: 1rem;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-function Navigation() {
-  const context = useContext(AuthContext) || {}; // Default do pustego obiektu
-  const { isLoggedIn, user, logout } = context; // Destructuring z context
-
-  return (
-      <NavBar>
-        {!isLoggedIn ? (
-            <>
-              <NavLink to="/register">Rejestracja</NavLink>
-              <NavLink to="/login">Logowanie</NavLink>
-              <NavLink to="/reset-password">Resetowanie Hasła</NavLink>
-            </>
-        ) : (
-            <>
-          <span style={{ color: "white", marginRight: "1rem" }}>
-            Witaj, {user?.firstName} {user?.lastName}
-          </span>
-              <button
-                  style={{
-                    position: "absolute",
-                    right: "1rem",
-                    backgroundColor: "transparent",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
-                  onClick={logout}
-              >
-                Wyloguj
-              </button>
-            </>
-        )}
-      </NavBar>
-  );
+    return (
+        <nav className="nav-bar">
+            {!isLoggedIn ? (
+                <>
+                    <Link to="/register" className="nav-link">Registration</Link>
+                    <Link to="/login" className="nav-link">Login</Link>
+                    <Link to="/reset-password" className="nav-link">Reset Password</Link>
+                </>
+            ) : (
+                <>
+                    <span className="nav-user-info">
+                        Hello, {user?.firstName} {user?.lastName}
+                    </span>
+                    <button className="nav-logout-button" onClick={onLogout}>
+                        Logout
+                    </button>
+                </>
+            )}
+        </nav>
+    );
 }
 
 export default Navigation;

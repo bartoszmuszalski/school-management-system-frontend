@@ -12,7 +12,7 @@ import LoginPage from "../pages/LoginPage/LoginPage";
 import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
 import Navigation from "../components/Auth/Navigation/Navigation";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
-import UserProfile from "../components/UserProfile";
+import UserProfile from "../components/UserProfile/UserProfile";
 import { AuthProvider, AuthContext } from "../contexts/AuthContext"; // Import AuthProvider
 
 function App() {
@@ -26,23 +26,37 @@ function App() {
 }
 
 const AppContent = () => {
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, login, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const handleLogin = (userData, token) => {
+        login(userData, token);
+        navigate("/dashboard");
+    };
+
     const handleLogout = () => {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
+        logout();
         navigate("/login");
         window.location.reload()
     };
+
     return (
         <>
             <GlobalStyle />
-            <Navigation />
+            <Navigation  onLogout={handleLogout}/>
             <Routes>
                 <Route path="/" element={<Navigate to="/login" />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route path="/login" element={<LoginPage />} />
+                <Route
+                    path="/login"
+                    element={
+                        isLoggedIn ? (
+                            <Navigate to="/profile" />
+                        ) : (
+                            <LoginPage onLogin={handleLogin} /> // przekazanie funkcji handleLogin
+                        )
+                    }
+                />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route
                     path="/dashboard"

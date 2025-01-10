@@ -1,9 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
-
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(undefined);
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
 
@@ -15,18 +14,19 @@ export const AuthProvider = ({ children }) => {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
       console.log("Zalogowano: token:", storedToken, "user:", JSON.parse(storedUser));
+    } else{
+      setIsLoggedIn(false);
     }
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem("authToken", token);
+    localStorage.setItem('authToken', token);
     localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedIn(true);
     setUser(userData);
     setToken(token);
     console.log("Logged in:", userData, "token", token);
   };
-
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
@@ -35,6 +35,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     console.log("Wylogowano.");
   };
+  const getAuthToken = () => { // funkcja do pobrania tokenu
+    return localStorage.getItem('authToken');
+  };
 
   const contextValues = {
     isLoggedIn,
@@ -42,9 +45,8 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     logout,
+    getAuthToken // dodanie nowej funkcji
   };
-
   return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
 };
-
 export default AuthProvider;
