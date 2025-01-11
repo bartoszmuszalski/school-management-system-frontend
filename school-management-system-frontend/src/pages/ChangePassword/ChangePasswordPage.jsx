@@ -5,16 +5,16 @@ function ResetPasswordPage() {
   const [message, setMessage] = useState("");
 
   const handleResetPassword = async (fieldValues) => {
-    const { email } = fieldValues;
+    const { email, password, token } = fieldValues;
 
     const response = await fetch(
-      "http://localhost/api/v1/user/request_password_change",
+      "http://localhost/api/v1/user/change_forgotten_password",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password, token }),
       }
     );
 
@@ -33,11 +33,18 @@ function ResetPasswordPage() {
 
   return (
     <AuthForm
-      title="Reset Password"
+      title="Change Password"
       fields={[
         { name: "email", type: "email", label: "Email", required: true },
+        {
+          name: "password",
+          type: "password",
+          label: "NewPassword",
+          required: true,
+        },
+        { name: "token", type: "token", label: "Token", required: true },
       ]}
-      submitButtonText="Reset password"
+      submitButtonText="Change password"
       onSubmit={handleResetPassword}
       message={message}
       setMessage={setMessage}

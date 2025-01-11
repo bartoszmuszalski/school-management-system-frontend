@@ -28,7 +28,7 @@ const ProfileInfo = styled.p`
 `;
 const LoadingMessage = styled.p`
   font-style: italic;
-    text-align: center;
+  text-align: center;
 `;
 
 const UserProfile = () => {
@@ -57,7 +57,6 @@ const UserProfile = () => {
 
         const data = await response.json();
         setUserData(data);
-
       } catch (error) {
         console.error("Błąd pobierania danych użytkownika:", error);
       }
@@ -67,21 +66,20 @@ const UserProfile = () => {
   }, [getAuthToken]);
 
   return (
-      <ProfileContainer>
-        <ProfileTitle>Your Profile Information</ProfileTitle>
-        {userData ? (
-            <>
-              <ProfileInfo>First name: {userData.firstName}</ProfileInfo>
-              <ProfileInfo>Last name: {userData.lastName}</ProfileInfo>
-              <ProfileInfo>Email: {userData.email}</ProfileInfo>
-              <ProfileInfo>Role: {userData.roles}</ProfileInfo>
-              {/*handleResetPassword*/}
-            </>
-        ) : (
-            <LoadingMessage>Ładowanie danych...</LoadingMessage>
-        )
-        }
-      </ProfileContainer>
+    <ProfileContainer>
+      <ProfileTitle>Your Profile Information</ProfileTitle>
+      {userData ? (
+        <>
+          <ProfileInfo>First name: {userData.firstName}</ProfileInfo>
+          <ProfileInfo>Last name: {userData.lastName}</ProfileInfo>
+          <ProfileInfo>Email: {userData.email}</ProfileInfo>
+          <ProfileInfo>Role: {userData.roles}</ProfileInfo>
+          {/*handleResetPassword*/}
+        </>
+      ) : (
+        <LoadingMessage>Ładowanie danych...</LoadingMessage>
+      )}
+    </ProfileContainer>
   );
 };
 
