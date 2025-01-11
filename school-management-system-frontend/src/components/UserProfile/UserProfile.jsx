@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import styled from "styled-components";
-import handleResetPassword from "../../pages/ResetPasswordPage/ResetPasswordPage";
 
 const ProfileContainer = styled.div`
   display: flex;
