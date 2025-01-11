@@ -8,6 +8,11 @@
   }
 }
 
+.error-message {
+  text-align: center;
+  color: red;
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
