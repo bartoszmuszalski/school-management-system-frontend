@@ -6,6 +6,13 @@ import logo from "../../Files/logo.png";
 import register_pic from "../../Files/register.png";
 import login_pic from "../../Files/login.png";
 import reset_pic from "../../Files/reset-password.png";
+import logout_pic from "../../Files/logout.png";
+import users_pic from "../../Files/users.png";
+import subjects_pic from "../../Files/subjects.png";
+import classroom_pic from "../../Files/user_classroom.png";
+import useradd_pic from "../../Files/user-add.png";
+
+import { useNavigate } from "react-router-dom";
 
 const UsersButton = ({ to, text, iconSrc }) => (
   <Link to={to} className="sidebar-users-button">
@@ -61,11 +68,47 @@ function Navigation({ onLogout }) {
           </>
         ) : (
           <>
-            <span className="sidebar-user-info">
+            <Link
+              to="/login"
+              className="sidebar-link-img"
+              data-tooltip="Subjects"
+            >
+              <img
+                src={subjects_pic}
+                alt="Subjects"
+                className="register-icon"
+              />
+            </Link>
+            <Link to="/login" className="sidebar-link-img" data-tooltip="Users">
+              <img src={users_pic} alt="Users" className="register-icon" />
+            </Link>
+            <Link
+              to="/login"
+              className="sidebar-link-img"
+              data-tooltip="User add"
+            >
+              <img src={useradd_pic} alt="User add" className="register-icon" />
+            </Link>
+            <Link
+              to="/login"
+              className="sidebar-link-img"
+              data-tooltip="User classroom"
+            >
+              <img
+                src={classroom_pic}
+                alt="User classroom"
+                className="register-icon"
+              />
+            </Link>
+            {/* <span className="sidebar-user-info">
               Hello, {user?.firstName} {user?.lastName}
-            </span>
-            <button className="sidebar-logout-button" onClick={onLogout}>
-              Logout
+            </span> */}
+            <button
+              onClick={onLogout}
+              className="sidebar-link-img"
+              data-tooltip="Logout"
+            >
+              <img src={logout_pic} alt="Logout" className="register-icon" />
             </button>
           </>
         )}

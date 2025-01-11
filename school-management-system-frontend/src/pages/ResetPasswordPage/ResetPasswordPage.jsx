@@ -1,8 +1,10 @@
 import AuthForm from "../../components/Auth/AuthForm/AuthForm";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function ResetPasswordPage() {
   const [message, setMessage] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleResetPassword = async (fieldValues) => {
     const { email } = fieldValues;
@@ -28,6 +30,9 @@ function ResetPasswordPage() {
       }
       throw new Error(errorMessage);
     }
+
+    setMessage("Reset password success"); // Set success message
+    navigate("/change-password"); // Redirect to /change-password
     return { message: "Reset password success" };
   };
 

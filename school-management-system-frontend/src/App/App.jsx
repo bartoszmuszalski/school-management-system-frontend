@@ -15,7 +15,6 @@ import ChangePassword from "../pages/ChangePassword/ChangePasswordPage";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
 import { AuthProvider, AuthContext } from "../contexts/AuthContext"; // Import AuthProvider
-import Navbar from "../components/Navbar/Navbar";
 
 function App() {
   return (
@@ -40,6 +39,10 @@ const AppContent = () => {
     logout();
     navigate("/login");
     window.location.reload();
+  };
+
+  const handleReset = () => {
+    navigate("/reset-password");
   };
 
   return (

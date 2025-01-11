@@ -1,10 +1,19 @@
 import AuthForm from "../../components/Auth/AuthForm/AuthForm";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-function ResetPasswordPage() {
+function ChangePasswordPage() {
   const [message, setMessage] = useState("");
+  const location = useLocation();
+  const [initialEmail, setInitialEmail] = useState("");
 
-  const handleResetPassword = async (fieldValues) => {
+  useEffect(() => {
+    if (location.state && location.state.email) {
+      setInitialEmail(location.state.email);
+    }
+  }, [location.state]);
+
+  const handleChangePassword = async (fieldValues) => {
     const { email, password, token } = fieldValues;
 
     const response = await fetch(
@@ -19,7 +28,7 @@ function ResetPasswordPage() {
     );
 
     if (!response.ok) {
-      let errorMessage = `Reset failed: ${response.status} ${response.statusText}`;
+      let errorMessage = `Change password failed: ${response.status} ${response.statusText}`;
       try {
         const errorData = await response.json();
         errorMessage += ` ${errorData.message || ""}`;
@@ -28,28 +37,35 @@ function ResetPasswordPage() {
       }
       throw new Error(errorMessage);
     }
-    return { message: "Reset password success" };
+    return { message: "Password changed successfully" };
   };
 
   return (
     <AuthForm
       title="Change Password"
       fields={[
-        { name: "email", type: "email", label: "Email", required: true },
+        {
+          name: "email",
+          type: "email",
+          label: "Email",
+          required: true,
+          initialValue: initialEmail, // Ustawienie wartości początkowej
+          readOnly: true, // Opcjonalnie, ustaw pole jako tylko do odczytu
+        },
         {
           name: "password",
           type: "password",
-          label: "NewPassword",
+          label: "New Password",
           required: true,
         },
-        { name: "token", type: "token", label: "Token", required: true },
+        { name: "token", type: "text", label: "Token", required: true },
       ]}
       submitButtonText="Change password"
-      onSubmit={handleResetPassword}
+      onSubmit={handleChangePassword}
       message={message}
       setMessage={setMessage}
     />
   );
 }
 
-export default ResetPasswordPage;
+export default ChangePasswordPage;

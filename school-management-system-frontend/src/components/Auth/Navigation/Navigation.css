@@ -84,9 +84,17 @@
   font-size: 12px;
 }
 
+.sidebar-link-img[data-tooltip="Logout"] {
+  position: absolute;
+  bottom: 30px;
+  left: 0; /* Opcjonalnie, aby wyrównać do lewej strony kontenera */
+  right: 0; /* Opcjonalnie, aby rozciągnąć na całą szerokość kontenera */
+  /* ... inne style dla linku */
+}
+
 .register-icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   transition: border 0.1s ease;
 }

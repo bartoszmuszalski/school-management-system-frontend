@@ -116,13 +116,6 @@ function AuthForm({
                 <label className="styled-label" htmlFor={field.name}>
                   {field.label}:
                 </label>
-                {field.name === "password" && (
-                  <div className="text-sm">
-                    <a href="/reset-password" className="forgot-password-link">
-                      Forgot password?
-                    </a>
-                  </div>
-                )}
               </div>
               <input
                 className="styled-input"
