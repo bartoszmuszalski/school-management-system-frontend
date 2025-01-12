@@ -13,14 +13,13 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
-      console.log("Zalogowano: token:", storedToken, "user:", JSON.parse(storedUser));
-    } else{
+    } else {
       setIsLoggedIn(false);
     }
   }, []);
 
   const login = (userData, token) => {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem("authToken", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setIsLoggedIn(true);
     setUser(userData);
@@ -35,8 +34,9 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     console.log("Wylogowano.");
   };
-  const getAuthToken = () => { // funkcja do pobrania tokenu
-    return localStorage.getItem('authToken');
+  const getAuthToken = () => {
+    // funkcja do pobrania tokenu
+    return localStorage.getItem("authToken");
   };
 
   const contextValues = {
@@ -45,8 +45,12 @@ export const AuthProvider = ({ children }) => {
     token,
     login,
     logout,
-    getAuthToken // dodanie nowej funkcji
+    getAuthToken, // dodanie nowej funkcji
   };
-  return <AuthContext.Provider value={contextValues}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={contextValues}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 export default AuthProvider;

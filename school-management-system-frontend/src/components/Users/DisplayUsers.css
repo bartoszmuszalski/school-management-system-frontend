@@ -1,0 +1,123 @@
+/* Globalne ustawienia dla <div> */
+.container {
+  margin-left: 150px;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 18px;
+  font-family: Roboto, sans-serif;
+  letter-spacing: -0.025em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ustawienia dla paragrafu */
+.myParagraphClass {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  font-family: Roboto, sans-serif;
+  font-weight: 700;
+  font-size: 25px;
+}
+
+/* Styl dla tabeli */
+.table {
+  width: 70%;
+  max-width: 1000px;
+  margin-top: 20px;
+  border-spacing: 2px;
+}
+
+/* Styl nagłówków tabeli */
+.table th {
+  background-color: #f0d78c;
+  text-align: center; /* Wyśrodkowanie poziome */
+  vertical-align: middle; /* Wyśrodkowanie pionowe */
+  padding: 8px;
+  border: 1px solid #ddd;
+  font-size: 21px;
+}
+
+/* Wyśrodkowanie tekstu w komórkach tabeli */
+.table td {
+  text-align: center; /* Wyśrodkowanie tekstu poziomo */
+  vertical-align: middle;
+  border: 1px solid #ddd; /* Dodane obramowanie dla lepszej widoczności
+  padding: 8px; /* Dodanie paddingu dla lepszej czytelności */
+}
+
+/* Styl dla wierszy naprzemiennych */
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Styl dla tekstu ładowania */
+.loading {
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+  color: #888;
+}
+
+/* Styl dla błędu */
+.error {
+  text-align: center;
+  color: red;
+  margin-top: 20px;
+}
+
+.table thead th {
+  background-color: rgb(70, 229, 155);
+  /* background-color: #5270cb; */
+  color: black;
+  text-align: center; /* Wyśrodkowanie poziome */
+  vertical-align: middle; /* Wyśrodkowanie pionowe */
+  padding: 2px;
+  border: 1px solid #ddd;
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+}
+
+/* Styl dla pola select */
+.table select {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+.VerifyButton {
+  display: inline-flex; /* Umożliwia centrowanie zawartości */
+  justify-content: center; /* Centruje poziomo */
+  align-items: center; /* Centruje pionowo */
+  padding: 8px 16px; /* Dodanie wewnętrznego marginesu */
+  font-size: 1rem; /* Rozmiar czcionki */
+  font-weight: 600; /* Pogrubienie tekstu */
+  color: #fff; /* Kolor tekstu */
+  background-color: #42bb39; /* Kolor tła przycisku */
+  border: none; /* Usunięcie obramowania */
+  border-radius: 4px; /* Zaokrąglenie rogów */
+  cursor: pointer; /* Zmiana kursora na wskazujący */
+  transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
+}
+
+.VerifyButton:hover {
+  background-color: #19cf34; /* Ciemniejszy kolor tła po najechaniu */
+}
+
+.VerifyButton:focus {
+  outline: none; /* Usunięcie domyślnego obramowania */
+  box-shadow: 0 0 0 2px rgba(64, 226, 56, 0.5); /* Dodanie cienia dla skupienia */
+}
