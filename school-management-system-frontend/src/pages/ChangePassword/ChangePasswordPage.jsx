@@ -14,7 +14,7 @@ function ChangePasswordPage() {
   }, [location.state]);
 
   const handleChangePassword = async (fieldValues) => {
-    const { email, password, token } = fieldValues;
+    const { email, password, repeatPassword, token } = fieldValues;
 
     const response = await fetch(
       "http://localhost/api/v1/user/change_forgotten_password",
@@ -23,7 +23,7 @@ function ChangePasswordPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password, token }),
+        body: JSON.stringify({ email, password, repeatPassword, token }),
       }
     );
 
@@ -54,6 +54,12 @@ function ChangePasswordPage() {
         },
         {
           name: "password",
+          type: "password",
+          label: "Password",
+          required: true,
+        },
+        {
+          name: "repeatPassword",
           type: "password",
           label: "New Password",
           required: true,

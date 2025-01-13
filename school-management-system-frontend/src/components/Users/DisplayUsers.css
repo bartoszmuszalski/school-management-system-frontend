@@ -1,79 +1,72 @@
-/* Globalne ustawienia dla <div> */
+/* Importing a nicer font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap");
+
+/* Global settings for <div> */
 .container {
   margin-left: 150px;
   margin-top: 40px;
   padding: 20px;
   font-size: 18px;
-  font-family: Roboto, sans-serif;
+  font-family: "Roboto Slab", serif;
   letter-spacing: -0.025em;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Ustawienia dla paragrafu */
+/* Settings for paragraph */
 .myParagraphClass {
   margin-top: 30px;
   margin-bottom: 30px;
-  font-family: Roboto, sans-serif;
+  font-family: "Roboto Slab", serif;
   font-weight: 700;
   font-size: 25px;
 }
 
-/* Styl dla tabeli */
+/* Enhanced table styling */
 .table {
-  width: 70%;
+  width: 80%;
   max-width: 1000px;
   margin-top: 20px;
-  border-spacing: 2px;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Styl nagłówków tabeli */
-.table th {
-  background-color: #f0d78c;
-  text-align: center; /* Wyśrodkowanie poziome */
-  vertical-align: middle; /* Wyśrodkowanie pionowe */
-  padding: 8px;
-  border: 1px solid #ddd;
-  font-size: 21px;
-}
-
-/* Wyśrodkowanie tekstu w komórkach tabeli */
+.table th,
 .table td {
-  text-align: center; /* Wyśrodkowanie tekstu poziomo */
-  vertical-align: middle;
-  border: 1px solid #ddd; /* Dodane obramowanie dla lepszej widoczności
-  padding: 8px; /* Dodanie paddingu dla lepszej czytelności */
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
 }
 
-/* Styl dla wierszy naprzemiennych */
+.table thead {
+  background-color: #4f46e5;
+  color: #fff;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
 .table tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-/* Styl dla tekstu ładowania */
+/* Styling for loading text */
 .loading {
   text-align: center;
   margin-top: 20px;
   font-style: italic;
   color: #888;
+  font-family: "Roboto Slab", serif;
 }
 
-/* Styl dla błędu */
+/* Styling for error messages */
 .error {
   text-align: center;
   color: red;
   margin-top: 20px;
-}
-
-.table thead th {
-  background-color: rgb(70, 229, 155);
-  /* background-color: #5270cb; */
-  color: black;
-  text-align: center; /* Wyśrodkowanie poziome */
-  vertical-align: middle; /* Wyśrodkowanie pionowe */
-  padding: 2px;
-  border: 1px solid #ddd;
+  font-family: "Roboto Slab", serif;
 }
 
 .table th,
@@ -81,7 +74,7 @@
   padding: 12px 15px;
 }
 
-/* Styl dla pola select */
+/* Styling for select fields */
 .table select {
   padding: 5px 10px;
   border-radius: 4px;
@@ -99,25 +92,172 @@
 }
 
 .VerifyButton {
-  display: inline-flex; /* Umożliwia centrowanie zawartości */
-  justify-content: center; /* Centruje poziomo */
-  align-items: center; /* Centruje pionowo */
-  padding: 8px 16px; /* Dodanie wewnętrznego marginesu */
-  font-size: 1rem; /* Rozmiar czcionki */
-  font-weight: 600; /* Pogrubienie tekstu */
-  color: #fff; /* Kolor tekstu */
-  background-color: #42bb39; /* Kolor tła przycisku */
-  border: none; /* Usunięcie obramowania */
-  border-radius: 4px; /* Zaokrąglenie rogów */
-  cursor: pointer; /* Zmiana kursora na wskazujący */
-  transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #42bb39;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .VerifyButton:hover {
-  background-color: #19cf34; /* Ciemniejszy kolor tła po najechaniu */
+  background-color: #19cf34;
 }
 
 .VerifyButton:focus {
-  outline: none; /* Usunięcie domyślnego obramowania */
-  box-shadow: 0 0 0 2px rgba(64, 226, 56, 0.5); /* Dodanie cienia dla skupienia */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(64, 226, 56, 0.5);
+}
+
+/* Styling for pagination controls */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  margin: 0 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination button:hover:not(.active) {
+  background-color: #f0f0f0;
+}
+
+.pagination button.active {
+  background-color: #4f46e5;
+  color: #fff;
+  border-color: #4f46e5;
+}
+
+/* Styling for the confirmation popup */
+.popup-overlay {
+  backdrop-filter: blur(4px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center; /* Centered horizontally */
+  align-items: center; /* Centered vertically */
+  z-index: 1000;
+}
+
+.popup {
+  background-color: #fff;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.popup-button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.popup-button.yes {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.popup-button.yes:hover {
+  background-color: #45a049;
+}
+
+.popup-button.no {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.popup-button.no:hover {
+  background-color: #e53935;
+}
+
+/* Styling for success notification */
+.success-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50; /* Green background */
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  animation: slide-in 0.5s ease-out, fade-out 0.5s 2.5s forwards;
+}
+
+.success-notification p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Existing CSS content remains unchanged */
+
+/* Styling for access denied message */
+.access-denied {
+  margin-left: 150px;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 18px;
+  font-family: "Roboto Slab", serif;
+  text-align: center;
+  color: #f44336; /* Red color for emphasis */
+}
+
+.access-denied p {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Animation for the success notification */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
