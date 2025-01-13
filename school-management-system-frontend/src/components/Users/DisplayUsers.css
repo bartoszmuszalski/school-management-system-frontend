@@ -261,3 +261,73 @@
     transform: translateX(100%);
   }
 }
+
+/* Existing CSS content as provided */
+
+/* Styling for header container */
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styling for Users Per Page selector */
+.users-per-page {
+  display: flex;
+  align-items: center;
+}
+
+.users-per-page label {
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.users-per-page select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Existing CSS content as provided */
+
+/* Styling for header container */
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styling for Users Per Page selector */
+.users-per-page {
+  display: flex;
+  align-items: center;
+}
+
+.users-per-page label {
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.users-per-page select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-per-page {
+    margin-top: 10px;
+  }
+
+  .table {
+    width: 100%;
+  }
+}

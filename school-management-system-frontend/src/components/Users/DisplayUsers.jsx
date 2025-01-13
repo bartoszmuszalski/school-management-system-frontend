@@ -2,6 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./DisplayUsers.css";
 
+// Constants for user roles
+const ROLE_ADMIN = "ROLE_ADMIN";
+const ROLE_TEACHER = "ROLE_TEACHER";
+const ROLE_STUDENT = "ROLE_STUDENT";
+const ROLE_USER = "ROLE_USER";
+
 const DisplayUsers = () => {
   // State for users, loading, error, and pagination
   const [users, setUsers] = useState([]);
@@ -21,26 +27,55 @@ const DisplayUsers = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // State for user role
-  let [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
-  // Fetch user role from localStorage on component mount
+  // Retrieve user role from localStorage on component mount
   useEffect(() => {
     const user = localStorage.getItem("user");
-    const userObj = JSON.parse(user);
-    const roles = String(userObj.roles);
-    setUserRole(roles);
+    if (user) {
+      const userObj = JSON.parse(user);
+      const roles = String(userObj.roles);
+      setUserRole(roles);
+    }
   }, []);
 
-  // Function to fetch users with pagination
+  // Function to fetch users with pagination and role-based filtering
   const fetchUsers = async (page) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(
-        `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`
-      );
-      setUsers(response.data.data);
-      const totalUsers = response.data.total; // Assuming the API returns the total number of users
+      let url = `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`;
+
+      // Add role filters based on userRole
+      if (userRole === ROLE_TEACHER) {
+        // Assuming the API accepts multiple roles as separate query parameters
+        url += `&roles=${ROLE_TEACHER}&roles=${ROLE_STUDENT}`;
+      } else if (userRole === ROLE_STUDENT) {
+        // If userRole is STUDENT, filter only teachers
+        url += `&roles=${ROLE_TEACHER}`;
+      }
+
+      const response = await axios.get(url);
+      let fetchedUsers = response.data.data;
+
+      // Additional frontend filtering as a fallback
+      if (userRole === ROLE_TEACHER) {
+        fetchedUsers = fetchedUsers.filter(
+          (user) => user.role === ROLE_TEACHER || user.role === ROLE_STUDENT
+        );
+      } else if (userRole === ROLE_STUDENT) {
+        fetchedUsers = fetchedUsers.filter(
+          (user) => user.role === ROLE_TEACHER
+        );
+      }
+
+      setUsers(fetchedUsers);
+
+      // Determine total pages based on filtered data
+      const totalUsers =
+        userRole === ROLE_TEACHER || userRole === ROLE_STUDENT
+          ? fetchedUsers.length
+          : response.data.total; // For admin, use the original total count
       setTotalPages(Math.ceil(totalUsers / limit));
     } catch (err) {
       setError(err);
@@ -49,14 +84,18 @@ const DisplayUsers = () => {
     }
   };
 
-  // Fetch users on component mount and when currentPage changes
+  // Fetch users when component mounts or when currentPage/userRole changes
   useEffect(() => {
-    if (userRole === "ROLE_ADMIN") {
+    if (
+      userRole === ROLE_ADMIN ||
+      userRole === ROLE_TEACHER ||
+      userRole === ROLE_STUDENT
+    ) {
       fetchUsers(currentPage);
     }
   }, [currentPage, userRole]);
 
-  // Function to handle user verification (without API calls)
+  // Function to verify a user (without API calls)
   const handleVerify = (userId) => {
     console.log(`Verify user with ID: ${userId}`);
     setUsers(
@@ -85,7 +124,7 @@ const DisplayUsers = () => {
         { role: `ROLE_${newUserRole}` }, // Request body
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Authentication headers
+            Authorization: `Bearer ${token}`, // Authorization headers
             "Content-Type": "application/json",
           },
         }
@@ -102,17 +141,17 @@ const DisplayUsers = () => {
         );
         // Set success message
         setSuccessMessage(
-          `Successfully changed role of ${selectedUser.email} to ${newUserRole}.`
+          `Successfully changed the role of ${selectedUser.email} to ${newUserRole}.`
         );
         setShowSuccess(true);
       } else {
         // Handle other response statuses
         console.error("Failed to change user role:", response.data.message);
-        // Optionally, display error message to the user
+        // Optionally, display an error message to the user
       }
     } catch (err) {
-      console.error("Error changing user role:", err);
-      // Optionally, display error message to the user
+      console.error("Error while changing user role:", err);
+      // Optionally, display an error message to the user
     } finally {
       // Close the popup
       setIsPopupOpen(false);
@@ -144,7 +183,7 @@ const DisplayUsers = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  // Handle auto-hide of success notification
+  // Handle automatic hiding of success notification
   useEffect(() => {
     if (showSuccess) {
       const timer = setTimeout(() => {
@@ -156,16 +195,26 @@ const DisplayUsers = () => {
   }, [showSuccess]);
 
   // Handle loading and error states
-  if (loading && userRole === "ROLE_ADMIN") {
-    return <p className="loading">Loading ...</p>;
+  if (
+    (userRole === ROLE_ADMIN ||
+      userRole === ROLE_TEACHER ||
+      userRole === ROLE_STUDENT) &&
+    loading
+  ) {
+    return <p className="loading">Loading...</p>;
   }
 
-  if (error && userRole === "ROLE_ADMIN") {
+  if (
+    (userRole === ROLE_ADMIN ||
+      userRole === ROLE_TEACHER ||
+      userRole === ROLE_STUDENT) &&
+    error
+  ) {
     return <p className="error">Error: {error.message}</p>;
   }
 
-  // Conditionally render the container based on user role
-  if (userRole !== "ROLE_ADMIN") {
+  // Conditional rendering based on user role
+  if (userRole === ROLE_USER) {
     return (
       <div className="access-denied">
         <p>You do not have permission to view this page.</p>
@@ -173,26 +222,33 @@ const DisplayUsers = () => {
     );
   }
 
-  // Render the list of users for admin
+  // Render the user list for admin, teacher, and student
   return (
     <div className="container">
-      <p className="myParagraphClass">List of users in the system</p>
+      <p className="myParagraphClass">User List in the System</p>
       <table className="table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Email</th>
-            <th>Name</th>
+            <th>First and Last Name</th>
             <th>Role</th>
-            <th>Verified</th>
-            <th>Action</th>
-            <th>Change Role</th>
+            {/* Conditional rendering of headers */}
+            {userRole === ROLE_ADMIN && (
+              <>
+                <th>Verified</th>
+                <th>Action</th>
+                <th>Change Role</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan="7">No users found.</td>
+              <td colSpan={userRole === ROLE_ADMIN ? "7" : "4"}>
+                No users found.
+              </td>
             </tr>
           ) : (
             users.map((user, index) => (
@@ -204,32 +260,37 @@ const DisplayUsers = () => {
                   {user.role.slice(5).charAt(0).toUpperCase() +
                     user.role.slice(6).toLowerCase()}
                 </td>
-                <td>{user.isVerified ? "Yes" : "No"}</td>
-                <td className="action-cell">
-                  {user.isVerified ? (
-                    <span>-</span>
-                  ) : (
-                    <button
-                      className="VerifyButton"
-                      onClick={() => handleVerify(user.id)}
-                      aria-label={`Verify user ${user.email}`}
-                    >
-                      Verify
-                    </button>
-                  )}
-                </td>
-                <td>
-                  <select
-                    value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
-                    onChange={(e) => handleChangeRole(user, e.target.value)}
-                    aria-label={`Change role for ${user.email}`}
-                  >
-                    <option value="USER">User</option>
-                    <option value="STUDENT">Student</option>
-                    <option value="TEACHER">Teacher</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
-                </td>
+                {/* Conditional rendering of cells */}
+                {userRole === ROLE_ADMIN && (
+                  <>
+                    <td>{user.isVerified ? "Yes" : "No"}</td>
+                    <td className="action-cell">
+                      {user.isVerified ? (
+                        <span>-</span>
+                      ) : (
+                        <button
+                          className="VerifyButton"
+                          onClick={() => handleVerify(user.id)}
+                          aria-label={`Verify user ${user.email}`}
+                        >
+                          Verify
+                        </button>
+                      )}
+                    </td>
+                    <td>
+                      <select
+                        value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
+                        onChange={(e) => handleChangeRole(user, e.target.value)}
+                        aria-label={`Change role for ${user.email}`}
+                      >
+                        <option value="USER">User</option>
+                        <option value="STUDENT">Student</option>
+                        <option value="TEACHER">Teacher</option>
+                        <option value="ADMIN">Administrator</option>
+                      </select>
+                    </td>
+                  </>
+                )}
               </tr>
             ))
           )}
@@ -239,7 +300,7 @@ const DisplayUsers = () => {
       {/* Pagination Controls */}
       <div className="pagination">
         <button onClick={prevPage} disabled={currentPage === 1}>
-          Prev
+          Previous
         </button>
         {/* Render page numbers */}
         {Array.from({ length: totalPages }, (_, index) => index + 1).map(
@@ -263,7 +324,7 @@ const DisplayUsers = () => {
         <div className="popup-overlay">
           <div className="popup">
             <p>
-              Are you sure you want to change the role of the user{" "}
+              Are you sure you want to change the role of{" "}
               <strong>{selectedUser.email}</strong> to{" "}
               <strong>{newUserRole}</strong>?
             </p>
