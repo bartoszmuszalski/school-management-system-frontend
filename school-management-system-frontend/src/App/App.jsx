@@ -11,7 +11,6 @@ import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import LoginPage from "../pages/LoginPage/LoginPage";
 import Navigation from "../components/Auth/Navigation/Navigation";
 import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
-import ChangePassword from "../pages/ChangePassword/ChangePasswordPage";
 import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
@@ -60,7 +59,6 @@ const AppContent = () => {
           }
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/users" element={<DisplayUsers />} />
         <Route
           path="/dashboard"
