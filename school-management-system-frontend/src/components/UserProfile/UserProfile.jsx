@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useNotification } from "../../contexts/NotificationContext"; // Importuj kontekst powiadomień
 import styled from "styled-components";
 
 const ProfileContainer = styled.div`
@@ -25,14 +27,29 @@ const ProfileInfo = styled.p`
   margin: 5px 0;
   font-size: 16px;
 `;
+
 const LoadingMessage = styled.p`
   font-style: italic;
   text-align: center;
 `;
 
+const SuccessNotification = styled.div`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+`;
+
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
   const { getAuthToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { notification } = useNotification(); // Pobierz komunikat z kontekstu
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -41,6 +58,7 @@ const UserProfile = () => {
         console.error("Brak tokena autoryzacji.");
         return;
       }
+
       try {
         const response = await fetch(`http://localhost/api/v1/user/me`, {
           method: "GET",
@@ -49,6 +67,7 @@ const UserProfile = () => {
             "Content-Type": "application/json",
           },
         });
+
         if (!response.ok) {
           const message = `Wystąpił błąd: ${response.status}`;
           throw new Error(message);
@@ -65,20 +84,26 @@ const UserProfile = () => {
   }, [getAuthToken]);
 
   return (
-    <ProfileContainer>
-      <ProfileTitle>Your Profile Information</ProfileTitle>
-      {userData ? (
-        <>
-          <ProfileInfo>First name: {userData.firstName}</ProfileInfo>
-          <ProfileInfo>Last name: {userData.lastName}</ProfileInfo>
-          <ProfileInfo>Email: {userData.email}</ProfileInfo>
-          <ProfileInfo>Role: {userData.roles}</ProfileInfo>
-          {/*handleResetPassword*/}
-        </>
-      ) : (
-        <LoadingMessage>Ładowanie danych...</LoadingMessage>
+    <>
+      <ProfileContainer>
+        <ProfileTitle>Your Profile Information</ProfileTitle>
+        {userData ? (
+          <>
+            <ProfileInfo>First name: {userData.firstName}</ProfileInfo>
+            <ProfileInfo>Last name: {userData.lastName}</ProfileInfo>
+            <ProfileInfo>Email: {userData.email}</ProfileInfo>
+            <ProfileInfo>Role: {userData.roles}</ProfileInfo>
+          </>
+        ) : (
+          <LoadingMessage>Ładowanie danych...</LoadingMessage>
+        )}
+      </ProfileContainer>
+      {notification && (
+        <SuccessNotification>
+          <p>{notification}</p>
+        </SuccessNotification>
       )}
-    </ProfileContainer>
+    </>
   );
 };
 

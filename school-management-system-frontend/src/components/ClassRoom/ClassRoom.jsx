@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ClassRoom.css"; // Ensure consistent styling
-import { useNavigate } from "react-router-dom"; // For navigation
+import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
@@ -23,6 +23,19 @@ function ClassRoom() {
   // State for Success Notification
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const location = useLocation(); // Initialize useLocation
+
+  useEffect(() => {
+    // Check for success message from navigation state
+    if (location.state && location.state.successMessage) {
+      setSuccessMessage(location.state.successMessage);
+      setShowSuccess(true);
+      // Clear the state to prevent repeated popups on re-render
+      navigate(location.pathname, { replace: true, state: {} });
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     const fetchClassRooms = async () => {
@@ -213,7 +226,7 @@ function ClassRoom() {
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
           <div className="edit-popup">
-            <h2>Edit Classroom</h2>
+            <h2>Edit Classroom: {editClassRoomName}</h2>
             <form onSubmit={handleEditSubmit}>
               <div className="form-group">
                 <label htmlFor="editName">Classroom Name:</label>

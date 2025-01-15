@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import AuthPage from "../../components/Auth/AuthPage/AuthPage";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useNotification } from "../../contexts/NotificationContext"; // Importuj kontekst powiadomień
+
 function LoginPage({ onLogin }) {
   const [verificationMessage, setVerificationMessage] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { showNotification } = useNotification(); // Użyj funkcji z kontekstu powiadomień
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -24,6 +28,7 @@ function LoginPage({ onLogin }) {
   const handleLoginSuccess = async (data) => {
     console.log("Login Success Data:", data);
     const token = data.token;
+
     try {
       const response = await fetch(`http://localhost/api/v1/user/me`, {
         method: "GET",
@@ -40,6 +45,10 @@ function LoginPage({ onLogin }) {
 
       const userResponseData = await response.json();
       onLogin(userResponseData, token);
+
+      // Wyświetl komunikat sukcesu i przejdź do profilu
+      showNotification("Logged in successfully!");
+      navigate("/profile");
     } catch (error) {
       console.error("Błąd podczas pobierania danych użytkownika:", error);
     }

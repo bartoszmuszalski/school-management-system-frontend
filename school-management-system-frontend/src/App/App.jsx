@@ -14,17 +14,21 @@ import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
 import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
-import { AuthProvider, AuthContext } from "../contexts/AuthContext"; // Import AuthProvider
+import { AuthProvider, AuthContext } from "../contexts/AuthContext";
 import Subjects from "../components/Subjects/Subjects";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
-// import EditClassRoom from "../components/ClassRoom/EditClassRoom";
+import { NotificationProvider } from "../contexts/NotificationContext"; // Import NotificationProvider
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <NotificationProvider>
+          {" "}
+          {/* Dodano NotificationProvider */}
+          <AppContent />
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );
@@ -58,16 +62,14 @@ const AppContent = () => {
             isLoggedIn ? (
               <Navigate to="/profile" />
             ) : (
-              <LoginPage onLogin={handleLogin} /> // przekazanie funkcji handleLogin
+              <LoginPage onLogin={handleLogin} />
             )
           }
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/users" element={<DisplayUsers />} />
-        {/* <Route path="/subjects" element={<Subjects />} /> */}
         <Route path="/classroom" element={<ClassRoom />} />
         <Route path="/classroom/create" element={<CreateClassRoom />} />
-        {/* <Route path="/classroom/edit/:id" element={<EditClassRoom />} /> */}
         <Route
           path="/dashboard"
           element={

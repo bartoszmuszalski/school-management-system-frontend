@@ -36,8 +36,12 @@ function CreateClassRoom() {
 
       // Assuming a successful creation returns status 201 or similar
       if (response.status === 201 || response.data.status === "success") {
-        // Optionally, show a success message
-        navigate("/classroom"); // Redirect to classroom list
+        // Navigate to classroom list with success message
+        navigate("/classroom", {
+          state: {
+            successMessage: `ClassRoom "${name}" has been successfully added.`,
+          },
+        });
       } else {
         setError("Failed to create classroom.");
       }
