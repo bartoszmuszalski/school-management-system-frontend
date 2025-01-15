@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./DisplayUsers.css";
+import verified from "../Files/verified.png";
+import unverified from "../Files/unverified.png";
 
 // Constants for user roles
 const ROLE_ADMIN = "ROLE_ADMIN";
-const ROLE_TEACHER = "ROLE_TEACHER";
-const ROLE_STUDENT = "ROLE_STUDENT";
-const ROLE_USER = "ROLE_USER";
 
 const DisplayUsers = () => {
   // State for users, loading, error, and pagination
@@ -15,7 +14,7 @@ const DisplayUsers = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
-  const limit = 10; // Number of users per page
+  const [limit, setLimit] = useState(10); // Number of users per page
 
   // State for popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -39,70 +38,70 @@ const DisplayUsers = () => {
     }
   }, []);
 
-  // Function to fetch users with pagination and role-based filtering
+  // Function to fetch users with pagination
   const fetchUsers = async (page) => {
     setLoading(true);
     setError(null);
+    const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     try {
-      let url = `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`;
-
-      // Add role filters based on userRole
-      if (userRole === ROLE_TEACHER) {
-        // Assuming the API accepts multiple roles as separate query parameters
-        url += `&roles=${ROLE_TEACHER}&roles=${ROLE_STUDENT}`;
-      } else if (userRole === ROLE_STUDENT) {
-        // If userRole is STUDENT, filter only teachers
-        url += `&roles=${ROLE_TEACHER}`;
-      }
-
-      const response = await axios.get(url);
-      let fetchedUsers = response.data.data;
-
-      // Additional frontend filtering as a fallback
-      if (userRole === ROLE_TEACHER) {
-        fetchedUsers = fetchedUsers.filter(
-          (user) => user.role === ROLE_TEACHER || user.role === ROLE_STUDENT
-        );
-      } else if (userRole === ROLE_STUDENT) {
-        fetchedUsers = fetchedUsers.filter(
-          (user) => user.role === ROLE_TEACHER
-        );
-      }
-
-      setUsers(fetchedUsers);
-
-      // Determine total pages based on filtered data
-      const totalUsers =
-        userRole === ROLE_TEACHER || userRole === ROLE_STUDENT
-          ? fetchedUsers.length
-          : response.data.total; // For admin, use the original total count
-      setTotalPages(Math.ceil(totalUsers / limit));
+      const url = `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`;
+      console.log("Fetching users from:", url); // Debugging log
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Bearer token to headers
+        },
+      });
+      console.log("Response data:", response.data); // Debugging log
+      setUsers(response.data.data);
+      setTotalPages(Math.ceil(response.data.total / limit));
     } catch (err) {
+      console.error("Error fetching users:", err); // Debugging log
       setError(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch users when component mounts or when currentPage/userRole changes
+  // Fetch users when component mounts or when currentPage changes
   useEffect(() => {
-    if (
-      userRole === ROLE_ADMIN ||
-      userRole === ROLE_TEACHER ||
-      userRole === ROLE_STUDENT
-    ) {
+    if (userRole === ROLE_ADMIN) {
       fetchUsers(currentPage);
     }
   }, [currentPage, userRole]);
 
   // Function to verify a user (without API calls)
-  const handleVerify = (userId) => {
-    console.log(`Verify user with ID: ${userId}`);
-    setUsers(
-      users.map((user) =>
-        user.id === userId ? { ...user, isVerified: true } : user
-      )
-    );
+  const handleActivate = async (userId) => {
+    console.log(`Verifying user with ID: ${userId}`);
+    const token = localStorage.getItem("authToken");
+
+    try {
+      const response = await fetch(
+        `http://localhost/api/v1/user/${userId}/change-activation`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ isActivated: true }),
+        }
+      );
+
+      if (response.status === 204) {
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, isActivated: true } : user
+          )
+        );
+        setSuccessMessage(`User ${userId} has been verified.`);
+        setShowSuccess(true);
+      } else {
+        console.error("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Error verifying user:", error);
+      // Optionally, display an error message to the user
+    }
   };
 
   // Function to handle role change with popup
@@ -195,26 +194,16 @@ const DisplayUsers = () => {
   }, [showSuccess]);
 
   // Handle loading and error states
-  if (
-    (userRole === ROLE_ADMIN ||
-      userRole === ROLE_TEACHER ||
-      userRole === ROLE_STUDENT) &&
-    loading
-  ) {
+  if (loading) {
     return <p className="loading">Loading...</p>;
   }
 
-  if (
-    (userRole === ROLE_ADMIN ||
-      userRole === ROLE_TEACHER ||
-      userRole === ROLE_STUDENT) &&
-    error
-  ) {
+  if (error) {
     return <p className="error">Error: {error.message}</p>;
   }
 
   // Conditional rendering based on user role
-  if (userRole === ROLE_USER) {
+  if (userRole !== ROLE_ADMIN) {
     return (
       <div className="access-denied">
         <p>You do not have permission to view this page.</p>
@@ -222,7 +211,7 @@ const DisplayUsers = () => {
     );
   }
 
-  // Render the user list for admin, teacher, and student
+  // Render the user list for admin
   return (
     <div className="container">
       <p className="myParagraphClass">User List in the System</p>
@@ -233,22 +222,15 @@ const DisplayUsers = () => {
             <th>Email</th>
             <th>First and Last Name</th>
             <th>Role</th>
-            {/* Conditional rendering of headers */}
-            {userRole === ROLE_ADMIN && (
-              <>
-                <th>Verified</th>
-                <th>Action</th>
-                <th>Change Role</th>
-              </>
-            )}
+            <th>Activated</th>
+            <th>Action</th>
+            <th>Change Role</th>
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan={userRole === ROLE_ADMIN ? "7" : "4"}>
-                No users found.
-              </td>
+              <td colSpan="7">No users found.</td>
             </tr>
           ) : (
             users.map((user, index) => (
@@ -260,37 +242,42 @@ const DisplayUsers = () => {
                   {user.role.slice(5).charAt(0).toUpperCase() +
                     user.role.slice(6).toLowerCase()}
                 </td>
-                {/* Conditional rendering of cells */}
-                {userRole === ROLE_ADMIN && (
-                  <>
-                    <td>{user.isVerified ? "Yes" : "No"}</td>
-                    <td className="action-cell">
-                      {user.isVerified ? (
-                        <span>-</span>
-                      ) : (
-                        <button
-                          className="VerifyButton"
-                          onClick={() => handleVerify(user.id)}
-                          aria-label={`Verify user ${user.email}`}
-                        >
-                          Verify
-                        </button>
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
-                        onChange={(e) => handleChangeRole(user, e.target.value)}
-                        aria-label={`Change role for ${user.email}`}
-                      >
-                        <option value="USER">User</option>
-                        <option value="STUDENT">Student</option>
-                        <option value="TEACHER">Teacher</option>
-                        <option value="ADMIN">Administrator</option>
-                      </select>
-                    </td>
-                  </>
-                )}
+                <td>
+                  {user.isActivated ? (
+                    <img src={verified} alt="Verified" className="verify_img" />
+                  ) : (
+                    <img
+                      src={unverified}
+                      alt="Unverified"
+                      className="verify_img"
+                    />
+                  )}
+                </td>
+                <td className="action-cell">
+                  {user.isActivated ? (
+                    <span>-</span>
+                  ) : (
+                    <button
+                      className="VerifyButton"
+                      onClick={() => handleActivate(user.id)}
+                      aria-label={`Verify user ${user.email}`}
+                    >
+                      Activate
+                    </button>
+                  )}
+                </td>
+                <td>
+                  <select
+                    value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
+                    onChange={(e) => handleChangeRole(user, e.target.value)}
+                    aria-label={`Change role for ${user.email}`}
+                  >
+                    <option value="USER">User</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="TEACHER">Teacher</option>
+                    <option value="ADMIN">Administrator</option>
+                  </select>
+                </td>
               </tr>
             ))
           )}
