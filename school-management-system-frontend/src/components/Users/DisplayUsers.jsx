@@ -70,8 +70,7 @@ const DisplayUsers = () => {
   }, [currentPage, userRole]);
 
   // Function to verify a user (without API calls)
-  const handleActivate = async (userId) => {
-    console.log(`Verifying user with ID: ${userId}`);
+  const handleActivationToggle = async (userId, isActivated) => {
     const token = localStorage.getItem("authToken");
 
     try {
@@ -83,24 +82,24 @@ const DisplayUsers = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ isActivated: true }),
+          body: JSON.stringify({ isActivated: !isActivated }), // Toggle the activation status
         }
       );
 
       if (response.status === 204) {
         setUsers(
           users.map((user) =>
-            user.id === userId ? { ...user, isActivated: true } : user
+            user.id === userId ? { ...user, isActivated: !isActivated } : user
           )
         );
-        setSuccessMessage(`User ${userId} has been verified.`);
+        const action = isActivated ? "deactivated" : "activated";
+        setSuccessMessage(`User ${userId} has been ${action}.`);
         setShowSuccess(true);
       } else {
         console.error("Unexpected response status:", response.status);
       }
     } catch (error) {
-      console.error("Error verifying user:", error);
-      // Optionally, display an error message to the user
+      console.error("Error toggling user activation:", error);
     }
   };
 
@@ -255,17 +254,28 @@ const DisplayUsers = () => {
                 </td>
                 <td className="action-cell">
                   {user.isActivated ? (
-                    <span>-</span>
+                    <button
+                      className="DeactivateButton"
+                      onClick={() =>
+                        handleActivationToggle(user.id, user.isActivated)
+                      }
+                      aria-label={`Deactivate user ${user.email}`}
+                    >
+                      Deactivate
+                    </button>
                   ) : (
                     <button
-                      className="VerifyButton"
-                      onClick={() => handleActivate(user.id)}
-                      aria-label={`Verify user ${user.email}`}
+                      className="ActivateButton"
+                      onClick={() =>
+                        handleActivationToggle(user.id, user.isActivated)
+                      }
+                      aria-label={`Activate user ${user.email}`}
                     >
                       Activate
                     </button>
                   )}
                 </td>
+
                 <td>
                   <select
                     value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
@@ -283,7 +293,6 @@ const DisplayUsers = () => {
           )}
         </tbody>
       </table>
-
       {/* Pagination Controls */}
       <div className="pagination">
         <button onClick={prevPage} disabled={currentPage === 1}>
@@ -305,7 +314,6 @@ const DisplayUsers = () => {
           Next
         </button>
       </div>
-
       {/* Confirmation Popup */}
       {isPopupOpen && selectedUser && (
         <div className="popup-overlay">
@@ -326,8 +334,7 @@ const DisplayUsers = () => {
           </div>
         </div>
       )}
-
-      {/* Success Notification */}
+      ,{/* Success Notification */}
       {showSuccess && (
         <div className="success-notification">
           <p>{successMessage}</p>
