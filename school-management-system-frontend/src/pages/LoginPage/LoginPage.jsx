@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import AuthPage from "../../components/Auth/AuthPage/AuthPage";
 import { useLocation } from "react-router-dom";
-import { AuthContext } from "../../contexts/AuthContext";
-
 function LoginPage({ onLogin }) {
   const [verificationMessage, setVerificationMessage] = useState(null);
   const location = useLocation();

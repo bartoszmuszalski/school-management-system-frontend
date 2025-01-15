@@ -45,13 +45,13 @@ const DisplayUsers = () => {
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     try {
       const url = `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`;
-      console.log("Fetching users from:", url); // Debugging log
+      // console.log("Fetching users from:", url); // Debugging log
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add Bearer token to headers
         },
       });
-      console.log("Response data:", response.data); // Debugging log
+      // console.log("Response data:", response.data); // Debugging log
       setUsers(response.data.data);
       setTotalPages(Math.ceil(response.data.total / limit));
     } catch (err) {

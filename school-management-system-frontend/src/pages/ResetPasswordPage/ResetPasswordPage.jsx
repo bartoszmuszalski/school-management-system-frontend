@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AuthForm from "../../components/Auth/AuthForm/AuthForm";
 import { useNavigate } from "react-router-dom";
 import "./ResetPasswordPage.css";

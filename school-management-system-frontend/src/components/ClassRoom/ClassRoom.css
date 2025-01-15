@@ -1,0 +1,487 @@
+/* Importing a nicer font from Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap");
+
+/* Global settings for <div> */
+.container {
+  margin-left: 150px;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 18px;
+  font-family: "Roboto Slab", serif;
+  letter-spacing: -0.025em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* Ensure relative positioning for absolute children */
+}
+
+/* Settings for paragraph */
+.myParagraphClass {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  font-family: "Roboto Slab", serif;
+  font-weight: 700;
+  font-size: 25px;
+}
+
+/* Enhanced table styling */
+.table {
+  width: 80%;
+  max-width: 1000px;
+  margin-top: 20px;
+  border-collapse: collapse;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table th,
+.table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.table thead {
+  background-color: #4f46e5;
+  color: #fff;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Styling for loading text */
+.loading {
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+  color: #888;
+  font-family: "Roboto Slab", serif;
+}
+
+/* Styling for error messages */
+.error {
+  text-align: center;
+  color: red;
+  margin-top: 20px;
+  font-family: "Roboto Slab", serif;
+}
+
+/* Styling for select fields */
+.table select {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+.VerifyButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px; /* Increased padding for better appearance */
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4f46e5; /* Matching the table header color */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px; /* Space below the button */
+}
+
+.VerifyButton:hover {
+  background-color: #3730a3; /* Darker shade on hover */
+}
+
+.VerifyButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+/* Styling for pagination controls */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pagination button:hover:not(.active) {
+  background-color: #f0f0f0;
+}
+
+.pagination button.active {
+  background-color: #4f46e5;
+  color: #fff;
+  border-color: #4f46e5;
+}
+
+/* Styling for the form in CreateClassRoom */
+.form {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+/* Styling for access denied message */
+.access-denied {
+  margin-left: 150px;
+  margin-top: 40px;
+  padding: 20px;
+  font-size: 18px;
+  font-family: "Roboto Slab", serif;
+  text-align: center;
+  color: #f44336; /* Red color for emphasis */
+}
+
+.access-denied p {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Animation for the success notification */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Styling for header container */
+.header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styling for Users Per Page selector */
+.users-per-page {
+  display: flex;
+  align-items: center;
+}
+
+.users-per-page label {
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.users-per-page select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+    margin-left: 0; /* Remove left margin for mobile */
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-per-page {
+    margin-top: 10px;
+  }
+
+  .table {
+    width: 100%;
+  }
+
+  .form {
+    width: 90%;
+  }
+}
+
+.verify_img {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.DeactivateButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px; /* Increased padding for better appearance */
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-left: 10px;
+  background-color: #e54646; /* Matching the table header color */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px; /* Space below the button */
+}
+
+.DeactivateButton:hover {
+  background-color: #d32f2f;
+}
+
+.ActivateButton {
+  background-color: #4caf50; /* Green for activation */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.ActivateButton:hover {
+  background-color: #388e3c;
+}
+
+/* Styling for confirmation popup */
+.popup-overlay {
+  backdrop-filter: blur(4px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center; /* Centered horizontally */
+  align-items: center; /* Centered vertically */
+  z-index: 1000;
+}
+
+.popup {
+  background-color: #fff;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.popup-button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.popup-button.yes {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.popup-button.yes:hover {
+  background-color: #45a049;
+}
+
+.popup-button.no {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.popup-button.no:hover {
+  background-color: #e53935;
+}
+
+/* Styling for success notification */
+.success-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4caf50; /* Green background */
+  color: #fff;
+  padding: 15px 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  animation: slide-in 0.5s ease-out, fade-out 0.5s 2.5s forwards;
+}
+
+.success-notification p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Positioning the Create Classroom button */
+.create-classroom-button {
+  position: absolute;
+  bottom: 20px;
+  left: 300px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-classroom-button:hover {
+  background-color: #3730a3;
+}
+
+.create-classroom-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+/* Edit Popup Specific Styles */
+.edit-popup-overlay {
+  backdrop-filter: blur(4px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center; /* Centered horizontally */
+  align-items: center; /* Centered vertically */
+  z-index: 1000;
+}
+
+.edit-popup {
+  background-color: #fff;
+  padding: 30px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.edit-popup h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Roboto Slab", serif;
+}
+
+.edit-popup .form-group {
+  margin-bottom: 20px;
+}
+
+.edit-popup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.edit-popup input[type="text"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.edit-popup input[type="text"]:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5);
+}
+
+/* Animation for success notification */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

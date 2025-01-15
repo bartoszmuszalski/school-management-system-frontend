@@ -69,7 +69,7 @@ function Navigation({ onLogout }) {
         ) : (
           <>
             <Link
-              to="/login"
+              to="/subjects"
               className="sidebar-link-img"
               data-tooltip="Subjects"
             >
@@ -90,7 +90,7 @@ function Navigation({ onLogout }) {
               <img src={useradd_pic} alt="User add" className="register-icon" />
             </Link>
             <Link
-              to="/login"
+              to="/classroom"
               className="sidebar-link-img"
               data-tooltip="User classroom"
             >

@@ -15,6 +15,10 @@ import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
 import { AuthProvider, AuthContext } from "../contexts/AuthContext"; // Import AuthProvider
+import Subjects from "../components/Subjects/Subjects";
+import ClassRoom from "../components/ClassRoom/ClassRoom";
+import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
+// import EditClassRoom from "../components/ClassRoom/EditClassRoom";
 
 function App() {
   return (
@@ -60,6 +64,10 @@ const AppContent = () => {
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/users" element={<DisplayUsers />} />
+        {/* <Route path="/subjects" element={<Subjects />} /> */}
+        <Route path="/classroom" element={<ClassRoom />} />
+        <Route path="/classroom/create" element={<CreateClassRoom />} />
+        {/* <Route path="/classroom/edit/:id" element={<EditClassRoom />} /> */}
         <Route
           path="/dashboard"
           element={
