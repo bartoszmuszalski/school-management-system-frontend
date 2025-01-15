@@ -275,7 +275,6 @@ const DisplayUsers = () => {
                     </button>
                   )}
                 </td>
-
                 <td>
                   <select
                     value={user.role.replace("ROLE_", "")} // Remove ROLE_ prefix
@@ -293,12 +292,12 @@ const DisplayUsers = () => {
           )}
         </tbody>
       </table>
+
       {/* Pagination Controls */}
       <div className="pagination">
         <button onClick={prevPage} disabled={currentPage === 1}>
           Previous
         </button>
-        {/* Render page numbers */}
         {Array.from({ length: totalPages }, (_, index) => index + 1).map(
           (page) => (
             <button
@@ -314,6 +313,7 @@ const DisplayUsers = () => {
           Next
         </button>
       </div>
+
       {/* Confirmation Popup */}
       {isPopupOpen && selectedUser && (
         <div className="popup-overlay">
@@ -334,7 +334,8 @@ const DisplayUsers = () => {
           </div>
         </div>
       )}
-      ,{/* Success Notification */}
+
+      {/* Success Notification */}
       {showSuccess && (
         <div className="success-notification">
           <p>{successMessage}</p>
@@ -343,5 +344,4 @@ const DisplayUsers = () => {
     </div>
   );
 };
-
 export default DisplayUsers;

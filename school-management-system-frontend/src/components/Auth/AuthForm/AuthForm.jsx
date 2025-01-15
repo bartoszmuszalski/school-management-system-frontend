@@ -142,23 +142,27 @@ function AuthForm({
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
-          <div className="modal-content">
-            <span className="header">Email Verification</span>
-            <p className="modal-text">Email: {userEmail}</p>
-            <input
-              className="styled-input"
-              type="text"
-              placeholder="Enter Token"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              required
-            />
-            <button className="styled-button" onClick={handleVerifyToken}>
-              Verify Token
-            </button>
-            {verificationStatus && (
-              <p className="message">{verificationStatus}</p>
-            )}
+          <div className="popup-overlay">
+            <div className="popup">
+              <div className="modal-content">
+                <span className="header">Email Verification</span>
+                <p className="modal-text">Email: {userEmail}</p>
+                <input
+                  className="styled-input"
+                  type="text"
+                  placeholder="Enter Token"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  required
+                />
+                <button className="styled-button" onClick={handleVerifyToken}>
+                  Verify Token
+                </button>
+                {verificationStatus && (
+                  <p className="message">{verificationStatus}</p>
+                )}
+              </div>
+            </div>
           </div>
         </Modal>
       )}

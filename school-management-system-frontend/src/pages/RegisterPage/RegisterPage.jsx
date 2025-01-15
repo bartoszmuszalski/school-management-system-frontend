@@ -1,7 +1,10 @@
 import React from "react";
 import AuthPage from "../../components/Auth/AuthPage/AuthPage";
+import { useNotification } from "../../contexts/NotificationContext"; // Import the notification context
 
 function RegisterPage() {
+  const { showNotification } = useNotification(); // Use the notification context
+
   const registerFields = [
     { name: "firstName", type: "text", label: "First Name", required: true },
     { name: "lastName", type: "text", label: "Last Name", required: true },
@@ -15,6 +18,11 @@ function RegisterPage() {
     },
   ];
 
+  const handleRegisterSuccess = () => {
+    // Show success notification
+    showNotification("Registration successful!");
+  };
+
   return (
     <AuthPage
       title="Register Form"
@@ -22,6 +30,7 @@ function RegisterPage() {
       submitButtonText="Register"
       apiEndpoint="register"
       successMessage="Registration successful"
+      onSuccess={handleRegisterSuccess} // Pass the success handler
     />
   );
 }

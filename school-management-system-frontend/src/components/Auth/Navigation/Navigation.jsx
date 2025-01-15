@@ -13,13 +13,6 @@ import classroom_pic from "../../Files/user_classroom.png";
 import useradd_pic from "../../Files/user-add.png";
 
 import { useNavigate } from "react-router-dom";
-
-const UsersButton = ({ to, text, iconSrc }) => (
-  <Link to={to} className="sidebar-users-button">
-    <img src={iconSrc} alt={text} className="sidebar-users-icon" />
-    <span className="sidebar-users-text">{text}</span>
-  </Link>
-);
 function Navigation({ onLogout }) {
   const context = useContext(AuthContext) || {};
   const { isLoggedIn, user } = context;
@@ -69,7 +62,7 @@ function Navigation({ onLogout }) {
         ) : (
           <>
             <Link
-              to="/subjects"
+              to="/login"
               className="sidebar-link-img"
               data-tooltip="Subjects"
             >

@@ -20,6 +20,13 @@ function ClassRoom() {
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
 
+  // States for Delete Popup
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [deleteClassRoomId, setDeleteClassRoomId] = useState(null);
+  const [deleteClassRoomName, setDeleteClassRoomName] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+
   // State for Success Notification
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -144,6 +151,64 @@ function ClassRoom() {
     }
   };
 
+  // Handlers for Delete Functionality
+  const handleDeleteClassRoom = (id, name) => {
+    setDeleteClassRoomId(id);
+    setDeleteClassRoomName(name);
+    setIsDeletePopupOpen(true);
+    setDeleteError(null);
+  };
+
+  const closeDeletePopup = () => {
+    setIsDeletePopupOpen(false);
+    setDeleteClassRoomId(null);
+    setDeleteClassRoomName("");
+    setDeleteError(null);
+  };
+
+  const confirmDeleteClassRoom = async () => {
+    setDeleteLoading(true);
+    setDeleteError(null);
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setDeleteError("Authentication token not found.");
+        setDeleteLoading(false);
+        return;
+      }
+
+      const response = await axios.delete(
+        `http://localhost/api/v1/class_room/remove/${deleteClassRoomId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 204 || response.status === 200) {
+        // Remove the deleted classroom from the list
+        setClassRooms((prevClassRooms) =>
+          prevClassRooms.filter(
+            (classRoom) => classRoom.id !== deleteClassRoomId
+          )
+        );
+        setSuccessMessage("Classroom deleted successfully.");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        closeDeletePopup();
+      } else {
+        setDeleteError("Failed to delete classroom.");
+      }
+    } catch (err) {
+      setDeleteError(
+        err.response?.data?.message || "An error occurred while deleting."
+      );
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   if (loading) {
     return <p className="loading">Loading...</p>;
   }
@@ -163,12 +228,13 @@ function ClassRoom() {
             <th>Created At</th>
             <th>Updated At</th>
             <th>Edit Classroom</th> {/* New Header */}
+            <th>Delete Classroom</th>
           </tr>
         </thead>
         <tbody>
           {classRooms.length === 0 ? (
             <tr>
-              <td colSpan="5">No classrooms found.</td> {/* Updated colspan */}
+              <td colSpan="6">No classrooms found.</td> {/* Updated colspan */}
             </tr>
           ) : (
             classRooms.map((classRoom, index) => (
@@ -185,6 +251,16 @@ function ClassRoom() {
                     }
                   >
                     Edit
+                  </button>
+                </td>
+                <td>
+                  <button
+                    className="DeactivateButton"
+                    onClick={() =>
+                      handleDeleteClassRoom(classRoom.id, classRoom.name)
+                    }
+                  >
+                    Delete
                   </button>
                 </td>
                 {/* Add more data fields as needed */}
@@ -226,7 +302,7 @@ function ClassRoom() {
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
           <div className="edit-popup">
-            <h2>Edit Classroom: {editClassRoomName}</h2>
+            <h2>Edit Classroom</h2>
             <form onSubmit={handleEditSubmit}>
               <div className="form-group">
                 <label htmlFor="editName">Classroom Name:</label>
@@ -258,6 +334,36 @@ function ClassRoom() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Classroom Popup */}
+      {isDeletePopupOpen && (
+        <div className="delete-popup-overlay">
+          <div className="delete-popup">
+            <h2>Delete Classroom</h2>
+            <p>
+              Are you sure you want to delete the classroom "
+              <strong>{deleteClassRoomName}</strong>"?
+            </p>
+            {deleteError && <p className="error">{deleteError}</p>}
+            <div className="popup-buttons">
+              <button
+                className="DeactivateButton"
+                onClick={confirmDeleteClassRoom}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? "Deleting..." : "Delete"}
+              </button>
+              <button
+                className="VerifyButton"
+                onClick={closeDeletePopup}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
