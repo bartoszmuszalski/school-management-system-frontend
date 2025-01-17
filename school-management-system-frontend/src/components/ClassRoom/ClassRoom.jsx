@@ -57,7 +57,7 @@ function ClassRoom() {
         }
 
         const response = await axios.get(
-          `http://localhost/api/v1/class_room/list?page=${currentPage}&limit=${limit}`,
+          `http://localhost:81/api/v1/class_room/list?page=${currentPage}&limit=${limit}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ function ClassRoom() {
       }
 
       const response = await axios.patch(
-        `http://localhost/api/v1/class_room/edit/${editClassRoomId}`,
+        `http://localhost:81/api/v1/class_room/edit/${editClassRoomId}`,
         { name: editClassRoomName },
         {
           headers: {
@@ -178,7 +178,7 @@ function ClassRoom() {
       }
 
       const response = await axios.delete(
-        `http://localhost/api/v1/class_room/remove/${deleteClassRoomId}`,
+        `http://localhost:81/api/v1/class_room/remove/${deleteClassRoomId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

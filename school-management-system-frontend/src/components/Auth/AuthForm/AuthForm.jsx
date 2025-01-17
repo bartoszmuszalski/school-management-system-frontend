@@ -27,7 +27,7 @@ function AuthForm({
     setFieldValues({ ...fieldValues, [name]: e.target.value });
   };
 
-  const BASE_URL = "http://localhost";
+  const BASE_URL = "http://localhost:81";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -93,7 +93,7 @@ function AuthForm({
 
   return (
     <div className="main-container">
-      <header className="header">
+      <header className="header-correct">
         <img
           style={{ marginBottom: "20px" }}
           alt="Your Company"

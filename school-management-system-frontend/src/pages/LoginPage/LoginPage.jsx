@@ -30,7 +30,7 @@ function LoginPage({ onLogin }) {
     const token = data.token;
 
     try {
-      const response = await fetch(`http://localhost/api/v1/user/me`, {
+      const response = await fetch(`http://localhost:81/api/v1/user/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

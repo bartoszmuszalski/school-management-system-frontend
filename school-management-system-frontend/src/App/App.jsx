@@ -6,6 +6,7 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
+import "./App.css";
 import GlobalStyle from "../styles/GlobalStyle";
 import RegisterPage from "../pages/RegisterPage/RegisterPage";
 import LoginPage from "../pages/LoginPage/LoginPage";
@@ -14,7 +15,11 @@ import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
 import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
-import { AuthProvider, AuthContext } from "../contexts/AuthContext";
+import {
+  AuthProvider,
+  AuthContext,
+  getUserName,
+} from "../contexts/AuthContext";
 import Subjects from "../components/Subjects/Subjects";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
@@ -49,12 +54,19 @@ const AppContent = () => {
     window.location.reload();
   };
 
+  const { getUserName } = useContext(AuthContext);
+
   return (
     <>
       <GlobalStyle />
       <Navigation onLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/" />
+          }
+        />
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/login"
@@ -74,7 +86,7 @@ const AppContent = () => {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <div>Dashboard</div>
+              <div className="hello-user">Hello, {getUserName()}</div>
             </ProtectedRoute>
           }
         />

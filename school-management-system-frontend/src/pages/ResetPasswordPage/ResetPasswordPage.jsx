@@ -17,7 +17,7 @@ function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost/api/v1/user/request_password_change",
+        "http://localhost:81/api/v1/user/request_password_change",
         {
           method: "POST",
           headers: {
@@ -58,7 +58,7 @@ function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost/api/v1/user/change_forgotten_password",
+        "http://localhost:81/api/v1/user/change_forgotten_password",
         {
           method: "POST",
           headers: {

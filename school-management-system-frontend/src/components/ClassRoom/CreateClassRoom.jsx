@@ -24,7 +24,7 @@ function CreateClassRoom() {
       }
 
       const response = await axios.post(
-        "http://localhost/api/v1/class_room/create",
+        "http://localhost:81/api/v1/class_room/create",
         { name },
         {
           headers: {

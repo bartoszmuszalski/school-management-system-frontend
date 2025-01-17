@@ -7,7 +7,7 @@ function VerificationModal({ email, onClose, onVerified }) {
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [apiError, setApiError] = useState(null);
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost";
+  const BASE_URL = "http://localhost:81";
 
   const handleVerifyToken = async (event) => {
     event.preventDefault();

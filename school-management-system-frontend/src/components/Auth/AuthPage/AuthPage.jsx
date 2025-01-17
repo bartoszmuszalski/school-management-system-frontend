@@ -15,7 +15,7 @@ function AuthPage({
   const handleAuth = async (fieldValues) => {
     try {
       const response = await fetch(
-        `http://localhost/api/v1/user/${apiEndpoint}`,
+        `http://localhost:81/api/v1/user/${apiEndpoint}`,
         {
           method: "POST",
           headers: {

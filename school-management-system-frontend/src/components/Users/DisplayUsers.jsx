@@ -44,14 +44,14 @@ const DisplayUsers = () => {
     setError(null);
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     try {
-      const url = `http://localhost/api/v1/users/list?page=${page}&limit=${limit}`;
+      const url = `http://localhost:81/api/v1/users/list?page=${page}&limit=${limit}`;
       // console.log("Fetching users from:", url); // Debugging log
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add Bearer token to headers
         },
       });
-      // console.log("Response data:", response.data); // Debugging log
+      console.log("Response data:", response.data); // Debugging log
       setUsers(response.data.data);
       setTotalPages(Math.ceil(response.data.total / limit));
     } catch (err) {
@@ -64,6 +64,8 @@ const DisplayUsers = () => {
 
   // Fetch users when component mounts or when currentPage changes
   useEffect(() => {
+    console.log(userRole);
+
     if (userRole === ROLE_ADMIN) {
       fetchUsers(currentPage);
     }
@@ -75,7 +77,7 @@ const DisplayUsers = () => {
 
     try {
       const response = await fetch(
-        `http://localhost/api/v1/user/${userId}/change-activation`,
+        `http://localhost:81/api/v1/user/${userId}/change-activation`,
         {
           method: "PATCH",
           headers: {
@@ -118,7 +120,7 @@ const DisplayUsers = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost/api/v1/user/${selectedUser.id}/change_role`, // API endpoint
+        `http://localhost:81/api/v1/user/${selectedUser.id}/change_role`, // API endpoint
         { role: `ROLE_${newUserRole}` }, // Request body
         {
           headers: {

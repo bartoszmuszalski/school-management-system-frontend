@@ -39,13 +39,19 @@ export const AuthProvider = ({ children }) => {
     return localStorage.getItem("authToken");
   };
 
+  const getUserName = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user ? user.firstName + " " + user.lastName : null;
+  };
+
   const contextValues = {
     isLoggedIn,
     user,
     token,
     login,
     logout,
-    getAuthToken, // dodanie nowej funkcji
+    getAuthToken,
+    getUserName,
   };
   return (
     <AuthContext.Provider value={contextValues}>

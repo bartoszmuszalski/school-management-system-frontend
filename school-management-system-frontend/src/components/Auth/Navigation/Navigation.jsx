@@ -20,12 +20,13 @@ function Navigation({ onLogout }) {
   return (
     <div className="sidebar open">
       <div className="sidebar-header">
-        <img
-          style={{ marginBottom: "20px" }}
-          alt="Your Company"
-          src={logo} // Use the imported local logo
-          className="mx-auto h-16 w-auto"
-        />
+        <Link to="/" className="link-icon">
+          <img
+            alt="Your Company"
+            src={logo} // Use the imported local logo
+            className="mx-auto h-16 w-auto cursor-pointer hover:opacity-80"
+          />
+        </Link>
       </div>
       <nav className="sidebar-nav">
         {!isLoggedIn ? (
