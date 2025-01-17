@@ -3,6 +3,7 @@ import axios from "axios";
 import "./DisplayUsers.css";
 import verified from "../Files/verified.png";
 import unverified from "../Files/unverified.png";
+import apiConfig from "../../config";
 
 // Constants for user roles
 const ROLE_ADMIN = "ROLE_ADMIN";
@@ -44,7 +45,7 @@ const DisplayUsers = () => {
     setError(null);
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     try {
-      const url = `http://localhost:81/api/v1/users/list?page=${page}&limit=${limit}`;
+      const url = `${apiConfig.apiUrl}/api/v1/users/list?page=${page}&limit=${limit}`;
       // console.log("Fetching users from:", url); // Debugging log
       const response = await axios.get(url, {
         headers: {
@@ -77,7 +78,7 @@ const DisplayUsers = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:81/api/v1/user/${userId}/change-activation`,
+        `${apiConfig.apiUrl}/api/v1/user/${userId}/change-activation`,
         {
           method: "PATCH",
           headers: {
@@ -120,7 +121,7 @@ const DisplayUsers = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:81/api/v1/user/${selectedUser.id}/change_role`, // API endpoint
+        `${apiConfig.apiUrl}/api/v1/user/${selectedUser.id}/change_role`, // API endpoint
         { role: `ROLE_${newUserRole}` }, // Request body
         {
           headers: {
@@ -215,17 +216,16 @@ const DisplayUsers = () => {
   // Render the user list for admin
   return (
     <div className="container">
-      <p className="myParagraphClass">User List in the System</p>
+      <p className="myParagraphClass">User list in the system</p>
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Email</th>
-            <th>First and Last Name</th>
+            <th>Name</th>
             <th>Role</th>
             <th>Activated</th>
             <th>Action</th>
-            <th>Change Role</th>
+            <th>Change role</th>
           </tr>
         </thead>
         <tbody>
@@ -236,7 +236,6 @@ const DisplayUsers = () => {
           ) : (
             users.map((user, index) => (
               <tr key={user.id}>
-                <td>{(currentPage - 1) * limit + index + 1}</td>
                 <td style={{ fontWeight: "bold" }}>{user.email}</td>
                 <td>{`${user.firstName} ${user.lastName}`}</td>
                 <td>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./ClassRoom.css"; // Reuse existing styles
 import { useNavigate } from "react-router-dom";
+import apiConfig from "../../config";
 
 function CreateClassRoom() {
   const [name, setName] = useState("");
@@ -24,7 +25,7 @@ function CreateClassRoom() {
       }
 
       const response = await axios.post(
-        "http://localhost:81/api/v1/class_room/create",
+        `${apiConfig.apiUrl}/api/v1/class_room/create`,
         { name },
         {
           headers: {

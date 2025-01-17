@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext"; // Importuj kontekst powiadomień
 import styled from "styled-components";
-
+import apiConfig from "../../config";
 const ProfileContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -60,7 +60,7 @@ const UserProfile = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:81/api/v1/user/me`, {
+        const response = await fetch(`${apiConfig.apiUrl}/api/v1/user/me`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,14 +69,14 @@ const UserProfile = () => {
         });
 
         if (!response.ok) {
-          const message = `Wystąpił błąd: ${response.status}`;
+          const message = `Error: ${response.status}`;
           throw new Error(message);
         }
 
         const data = await response.json();
         setUserData(data);
       } catch (error) {
-        console.error("Błąd pobierania danych użytkownika:", error);
+        console.error("Error fetching user data:", error);
       }
     };
 

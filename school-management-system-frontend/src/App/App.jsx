@@ -15,11 +15,7 @@ import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
 import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
-import {
-  AuthProvider,
-  AuthContext,
-  getUserName,
-} from "../contexts/AuthContext";
+import { AuthProvider, AuthContext } from "../contexts/AuthContext";
 import Subjects from "../components/Subjects/Subjects";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
@@ -39,6 +35,10 @@ function App() {
   );
 }
 
+const localToken = localStorage.getItem("user");
+const userRoles = localToken ? JSON.parse(localToken).roles : [];
+// console.log(String(userRoles));
+
 const AppContent = () => {
   const { isLoggedIn, login, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -48,6 +48,8 @@ const AppContent = () => {
     navigate("/dashboard");
   };
 
+  const isAdmin = String(userRoles) === "ROLE_ADMIN";
+  // console.log(isAdmin);
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -72,14 +74,17 @@ const AppContent = () => {
           path="/login"
           element={
             isLoggedIn ? (
-              <Navigate to="/profile" />
+              <Navigate to="/dashboard" />
             ) : (
               <LoginPage onLogin={handleLogin} />
             )
           }
         />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/users" element={<DisplayUsers />} />
+        <Route
+          path="/users"
+          element={isAdmin ? <DisplayUsers /> : <Navigate to="/dashboard" />}
+        />
         <Route path="/classroom" element={<ClassRoom />} />
         <Route path="/classroom/create" element={<CreateClassRoom />} />
         <Route

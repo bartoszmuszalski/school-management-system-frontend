@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ClassRoom.css"; // Ensure consistent styling
 import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
-
+import apiConfig from "../../config";
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +57,7 @@ function ClassRoom() {
         }
 
         const response = await axios.get(
-          `http://localhost:81/api/v1/class_room/list?page=${currentPage}&limit=${limit}`,
+          `${apiConfig.apiUrl}/api/v1/class_room/list?page=${currentPage}&limit=${limit}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ function ClassRoom() {
         setClassRooms(response.data.data); // Adjust based on API response
         setTotalPages(response.data.totalPages); // Adjust based on API response
       } catch (err) {
-        setError("Failed to fetch classroom data.");
+        setError("You are not authorized to access this page.");
       } finally {
         setLoading(false);
       }
@@ -116,7 +116,7 @@ function ClassRoom() {
       }
 
       const response = await axios.patch(
-        `http://localhost:81/api/v1/class_room/edit/${editClassRoomId}`,
+        `${apiConfig.apiUrl}/api/v1/class_room/edit/${editClassRoomId}`,
         { name: editClassRoomName },
         {
           headers: {
@@ -178,7 +178,7 @@ function ClassRoom() {
       }
 
       const response = await axios.delete(
-        `http://localhost:81/api/v1/class_room/remove/${deleteClassRoomId}`,
+        `${apiConfig.apiUrl}/api/v1/class_room/remove/${deleteClassRoomId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -223,12 +223,11 @@ function ClassRoom() {
       <table className="table">
         <thead>
           <tr>
-            <th>ID</th>
+            {/* <th>ID</th> */}
             <th>Name</th>
             <th>Created At</th>
             <th>Updated At</th>
-            <th>Edit Classroom</th> {/* New Header */}
-            <th>Delete Classroom</th>
+            <th>Actions</th> {/* New Header */}
           </tr>
         </thead>
         <tbody>
@@ -239,10 +238,14 @@ function ClassRoom() {
           ) : (
             classRooms.map((classRoom, index) => (
               <tr key={classRoom.id}>
-                <td>{(currentPage - 1) * limit + index + 1}</td>
+                {/* <td>{(currentPage - 1) * limit + index + 1}</td> */}
                 <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
-                <td>{classRoom.createdAt.date.slice(0, 10)}</td>
-                <td>{classRoom.createdAt.date.slice(0, 10)}</td>
+                <td>{classRoom.createdAt.date.slice(5, 19)}</td>
+                <td>
+                  {classRoom.updatedAt
+                    ? classRoom.updatedAt.date.slice(5, 19)
+                    : "-"}
+                </td>
                 <td>
                   <button
                     className="VerifyButton"
@@ -252,8 +255,7 @@ function ClassRoom() {
                   >
                     Edit
                   </button>
-                </td>
-                <td>
+
                   <button
                     className="DeactivateButton"
                     onClick={() =>

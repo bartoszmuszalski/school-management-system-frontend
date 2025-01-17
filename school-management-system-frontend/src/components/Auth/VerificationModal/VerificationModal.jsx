@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import "./VerificationModal.css";
 import { useNavigate } from "react-router-dom";
+import apiConfig from "../../../config";
 
 function VerificationModal({ email, onClose, onVerified }) {
   const [token, setToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [apiError, setApiError] = useState(null);
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:81";
 
   const handleVerifyToken = async (event) => {
     event.preventDefault();
@@ -15,7 +15,7 @@ function VerificationModal({ email, onClose, onVerified }) {
       email: email,
       token: token,
     };
-    const verifyEndpoint = `${BASE_URL}/api/v1/user/verify_email`;
+    const verifyEndpoint = `${apiConfig.apiUrl}/api/v1/user/verify_email`;
 
     try {
       const response = await fetch(verifyEndpoint, {
@@ -29,7 +29,7 @@ function VerificationModal({ email, onClose, onVerified }) {
       const result = await response.json();
 
       if (result && result.status === "ok") {
-        setVerificationStatus("Email zweryfikowany. Przekierowanie...");
+        setVerificationStatus("Email verified. Redirecting...");
         setTimeout(() => {
           onClose();
           navigate("/dashboard", {
@@ -38,13 +38,13 @@ function VerificationModal({ email, onClose, onVerified }) {
         }, 1000);
       } else {
         if (result && result.message) {
-          setApiError(result.message);
+          setApiError(result.errors.validation);
         } else {
-          setApiError("Nie udało się zweryfikować emaila");
+          setApiError("No able to verify email");
         }
       }
     } catch (error) {
-      setApiError(`Błąd: ${error.message}`);
+      setApiError(`Error: ${error.message}`);
     }
   };
 

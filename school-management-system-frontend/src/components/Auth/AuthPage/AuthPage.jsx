@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AuthForm from "../AuthForm/AuthForm";
+import apiConfig from "../../../config";
 
 function AuthPage({
   title,
@@ -8,14 +9,14 @@ function AuthPage({
   apiEndpoint,
   successMessage,
   verificationMessage,
-  onSuccess, // Accept onSuccess as a prop
+  onSuccess, // Obsługa sukcesu
 }) {
   const [message, setMessage] = useState("");
 
   const handleAuth = async (fieldValues) => {
     try {
       const response = await fetch(
-        `http://localhost:81/api/v1/user/${apiEndpoint}`,
+        `${apiConfig.apiUrl}/api/v1/user/${apiEndpoint}`,
         {
           method: "POST",
           headers: {
@@ -26,25 +27,22 @@ function AuthPage({
       );
 
       if (!response.ok) {
-        let errorMessage = `${
-          apiEndpoint.charAt(0).toUpperCase() + apiEndpoint.slice(1)
-        } failed: ${response.status} ${response.statusText}`;
-        try {
-          const errorData = await response.json();
-          errorMessage += ` ${errorData.message || ""}`;
-        } catch (jsonError) {
-          console.error("Failed to parse error JSON:", jsonError);
+        // Odczytaj szczegóły błędu z odpowiedzi
+        let errorMessage = `Error: ${response.status} ${response.statusText}`;
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
         }
         throw new Error(errorMessage);
       }
 
       const result = await response.json();
       if (onSuccess) {
-        onSuccess(result); // Call onSuccess on successful login
+        onSuccess(result); // Wywołaj onSuccess w przypadku powodzenia
       }
       return { message: successMessage, ...result };
     } catch (error) {
-      console.error(error.message);
+      console.error("Error in handleAuth:", error);
       throw error;
     }
   };

@@ -77,13 +77,6 @@ function Navigation({ onLogout }) {
               <img src={users_pic} alt="Users" className="register-icon" />
             </Link>
             <Link
-              to="/login"
-              className="sidebar-link-img"
-              data-tooltip="User add"
-            >
-              <img src={useradd_pic} alt="User add" className="register-icon" />
-            </Link>
-            <Link
               to="/classroom"
               className="sidebar-link-img"
               data-tooltip="User classroom"

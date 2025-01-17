@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import AuthForm from "../../components/Auth/AuthForm/AuthForm";
 import { useNavigate } from "react-router-dom";
 import "./ResetPasswordPage.css";
+import apiConfig from "../../config";
 
 function ResetPasswordPage() {
   const [message, setMessage] = useState("");
@@ -17,7 +18,7 @@ function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:81/api/v1/user/request_password_change",
+        `${apiConfig.apiUrl}/api/v1/user/request_password_change`,
         {
           method: "POST",
           headers: {
@@ -58,7 +59,7 @@ function ResetPasswordPage() {
 
     try {
       const response = await fetch(
-        "http://localhost:81/api/v1/user/change_forgotten_password",
+        `${apiConfig.apiUrl}/api/v1/user/change_forgotten_password`,
         {
           method: "POST",
           headers: {

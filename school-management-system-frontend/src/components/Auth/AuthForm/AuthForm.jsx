@@ -3,10 +3,15 @@ import "./AuthForm.css"; // Import stylów
 import Modal from "../Shared/Modal";
 import { useNavigate } from "react-router-dom";
 import logo from "../../Files/logo.png";
+import apiConfig from "../../../config";
+import registerFields from "../../../pages/RegisterPage/registerFields";
+import AuthPage from "../AuthPage/AuthPage";
+import LoginPage from "../../../pages/LoginPage/LoginPage";
+import handleLoginSuccess from "../../../pages/LoginPage/LoginPage";
 
 function AuthForm({
   title,
-  fields,
+  fields = registerFields,
   submitButtonText,
   onSubmit,
   message,
@@ -27,10 +32,9 @@ function AuthForm({
     setFieldValues({ ...fieldValues, [name]: e.target.value });
   };
 
-  const BASE_URL = "http://localhost:81";
-
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log(fieldValues);
 
     try {
       const result = await onSubmit(fieldValues);
@@ -53,6 +57,34 @@ function AuthForm({
     }
   };
 
+  const handleResendToken = async (event) => {
+    event.preventDefault();
+
+    const resendToken = {
+      email: userEmail,
+      type: "email_verification",
+    };
+    const resendEndpoint = `${apiConfig.apiUrl}/api/v1/user/resend_verification_code`;
+    try {
+      const response = await fetch(resendEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(resendToken),
+      });
+      const result = await response.json();
+      if (result && result.status === "ok") {
+        setVerificationStatus("Token resent");
+      } else {
+        setVerificationStatus(result.errors.validation);
+      }
+    } catch (error) {
+      setVerificationStatus(`Error: ${error.message}`);
+      console.error("handleResendToken: Error:", error);
+    }
+  };
+
   const handleVerifyToken = async (event) => {
     event.preventDefault();
 
@@ -60,7 +92,7 @@ function AuthForm({
       email: userEmail,
       token: token,
     };
-    const verifyEndpoint = `${BASE_URL}/api/v1/user/verify_email`;
+    const verifyEndpoint = `${apiConfig.apiUrl}/api/v1/user/verify_email`;
 
     try {
       const response = await fetch(verifyEndpoint, {
@@ -74,20 +106,24 @@ function AuthForm({
       const result = await response.json();
       if (result && result.status === "ok") {
         setShowModal(false);
-        const params = new URLSearchParams();
-        params.append("verificationSuccess", "true");
-
-        navigate(`/login?${params.toString()}`);
+        // Since userEmail, userPassword, and onLogin are not available, we cannot perform auto-login.
+        // Therefore, we will remove the autoLogin function and handle the verification status only.
+        // const loginFields = {
+        //   userName: fieldValues.email,
+        //   password: fieldValues.password,
+        // };
+        // console.log(loginFields);
+        // LoginPage(loginFields);
       } else {
         if (result && result.message) {
           setVerificationStatus(result.message);
         } else {
-          setVerificationStatus("Nie udało się zweryfikować emaila");
+          setVerificationStatus(result.errors.validation);
         }
       }
     } catch (error) {
-      setVerificationStatus(`Błąd: ${error.message}`);
-      console.error("handleVerifyToken: Błąd:", error);
+      setVerificationStatus(`Error: ${error.message}`);
+      console.error("handleVerifyToken: Error:", error);
     }
   };
 
@@ -145,18 +181,24 @@ function AuthForm({
           <div className="popup-overlay">
             <div className="popup">
               <div className="modal-content">
-                <span className="header">Email Verification</span>
+                <span className="header-correct">Email verification</span>
                 <p className="modal-text">Email: {userEmail}</p>
                 <input
                   className="styled-input"
                   type="text"
-                  placeholder="Enter Token"
+                  placeholder="Enter token"
                   value={token}
                   onChange={(e) => setToken(e.target.value)}
                   required
                 />
                 <button className="styled-button" onClick={handleVerifyToken}>
-                  Verify Token
+                  Verify token
+                </button>
+                <button
+                  className="styled-button-resend"
+                  onClick={handleResendToken}
+                >
+                  Resend token
                 </button>
                 {verificationStatus && (
                   <p className="message">{verificationStatus}</p>

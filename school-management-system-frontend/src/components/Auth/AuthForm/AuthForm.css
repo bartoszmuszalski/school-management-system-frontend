@@ -147,6 +147,24 @@
   background-color: #4f46e5;
   transform: scale(1.02);
 }
+
+.styled-button-resend {
+  margin-top: 5px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #fc0000;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+  font-weight: 600;
+  text-decoration: underline;
+}
+.styled-button-resend:hover {
+  transform: scale(1.02);
+  /* background-color: #4f46e5; */
+}
+
 .message {
   margin-top: 1rem;
   text-align: center;

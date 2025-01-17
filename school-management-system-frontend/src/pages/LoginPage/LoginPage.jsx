@@ -2,23 +2,13 @@ import React, { useEffect, useState } from "react";
 import AuthPage from "../../components/Auth/AuthPage/AuthPage";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNotification } from "../../contexts/NotificationContext"; // Importuj kontekst powiadomień
+import apiConfig from "../../config";
 
 function LoginPage({ onLogin }) {
   const [verificationMessage, setVerificationMessage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { showNotification } = useNotification(); // Użyj funkcji z kontekstu powiadomień
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const success = params.get("verificationSuccess");
-
-    if (success === "true") {
-      setVerificationMessage("Użytkownik zweryfikowany!");
-    } else {
-      setVerificationMessage(null);
-    }
-  }, [location.search]);
 
   const loginFields = [
     { name: "username", type: "email", label: "Email address", required: true },
@@ -30,7 +20,7 @@ function LoginPage({ onLogin }) {
     const token = data.token;
 
     try {
-      const response = await fetch(`http://localhost:81/api/v1/user/me`, {
+      const response = await fetch(`${apiConfig.apiUrl}/api/v1/user/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -39,7 +29,7 @@ function LoginPage({ onLogin }) {
       });
 
       if (!response.ok) {
-        const message = `Wystąpił błąd: ${response.status}`;
+        const message = `Error: ${response.status}`;
         throw new Error(message);
       }
 
@@ -48,9 +38,9 @@ function LoginPage({ onLogin }) {
 
       // Wyświetl komunikat sukcesu i przejdź do profilu
       showNotification("Logged in successfully!");
-      navigate("/profile");
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Błąd podczas pobierania danych użytkownika:", error);
+      console.error("Error fetching user data:", error);
     }
   };
 
