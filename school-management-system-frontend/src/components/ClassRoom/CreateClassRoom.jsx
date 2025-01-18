@@ -58,10 +58,20 @@ function CreateClassRoom() {
 
   return (
     <div className="container">
-      <p className="myParagraphClass">Create a New Classroom</p>
+      <p className="myParagraphClass">Create a new classroom</p>
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="className">Classroom Name:</label>
+          <label
+            className="label"
+            htmlFor="className"
+            style={{
+              margin: "auto",
+              textAlign: "center",
+              marginBottom: "20px",
+            }}
+          >
+            New classroom name:
+          </label>
           <input
             type="text"
             id="className"
@@ -69,11 +79,17 @@ function CreateClassRoom() {
             onChange={(e) => setName(e.target.value)}
             required
             placeholder="Enter classroom name"
+            style={{ width: "200px", margin: "auto" }}
           />
         </div>
         {error && <p className="error">{error}</p>}
-        <button type="submit" className="VerifyButton" disabled={loading}>
-          {loading ? "Creating..." : "Create Classroom"}
+        <button
+          type="submit"
+          className="VerifyButton"
+          style={{ width: "200px", margin: "auto" }}
+          disabled={loading}
+        >
+          {loading ? "Creating..." : "Create classroom"}
         </button>
       </form>
     </div>

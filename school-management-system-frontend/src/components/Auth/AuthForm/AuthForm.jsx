@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import "./AuthForm.css"; // Import stylów
 import Modal from "../Shared/Modal";
 import { useNavigate } from "react-router-dom";
 import logo from "../../Files/logo.png";
 import apiConfig from "../../../config";
 import registerFields from "../../../pages/RegisterPage/registerFields";
+import { useNotification } from "../../../contexts/NotificationContext"; // Importuj kontekst powiadomień
 import AuthPage from "../AuthPage/AuthPage";
+import { Link } from "react-router-dom";
 import LoginPage from "../../../pages/LoginPage/LoginPage";
-import handleLoginSuccess from "../../../pages/LoginPage/LoginPage";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 function AuthForm({
   title,
@@ -27,6 +29,15 @@ function AuthForm({
   const [token, setToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState(null);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const { showNotification } = useNotification();
+
+  const handleLogin = (userData, token) => {
+    login(userData, token);
+    // console.log("Login successful");
+    showNotification("Login successful");
+    navigate("/dashboard");
+  };
 
   const handleChange = (e, name) => {
     setFieldValues({ ...fieldValues, [name]: e.target.value });
@@ -108,12 +119,9 @@ function AuthForm({
         setShowModal(false);
         // Since userEmail, userPassword, and onLogin are not available, we cannot perform auto-login.
         // Therefore, we will remove the autoLogin function and handle the verification status only.
-        // const loginFields = {
-        //   userName: fieldValues.email,
-        //   password: fieldValues.password,
-        // };
-        // console.log(loginFields);
-        // LoginPage(loginFields);
+        // console.log(fieldValues.email, fieldValues.password);
+        handleLogin(fieldValues, token);
+        navigate("/dashboard");
       } else {
         if (result && result.message) {
           setVerificationStatus(result.message);
@@ -152,6 +160,11 @@ function AuthForm({
                 <label className="styled-label" htmlFor={field.name}>
                   {field.label}:
                 </label>
+                {field.name === "password" && apiEndpoint === "login" && (
+                  <Link to="/reset-password" className="forgot-password-link">
+                    Forgot Password?
+                  </Link>
+                )}
               </div>
               <input
                 className="styled-input"

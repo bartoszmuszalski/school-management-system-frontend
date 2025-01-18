@@ -5,7 +5,7 @@ import { useNotification } from "../../contexts/NotificationContext"; // Importu
 import apiConfig from "../../config";
 
 function LoginPage({ onLogin }) {
-  const [verificationMessage, setVerificationMessage] = useState(null);
+  const [verificationMessage] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { showNotification } = useNotification(); // Użyj funkcji z kontekstu powiadomień

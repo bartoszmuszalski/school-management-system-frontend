@@ -3,6 +3,7 @@ import axios from "axios";
 import "./ClassRoom.css"; // Ensure consistent styling
 import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import apiConfig from "../../config";
+
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,7 @@ function ClassRoom() {
         setTotalPages(response.data.totalPages); // Adjust based on API response
       } catch (err) {
         setError("You are not authorized to access this page.");
+        navigate("/dashboard");
       } finally {
         setLoading(false);
       }
@@ -227,16 +229,16 @@ function ClassRoom() {
             <th>Name</th>
             <th>Created At</th>
             <th>Updated At</th>
-            <th>Actions</th> {/* New Header */}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {classRooms.length === 0 ? (
             <tr>
-              <td colSpan="6">No classrooms found.</td> {/* Updated colspan */}
+              <td colSpan="6">No classrooms found.</td>
             </tr>
           ) : (
-            classRooms.map((classRoom, index) => (
+            classRooms.map((classRoom) => (
               <tr key={classRoom.id}>
                 {/* <td>{(currentPage - 1) * limit + index + 1}</td> */}
                 <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
@@ -269,6 +271,16 @@ function ClassRoom() {
               </tr>
             ))
           )}
+          <tr>
+            <td colSpan="4">
+              <button
+                className="create-classroom-button"
+                onClick={handleCreateClassRoom}
+              >
+                Create a Classroom
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
       {/* Pagination Controls */}
@@ -292,13 +304,6 @@ function ClassRoom() {
           Next
         </button>
       </div>
-      {/* Create Classroom Button */}
-      <button
-        className="create-classroom-button"
-        onClick={handleCreateClassRoom}
-      >
-        Create a Classroom
-      </button>
 
       {/* Edit Classroom Popup */}
       {isEditPopupOpen && (

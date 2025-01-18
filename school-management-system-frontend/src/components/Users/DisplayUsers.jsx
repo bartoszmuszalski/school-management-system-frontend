@@ -201,7 +201,11 @@ const DisplayUsers = () => {
   }
 
   if (error) {
-    return <p className="error">Error: {error.message}</p>;
+    return (
+      <p className="error">
+        Error: You are not authorized to access this page.
+      </p>
+    );
   }
 
   // Conditional rendering based on user role

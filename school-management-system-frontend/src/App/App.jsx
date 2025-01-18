@@ -15,11 +15,14 @@ import ResetPasswordPage from "../pages/ResetPasswordPage/ResetPasswordPage";
 import DisplayUsers from "../components/Users/DisplayUsers";
 import ProtectedRoute from "../components/Auth/ProtectedRoute/ProtectedRoute";
 import UserProfile from "../components/UserProfile/UserProfile";
+import DashBoard from "../components/DashBoard/DashBoard";
 import { AuthProvider, AuthContext } from "../contexts/AuthContext";
 import Subjects from "../components/Subjects/Subjects";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
 import { NotificationProvider } from "../contexts/NotificationContext"; // Import NotificationProvider
+import { useNotification } from "../contexts/NotificationContext";
+import styled from "styled-components";
 
 function App() {
   return (
@@ -35,21 +38,25 @@ function App() {
   );
 }
 
-const localToken = localStorage.getItem("user");
-const userRoles = localToken ? JSON.parse(localToken).roles : [];
-// console.log(String(userRoles));
+const checkAdminStatus = () => {
+  const localToken = localStorage.getItem("user");
+  const userRoles = localToken ? JSON.parse(localToken).roles : [];
+  const isAdmin = String(userRoles) === "ROLE_ADMIN";
+  return isAdmin;
+};
 
 const AppContent = () => {
   const { isLoggedIn, login, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const isAdmin = checkAdminStatus();
 
   const handleLogin = (userData, token) => {
     login(userData, token);
+    // console.log("Login successful");
+    // setNotification("Login successful");
     navigate("/dashboard");
   };
 
-  const isAdmin = String(userRoles) === "ROLE_ADMIN";
-  // console.log(isAdmin);
   const handleLogout = () => {
     logout();
     navigate("/login");
@@ -57,6 +64,24 @@ const AppContent = () => {
   };
 
   const { getUserName } = useContext(AuthContext);
+
+  const SuccessNotification = ({ children }) => (
+    <div
+      style={{
+        position: "fixed",
+        top: "20px",
+        right: "20px",
+        backgroundColor: "#4caf50",
+        color: "white",
+        padding: "16px",
+        borderRadius: "4px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+        zIndex: 1000,
+      }}
+    >
+      {children}
+    </div>
+  );
 
   return (
     <>
@@ -85,13 +110,24 @@ const AppContent = () => {
           path="/users"
           element={isAdmin ? <DisplayUsers /> : <Navigate to="/dashboard" />}
         />
-        <Route path="/classroom" element={<ClassRoom />} />
-        <Route path="/classroom/create" element={<CreateClassRoom />} />
         <Route
+          path="/classroom"
+          element={isAdmin ? <ClassRoom /> : <Navigate to="/dashboard" />}
+        />
+        <Route path="/classroom/create" element={<CreateClassRoom />} />
+        {/* <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <div className="hello-user">Hello, {getUserName()}</div>
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashBoard />
             </ProtectedRoute>
           }
         />
