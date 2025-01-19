@@ -8,7 +8,7 @@ import registerFields from "../../../pages/RegisterPage/registerFields";
 import { useNotification } from "../../../contexts/NotificationContext"; // Importuj kontekst powiadomień
 import AuthPage from "../AuthPage/AuthPage";
 import { Link } from "react-router-dom";
-import LoginPage from "../../../pages/LoginPage/LoginPage";
+import LoginPage from "../../../pages/LoginPage/LoginPage"; // Assuming this exists
 import { AuthContext } from "../../../contexts/AuthContext";
 
 function AuthForm({
@@ -24,17 +24,17 @@ function AuthForm({
   const [fieldValues, setFieldValues] = useState(
     fields.reduce((acc, field) => ({ ...acc, [field.name]: "" }), {})
   );
+
   const [showModal, setShowModal] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [token, setToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState(null);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, onLogin } = useContext(AuthContext);
   const { showNotification } = useNotification();
 
-  const handleLogin = (userData, token) => {
+  const handleLoginSuccess = (userData, token) => {
     login(userData, token);
-    // console.log("Login successful");
     showNotification("Login successful");
     navigate("/dashboard");
   };
@@ -52,7 +52,7 @@ function AuthForm({
       if (result && result.message) {
         setMessage(result.message);
         const token = result.token;
-        localStorage.setItem("authToken", token);
+        localStorage.setItem("authToken", `Bearer ${token}`);
         if (result.endpoint) {
         }
         if (apiEndpoint === "register") {
@@ -104,6 +104,7 @@ function AuthForm({
       token: token,
     };
     const verifyEndpoint = `${apiConfig.apiUrl}/api/v1/user/verify_email`;
+    const loginEndpoint = `${apiConfig.apiUrl}/api/v1/user/login`; // Poprawiony endpoint logowania
 
     try {
       const response = await fetch(verifyEndpoint, {
@@ -117,11 +118,71 @@ function AuthForm({
       const result = await response.json();
       if (result && result.status === "ok") {
         setShowModal(false);
-        // Since userEmail, userPassword, and onLogin are not available, we cannot perform auto-login.
-        // Therefore, we will remove the autoLogin function and handle the verification status only.
-        // console.log(fieldValues.email, fieldValues.password);
-        handleLogin(fieldValues, token);
-        navigate("/dashboard");
+
+        // Wywołanie endpointu logowania po udanej weryfikacji
+        try {
+          const loginResponse = await fetch(loginEndpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              username: fieldValues.email, // Zmieniono 'email' na 'username'
+              password: fieldValues.password,
+            }),
+          });
+
+          const loginResult = await loginResponse.json();
+          if (loginResult && loginResult.token) {
+            // Teraz, jeśli login przechodzi, załóżmy, że loginResult.user może być undefined
+            // Możesz potrzebować dodatkowego wywołania API, aby pobrać dane użytkownika,
+            // jeśli /user/login nie zwraca ich bezpośrednio.
+            // Poniżej przykład, jak można by to zrobić:
+            if (loginResult.user) {
+              localStorage.setItem("authToken", `Bearer ${loginResult.token}`);
+              handleLoginSuccess(loginResult.user, loginResult.token);
+            } else {
+              // Jeśli brak danych użytkownika w odpowiedzi logowania, pobierz je osobno
+              const fetchUserEndpoint = `${apiConfig.apiUrl}/api/v1/user/me`; // Załóżmy, że taki jest endpoint
+              try {
+                const userResponse = await fetch(fetchUserEndpoint, {
+                  headers: {
+                    Authorization: `Bearer ${loginResult.token}`,
+                  },
+                });
+                const userData = await userResponse.json();
+                if (userData) {
+                  localStorage.setItem(
+                    "authToken",
+                    `Bearer ${loginResult.token}`
+                  );
+                  handleLoginSuccess(userData, loginResult.token);
+                } else {
+                  console.error(
+                    "Login successful, token received, but could not fetch user data."
+                  );
+                  setVerificationStatus(
+                    "Login successful, but could not fetch user data."
+                  );
+                }
+              } catch (fetchUserError) {
+                console.error("Error fetching user data:", fetchUserError);
+                setVerificationStatus(
+                  `Login successful, but error fetching user data: ${fetchUserError.message}`
+                );
+              }
+            }
+          } else {
+            setVerificationStatus(
+              loginResult.message || "Login failed after verification."
+            );
+          }
+        } catch (loginError) {
+          setVerificationStatus(
+            `Login error after verification: ${loginError.message}`
+          );
+          console.error("Login error after verification:", loginError);
+        }
       } else {
         if (result && result.message) {
           setVerificationStatus(result.message);

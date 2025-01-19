@@ -23,6 +23,7 @@ const myRole = async () => {
       "Content-Type": "application/json",
     },
   });
+  console.log("TOKEN", token);
   const data = await response.json();
   return data.roles;
 };

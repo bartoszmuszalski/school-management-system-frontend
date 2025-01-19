@@ -78,7 +78,7 @@ const DisplayUsers = () => {
 
     try {
       const response = await fetch(
-        `${apiConfig.apiUrl}/api/v1/user/${userId}/change-activation`,
+        `${apiConfig.apiUrl}/api/v1/user/${userId}/change_activation`,
         {
           method: "PATCH",
           headers: {
