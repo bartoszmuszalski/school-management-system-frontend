@@ -22,6 +22,10 @@ const DisplayUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [newUserRole, setNewUserRole] = useState("");
 
+  // State for details popup
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
+  const [selectedUserDetails, setSelectedUserDetails] = useState(null);
+
   // State for success notification
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -111,6 +115,17 @@ const DisplayUsers = () => {
     setSelectedUser(user);
     setNewUserRole(newRole);
     setIsPopupOpen(true);
+  };
+
+  const handleSeeDetails = (user) => {
+    console.log(user);
+    setSelectedUserDetails(user);
+    setIsDetailsPopupOpen(true);
+  };
+
+  const closeDetailsPopup = () => {
+    setIsDetailsPopupOpen(false);
+    setSelectedUserDetails(null);
   };
 
   // Function to confirm role change
@@ -238,7 +253,7 @@ const DisplayUsers = () => {
               <td colSpan="7">No users found.</td>
             </tr>
           ) : (
-            users.map((user, index) => (
+            users.map((user) => (
               <tr key={user.id}>
                 <td style={{ fontWeight: "bold" }}>{user.email}</td>
                 <td>{`${user.firstName} ${user.lastName}`}</td>
@@ -279,6 +294,12 @@ const DisplayUsers = () => {
                       Activate
                     </button>
                   )}
+                  <button
+                    className="SeeDetailsButton"
+                    onClick={() => handleSeeDetails(user)}
+                  >
+                    Details
+                  </button>
                 </td>
                 <td>
                   <select
@@ -344,6 +365,44 @@ const DisplayUsers = () => {
       {showSuccess && (
         <div className="success-notification">
           <p>{successMessage}</p>
+        </div>
+      )}
+
+      {/* Details Popup */}
+      {isDetailsPopupOpen && selectedUserDetails && (
+        <div className="popup-overlay">
+          <div className="popup-1">
+            <h3>Details for {selectedUserDetails.email}</h3>
+            <p>
+              <strong>ID:</strong> {selectedUserDetails.id}
+            </p>
+            <p>
+              <strong>First Name:</strong> {selectedUserDetails.firstName}
+            </p>
+            <p>
+              <strong>Last Name:</strong> {selectedUserDetails.lastName}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUserDetails.email}
+            </p>
+            <p>
+              <strong>Created At:</strong> {selectedUserDetails.createdAt.date}
+            </p>
+            <p>
+              <strong>Activated:</strong>{" "}
+              {selectedUserDetails.isActivated ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>Verified:</strong>{" "}
+              {selectedUserDetails.isVerified ? "Yes" : "No"}
+            </p>
+            <p>
+              <strong>Role:</strong> {selectedUserDetails.role}
+            </p>
+            <button className="DeactivateButton" onClick={closeDetailsPopup}>
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

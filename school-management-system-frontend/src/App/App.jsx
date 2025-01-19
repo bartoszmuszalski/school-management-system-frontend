@@ -29,8 +29,6 @@ function App() {
     <Router>
       <AuthProvider>
         <NotificationProvider>
-          {" "}
-          {/* Dodano NotificationProvider */}
           <AppContent />
         </NotificationProvider>
       </AuthProvider>
@@ -38,29 +36,37 @@ function App() {
   );
 }
 
-const checkAdminStatus = () => {
-  const localToken = localStorage.getItem("user");
-  const userRoles = localToken ? JSON.parse(localToken).roles : [];
-  const isAdmin = String(userRoles) === "ROLE_ADMIN";
-  return isAdmin;
-};
-
 const AppContent = () => {
-  const { isLoggedIn, login, logout } = useContext(AuthContext);
+  const { isLoggedIn, login, logout, user, loading } = useContext(AuthContext); // Pobierz 'loading' z AuthContext
   const navigate = useNavigate();
-  const isAdmin = checkAdminStatus();
 
-  const handleLogin = (userData, token) => {
-    login(userData, token);
-    // console.log("Login successful");
-    // setNotification("Login successful");
+  console.log("AppContent: useContext(AuthContext)", {
+    isLoggedIn,
+    user,
+    loading,
+  }); // Debug: sprawdź kontekst
+
+  // Sprawdź rolę na podstawie danych z kontekstu
+  const isAdmin =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
+
+  console.log("AppContent: isAdmin status", {
+    isAdmin,
+    userRoles: user?.roles,
+  }); // Debug: sprawdź status admina
+  console.log("AppContent: Actual roles received:", user?.roles); // Debug: pokaż jakie role przyszły
+
+  const handleLogin = async (userData, token) => {
+    await login(userData, token); // Użyj await, aby poczekać na aktualizację danych użytkownika
     navigate("/dashboard");
   };
 
   const handleLogout = () => {
     logout();
     navigate("/login");
-    window.location.reload();
+    // window.location.reload(); // Niepotrzebne, AuthContext zarządza stanem
   };
 
   const { getUserName } = useContext(AuthContext);
@@ -83,6 +89,10 @@ const AppContent = () => {
     </div>
   );
 
+  if (loading) {
+    return <div>Loading...</div>; // Dodaj globalny loader, jeśli potrzebny
+  }
+
   return (
     <>
       <GlobalStyle />
@@ -91,7 +101,7 @@ const AppContent = () => {
         <Route
           path="/"
           element={
-            isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/" />
+            isLoggedIn ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
           }
         />
         <Route path="/register" element={<RegisterPage />} />
@@ -115,14 +125,6 @@ const AppContent = () => {
           element={isAdmin ? <ClassRoom /> : <Navigate to="/dashboard" />}
         />
         <Route path="/classroom/create" element={<CreateClassRoom />} />
-        {/* <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <div className="hello-user">Hello, {getUserName()}</div>
-            </ProtectedRoute>
-          }
-        /> */}
         <Route
           path="/dashboard"
           element={

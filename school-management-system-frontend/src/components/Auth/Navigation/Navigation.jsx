@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext";
 import "./Navigation.css";
@@ -14,44 +14,12 @@ import useradd_pic from "../../Files/user-add.png";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../../../config";
 
-const myRole = async () => {
-  const token = localStorage.getItem("authToken");
-  const response = await fetch(`${apiConfig.apiUrl}/api/v1/user/me`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-  console.log("TOKEN", token);
-  const data = await response.json();
-  return data.roles;
-};
-
 function Navigation({ onLogout }) {
-  const context = useContext(AuthContext) || {};
-  const { isLoggedIn, user } = context;
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { isLoggedIn, user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchRole = async () => {
-      try {
-        const fetchedRole = await myRole();
-        setRole(fetchedRole);
-      } catch (error) {
-        console.error("Failed to fetch user role:", error);
-        setRole([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  console.log("Navigation.jsx: User role:", user?.roles);
 
-    fetchRole();
-  }, [isLoggedIn]);
-
-  // Renderuj tylko wtedy gdy rola jest już pobrana z serwera
   if (loading) {
     return (
       <div className="sidebar open">
@@ -69,7 +37,6 @@ function Navigation({ onLogout }) {
     );
   }
 
-  console.log("User role:", role);
   return (
     <div className="sidebar open">
       <div className="sidebar-header">
@@ -101,31 +68,31 @@ function Navigation({ onLogout }) {
           </>
         ) : (
           <>
-            {/* User role -  Wait for role message and Logout  */}
-            {role &&
-              !role.includes("ROLE_ADMIN") &&
-              !role.includes("ROLE_TEACHER") &&
-              !role.includes("ROLE_STUDENT") && (
-                <>
-                  <p className="wait-message">
-                    Please wait for an admin to assign your role.
-                  </p>
-                  <button
-                    onClick={onLogout}
-                    className="sidebar-link-img"
-                    data-tooltip="Logout"
-                  >
-                    <img
-                      src={logout_pic}
-                      alt="Logout"
-                      className="register-icon"
-                    />
-                  </button>
-                </>
-              )}
+            {/* User role - Wait for role message and Logout */}
+            {!user?.roles ||
+              (!user.roles.includes("ROLE_ADMIN") &&
+                !user.roles.includes("ROLE_TEACHER") &&
+                !user.roles.includes("ROLE_STUDENT") && (
+                  <>
+                    <p className="wait-message">
+                      Please wait for an admin to assign your role.
+                    </p>
+                    <button
+                      onClick={onLogout}
+                      className="sidebar-link-img"
+                      data-tooltip="Logout"
+                    >
+                      <img
+                        src={logout_pic}
+                        alt="Logout"
+                        className="register-icon"
+                      />
+                    </button>
+                  </>
+                ))}
 
             {/* Student Role */}
-            {role && role.includes("ROLE_STUDENT") && (
+            {user?.roles?.includes("ROLE_STUDENT") && (
               <>
                 <Link
                   to="/subjects"
@@ -138,7 +105,6 @@ function Navigation({ onLogout }) {
                     className="register-icon"
                   />
                 </Link>
-
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
@@ -165,7 +131,7 @@ function Navigation({ onLogout }) {
             )}
 
             {/* Teacher Role */}
-            {role && role.includes("ROLE_TEACHER") && (
+            {user?.roles?.includes("ROLE_TEACHER") && (
               <>
                 <Link
                   to="/subjects"
@@ -178,7 +144,6 @@ function Navigation({ onLogout }) {
                     className="register-icon"
                   />
                 </Link>
-
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
@@ -190,7 +155,6 @@ function Navigation({ onLogout }) {
                     className="register-icon"
                   />
                 </Link>
-
                 <button
                   onClick={onLogout}
                   className="sidebar-link-img"
@@ -206,7 +170,7 @@ function Navigation({ onLogout }) {
             )}
 
             {/* Admin Role */}
-            {role && role.includes("ROLE_ADMIN") && (
+            {user?.roles?.includes("ROLE_ADMIN") && (
               <>
                 <Link
                   to="/subjects"
@@ -226,7 +190,6 @@ function Navigation({ onLogout }) {
                 >
                   <img src={users_pic} alt="Users" className="register-icon" />
                 </Link>
-
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
@@ -238,7 +201,6 @@ function Navigation({ onLogout }) {
                     className="register-icon"
                   />
                 </Link>
-
                 <button
                   onClick={onLogout}
                   className="sidebar-link-img"
