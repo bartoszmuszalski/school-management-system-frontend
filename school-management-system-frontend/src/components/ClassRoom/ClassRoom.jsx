@@ -44,6 +44,15 @@ function ClassRoom() {
   const [studentListLoading, setStudentListLoading] = useState(false);
   const [studentListError, setStudentListError] = useState(null);
 
+  // States for Delete Student Modal
+  const [isDeleteStudentModalOpen, setIsDeleteStudentModalOpen] =
+    useState(false);
+  const [deleteStudentClassRoomId, setDeleteStudentClassRoomId] =
+    useState(null);
+  const [studentIdToDelete, setStudentIdToDelete] = useState("");
+  const [deleteStudentLoading, setDeleteStudentLoading] = useState(false);
+  const [deleteStudentError, setDeleteStudentError] = useState(null);
+
   useEffect(() => {
     if (location.state && location.state.successMessage) {
       setSuccessMessage(location.state.successMessage);
@@ -357,6 +366,127 @@ function ClassRoom() {
     }
   };
 
+  // Handlers for Delete Student Modal
+  const handleOpenDeleteStudentModal = async (classRoomId) => {
+    console.log(
+      "handleOpenDeleteStudentModal called for classroom ID:",
+      classRoomId
+    );
+    setDeleteStudentClassRoomId(classRoomId);
+    setStudentIdToDelete("");
+    setDeleteStudentError(null);
+    setIsDeleteStudentModalOpen(true);
+    setStudentList([]);
+    setStudentListError(null);
+    setStudentListLoading(true);
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setStudentListError("Authentication token not found.");
+        setStudentListLoading(false);
+        return;
+      }
+
+      const timestamp = new Date().getTime();
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?_=${timestamp}`;
+      console.log("Fetching student list from:", apiUrlWithCacheBust);
+
+      const response = await fetch(apiUrlWithCacheBust, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const message = `Failed to fetch student list. Status: ${response.status}`;
+        setStudentListError(message);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(
+        "Student list fetched successfully (with potential duplicates):",
+        data.data
+      );
+
+      // Filtrowanie duplikatów po emailu
+      const uniqueStudents = data.data.filter(
+        (student, index, self) =>
+          index === self.findIndex((t) => t.email === student.email)
+      );
+      console.log(
+        "Student list after removing duplicates (by email):",
+        uniqueStudents
+      );
+      setStudentList(uniqueStudents);
+    } catch (err) {
+      console.error("Error fetching student list:", err);
+      setStudentListError("Failed to load student list.");
+    } finally {
+      setStudentListLoading(false);
+      console.log("Student list loading finished.");
+    }
+  };
+
+  const handleCloseDeleteStudentModal = () => {
+    console.log("handleCloseDeleteStudentModal called.");
+    setIsDeleteStudentModalOpen(false);
+    setDeleteStudentClassRoomId(null);
+    setStudentIdToDelete("");
+    setDeleteStudentError(null);
+    setStudentList([]);
+    setStudentListError(null);
+  };
+
+  const handleDeleteStudentSubmit = async () => {
+    console.log("handleDeleteStudentSubmit called.");
+    setDeleteStudentLoading(true);
+    setDeleteStudentError(null);
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setDeleteStudentError("Authentication token not found.");
+        setDeleteStudentLoading(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${apiConfig.apiUrl}/api/v1/student/${studentIdToDelete}/remove_class_room`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        console.log("Student removed from classroom successfully.");
+        setSuccessMessage("Student removed from classroom successfully.");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        handleCloseDeleteStudentModal();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to remove student from classroom.", errorData);
+        setDeleteStudentError(
+          errorData.message || "Failed to remove student from classroom."
+        );
+      }
+    } catch (err) {
+      console.error("Error removing student from classroom:", err);
+      setDeleteStudentError(
+        "An error occurred while removing student from classroom."
+      );
+    } finally {
+      setDeleteStudentLoading(false);
+      console.log("handleDeleteStudentSubmit finished.");
+    }
+  };
+
   if (loading) {
     return <p className="loading">Loading...</p>;
   }
@@ -415,6 +545,12 @@ function ClassRoom() {
                     onClick={() => handleOpenAddStudentModal(classRoom.id)}
                   >
                     Add Student
+                  </button>
+                  <button
+                    className="DeactivateButton"
+                    onClick={() => handleOpenDeleteStudentModal(classRoom.id)}
+                  >
+                    Remove Student
                   </button>
                 </td>
               </tr>
@@ -569,6 +705,67 @@ function ClassRoom() {
                     className="DeactivateButton"
                     onClick={handleCloseAddStudentModal}
                     disabled={addStudentLoading}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              !studentListLoading &&
+              !studentListError && <p>No students found.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete Student Modal */}
+      {isDeleteStudentModalOpen && (
+        <div className="add-student-modal-overlay">
+          <div className="add-student-modal">
+            <h2>Remove Student from Classroom</h2>
+            {studentListLoading && (
+              <p className="loading">Loading students...</p>
+            )}
+            {studentListError && <p className="error">{studentListError}</p>}
+            {studentList.length > 0 ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleDeleteStudentSubmit();
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="studentId">Select Student:</label>
+                  <select
+                    id="studentId"
+                    value={studentIdToDelete}
+                    onChange={(e) => setStudentIdToDelete(e.target.value)}
+                    required
+                  >
+                    <option value="">-- Select a student --</option>
+                    {studentList.map((student) => (
+                      <option key={student.email} value={student.id}>
+                        {`${student.firstName} ${student.lastName} (${student.email})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {deleteStudentError && (
+                  <p className="error">{deleteStudentError}</p>
+                )}
+                <div className="popup-buttons">
+                  <button
+                    type="submit"
+                    className="DeactivateButton"
+                    disabled={deleteStudentLoading}
+                  >
+                    {deleteStudentLoading ? "Removing..." : "Remove Student"}
+                  </button>
+                  <button
+                    type="button"
+                    className="VerifyButton"
+                    onClick={handleCloseDeleteStudentModal}
+                    disabled={deleteStudentLoading}
                   >
                     Cancel
                   </button>
