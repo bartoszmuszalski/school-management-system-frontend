@@ -18,7 +18,7 @@ function Navigation({ onLogout }) {
   const { isLoggedIn, user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  console.log("Navigation.jsx: User role:", user?.roles);
+  // console.log("Navigation.jsx: User role:", user?.roles);
 
   if (loading) {
     return (

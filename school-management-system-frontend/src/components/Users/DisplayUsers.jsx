@@ -272,7 +272,7 @@ const DisplayUsers = () => {
                     />
                   )}
                 </td>
-                <td className="action-cell">
+                <td>
                   {user.isActivated ? (
                     <button
                       className="DeactivateButton"
@@ -294,7 +294,7 @@ const DisplayUsers = () => {
                       Activate
                     </button>
                   )}
-                  <button
+                  <button // Remove the space before this button
                     className="SeeDetailsButton"
                     onClick={() => handleSeeDetails(user)}
                   >

@@ -18,6 +18,7 @@ import UserProfile from "../components/UserProfile/UserProfile";
 import DashBoard from "../components/DashBoard/DashBoard";
 import { AuthProvider, AuthContext } from "../contexts/AuthContext";
 import Subjects from "../components/Subjects/Subjects";
+import CreateSubject from "../components/Subjects/CreateSubject";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
 import { NotificationProvider } from "../contexts/NotificationContext"; // Import NotificationProvider
@@ -40,23 +41,17 @@ const AppContent = () => {
   const { isLoggedIn, login, logout, user, loading } = useContext(AuthContext); // Pobierz 'loading' z AuthContext
   const navigate = useNavigate();
 
-  console.log("AppContent: useContext(AuthContext)", {
-    isLoggedIn,
-    user,
-    loading,
-  }); // Debug: sprawdź kontekst
-
   // Sprawdź rolę na podstawie danych z kontekstu
   const isAdmin =
     user &&
     user.roles &&
     user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
 
-  console.log("AppContent: isAdmin status", {
-    isAdmin,
-    userRoles: user?.roles,
-  }); // Debug: sprawdź status admina
-  console.log("AppContent: Actual roles received:", user?.roles); // Debug: pokaż jakie role przyszły
+  // console.log("AppContent: isAdmin status", {
+  //   isAdmin,
+  //   userRoles: user?.roles,
+  // }); // Debug: sprawdź status admina
+  // console.log("AppContent: Actual roles received:", user?.roles); // Debug: pokaż jakie role przyszły
 
   const handleLogin = async (userData, token) => {
     await login(userData, token); // Użyj await, aby poczekać na aktualizację danych użytkownika
@@ -115,6 +110,8 @@ const AppContent = () => {
             )
           }
         />
+        <Route path="/subjects" element={<Subjects />} />
+        <Route path="/subject/create" element={<CreateSubject />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route
           path="/users"

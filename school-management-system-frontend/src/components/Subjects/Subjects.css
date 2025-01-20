@@ -1,0 +1,248 @@
+/* Existing styles */
+.subjects-container {
+  padding: 20px;
+}
+
+.subjects-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.subjects-table th,
+.subjects-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.subjects-table th {
+  background-color: #f2f2f2;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.pagination button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  background-color: #f2f2f2;
+  cursor: not-allowed;
+}
+
+.pagination button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.create-classroom-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.create-classroom-button:hover {
+  background-color: #218838;
+}
+
+.edit-popup-overlay,
+.delete-popup-overlay,
+.assign-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.edit-popup,
+.delete-popup,
+.assign-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 90%;
+}
+
+.edit-popup h2,
+.delete-popup h2,
+.assign-popup h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: calc(100% - 20px);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: auto;
+  display: block;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.popup-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.VerifyButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.DeactivateButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.AddButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.success-notification {
+  position: fixed;
+  top: 20px;
+  right: 0;
+  /* transform: translateX(-50%); */
+  background-color: #28a745;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+}
+
+/* Assign Classroom Popup Styles */
+.assign-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.assign-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  max-width: 90%;
+}
+
+.assign-popup h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.assign-popup .form-group {
+  margin-bottom: 15px;
+}
+
+.assign-popup .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.assign-popup .form-group select {
+  width: calc(100% - 20px);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: auto;
+  display: block;
+}
+
+.assign-popup .popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.assign-popup .popup-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.assign-popup .VerifyButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.assign-popup .DeactivateButton {
+  background-color: #dc3545;
+  color: white;
+}
+
+.assign-popup .error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.assign-popup .loading {
+  text-align: center;
+  margin-top: 10px;
+}

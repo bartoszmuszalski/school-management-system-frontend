@@ -1,0 +1,71 @@
+.create-subject-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.create-subject-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.create-subject-form {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  max-width: 90%;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.create-subject-form-group {
+  margin-bottom: 15px;
+}
+
+.create-subject-label {
+  display: block;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.create-subject-form input,
+.create-subject-form textarea,
+.create-subject-form select {
+  width: calc(100% - 20px);
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: auto;
+  display: block;
+}
+
+.create-subject-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px auto 0;
+  display: block;
+}
+
+.create-subject-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.create-subject-error {
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.create-subject-loading {
+  text-align: center;
+  margin-top: 10px;
+}

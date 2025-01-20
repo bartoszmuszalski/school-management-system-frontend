@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./ClassRoom.css"; // Ensure consistent styling
-import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
+import "./ClassRoom.css";
+import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
+import { v4 as uuidv4 } from "uuid";
 
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
@@ -12,7 +12,7 @@ function ClassRoom() {
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
   // States for Edit Popup
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
@@ -32,14 +32,22 @@ function ClassRoom() {
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const location = useLocation(); // Initialize useLocation
+  const location = useLocation();
+
+  // States for Add Student Modal
+  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+  const [addStudentClassRoomId, setAddStudentClassRoomId] = useState(null);
+  const [studentIdToAdd, setStudentIdToAdd] = useState("");
+  const [addStudentLoading, setAddStudentLoading] = useState(false);
+  const [addStudentError, setAddStudentError] = useState(null);
+  const [studentList, setStudentList] = useState([]);
+  const [studentListLoading, setStudentListLoading] = useState(false);
+  const [studentListError, setStudentListError] = useState(null);
 
   useEffect(() => {
-    // Check for success message from navigation state
     if (location.state && location.state.successMessage) {
       setSuccessMessage(location.state.successMessage);
       setShowSuccess(true);
-      // Clear the state to prevent repeated popups on re-render
       navigate(location.pathname, { replace: true, state: {} });
       setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -47,6 +55,7 @@ function ClassRoom() {
 
   useEffect(() => {
     const fetchClassRooms = async () => {
+      console.log("Fetching classrooms...");
       setLoading(true);
       setError(null);
       try {
@@ -57,26 +66,42 @@ function ClassRoom() {
           return;
         }
 
-        const response = await axios.get(
-          `${apiConfig.apiUrl}/api/v1/class_room/list?page=${currentPage}&limit=${limit}`,
+        const response = await fetch(
+          `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=${currentPage}&limit=${limit}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setClassRooms(response.data.data); // Adjust based on API response
-        setTotalPages(response.data.totalPages); // Adjust based on API response
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            setError("You are not authorized to access this page.");
+            navigate("/dashboard");
+          } else {
+            const message = `Failed to fetch classrooms. Status: ${response.status}`;
+            setError(message);
+          }
+          setClassRooms([]);
+          return;
+        }
+
+        const data = await response.json();
+        console.log("Classrooms fetched successfully:", data);
+        setClassRooms(data.data);
+        setTotalPages(data.totalPages);
       } catch (err) {
-        setError("You are not authorized to access this page.");
-        navigate("/dashboard");
+        console.error("Error fetching classrooms:", err);
+        setError("An error occurred while fetching classrooms.");
       } finally {
         setLoading(false);
+        console.log("Classrooms loading finished.");
       }
     };
 
     fetchClassRooms();
-  }, [currentPage, limit]);
+  }, [currentPage, limit, navigate]);
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -87,7 +112,7 @@ function ClassRoom() {
   };
 
   const handleCreateClassRoom = () => {
-    navigate("/classroom/create"); // Navigate to create page
+    navigate("/classroom/create");
   };
 
   const handleEditClassRoom = (id, currentName) => {
@@ -117,19 +142,19 @@ function ClassRoom() {
         return;
       }
 
-      const response = await axios.patch(
+      const response = await fetch(
         `${apiConfig.apiUrl}/api/v1/class_room/edit/${editClassRoomId}`,
-        { name: editClassRoomName },
         {
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ name: editClassRoomName }),
         }
       );
 
       if (response.status === 204) {
-        // Update the classroom list with the new name
         setClassRooms((prevClassRooms) =>
           prevClassRooms.map((classRoom) =>
             classRoom.id === editClassRoomId
@@ -142,12 +167,11 @@ function ClassRoom() {
         setTimeout(() => setShowSuccess(false), 3000);
         closeEditPopup();
       } else {
-        setEditError("Failed to update classroom.");
+        const errorData = await response.json();
+        setEditError(errorData.message || "Failed to update classroom.");
       }
     } catch (err) {
-      setEditError(
-        err.response?.data?.message || "An error occurred while updating."
-      );
+      setEditError("An error occurred while updating.");
     } finally {
       setEditLoading(false);
     }
@@ -179,9 +203,10 @@ function ClassRoom() {
         return;
       }
 
-      const response = await axios.delete(
+      const response = await fetch(
         `${apiConfig.apiUrl}/api/v1/class_room/remove/${deleteClassRoomId}`,
         {
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -189,7 +214,6 @@ function ClassRoom() {
       );
 
       if (response.status === 204 || response.status === 200) {
-        // Remove the deleted classroom from the list
         setClassRooms((prevClassRooms) =>
           prevClassRooms.filter(
             (classRoom) => classRoom.id !== deleteClassRoomId
@@ -200,14 +224,136 @@ function ClassRoom() {
         setTimeout(() => setShowSuccess(false), 3000);
         closeDeletePopup();
       } else {
-        setDeleteError("Failed to delete classroom.");
+        const errorData = await response.json();
+        setDeleteError(errorData.message || "Failed to delete classroom.");
       }
     } catch (err) {
-      setDeleteError(
-        err.response?.data?.message || "An error occurred while deleting."
-      );
+      setDeleteError("An error occurred while deleting.");
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  // Handlers for Add Student Modal
+  const handleOpenAddStudentModal = async (classRoomId) => {
+    console.log(
+      "handleOpenAddStudentModal called for classroom ID:",
+      classRoomId
+    );
+    setAddStudentClassRoomId(classRoomId);
+    setStudentIdToAdd("");
+    setAddStudentError(null);
+    setIsAddStudentModalOpen(true);
+    setStudentList([]);
+    setStudentListError(null);
+    setStudentListLoading(true);
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setStudentListError("Authentication token not found.");
+        setStudentListLoading(false);
+        return;
+      }
+
+      const timestamp = new Date().getTime();
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?_=${timestamp}`;
+      console.log("Fetching student list from:", apiUrlWithCacheBust);
+
+      const response = await fetch(apiUrlWithCacheBust, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const message = `Failed to fetch student list. Status: ${response.status}`;
+        setStudentListError(message);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(
+        "Student list fetched successfully (with potential duplicates):",
+        data.data
+      );
+
+      // Filtrowanie duplikatów po emailu
+      const uniqueStudents = data.data.filter(
+        (student, index, self) =>
+          index === self.findIndex((t) => t.email === student.email)
+      );
+      console.log(
+        "Student list after removing duplicates (by email):",
+        uniqueStudents
+      );
+      setStudentList(uniqueStudents);
+    } catch (err) {
+      console.error("Error fetching student list:", err);
+      setStudentListError("Failed to load student list.");
+    } finally {
+      setStudentListLoading(false);
+      console.log("Student list loading finished.");
+    }
+  };
+
+  const handleCloseAddStudentModal = () => {
+    console.log("handleCloseAddStudentModal called.");
+    setIsAddStudentModalOpen(false);
+    setAddStudentClassRoomId(null);
+    setStudentIdToAdd("");
+    setAddStudentError(null);
+    setStudentList([]);
+    setStudentListError(null);
+  };
+
+  const handleAddStudentSubmit = async () => {
+    console.log("handleAddStudentSubmit called.");
+    setAddStudentLoading(true);
+    setAddStudentError(null);
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setAddStudentError("Authentication token not found.");
+        setAddStudentLoading(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${apiConfig.apiUrl}/api/v1/class_room/${addStudentClassRoomId}/add_student`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ studentId: studentIdToAdd }),
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Student added to classroom successfully.");
+        setSuccessMessage("Student added to classroom successfully.");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        handleCloseAddStudentModal();
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to add student to classroom.", errorData);
+        setAddStudentError(
+          errorData.message || "Failed to add student to classroom."
+        );
+      }
+    } catch (err) {
+      console.error("Error adding student to classroom:", err);
+      setAddStudentError(
+        "An error occurred while adding student to classroom."
+      );
+    } finally {
+      setAddStudentLoading(false);
+      console.log("handleAddStudentSubmit finished.");
     }
   };
 
@@ -225,7 +371,6 @@ function ClassRoom() {
       <table className="table">
         <thead>
           <tr>
-            {/* <th>ID</th> */}
             <th>Name</th>
             <th>Created At</th>
             <th>Updated At</th>
@@ -240,7 +385,6 @@ function ClassRoom() {
           ) : (
             classRooms.map((classRoom) => (
               <tr key={classRoom.id}>
-                {/* <td>{(currentPage - 1) * limit + index + 1}</td> */}
                 <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
                 <td>{classRoom.createdAt.date.slice(5, 19)}</td>
                 <td>
@@ -266,8 +410,13 @@ function ClassRoom() {
                   >
                     Delete
                   </button>
+                  <button
+                    className="AddButton"
+                    onClick={() => handleOpenAddStudentModal(classRoom.id)}
+                  >
+                    Add Student
+                  </button>
                 </td>
-                {/* Add more data fields as needed */}
               </tr>
             ))
           )}
@@ -288,7 +437,6 @@ function ClassRoom() {
         <button onClick={handlePrev} disabled={currentPage === 1}>
           Previous
         </button>
-        {/* Render page numbers */}
         {Array.from({ length: totalPages }, (_, index) => index + 1).map(
           (page) => (
             <button
@@ -371,6 +519,65 @@ function ClassRoom() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Student Modal */}
+      {isAddStudentModalOpen && (
+        <div className="add-student-modal-overlay">
+          <div className="add-student-modal">
+            <h2>Add Student to Classroom</h2>
+            {studentListLoading && (
+              <p className="loading">Loading students...</p>
+            )}
+            {studentListError && <p className="error">{studentListError}</p>}
+            {studentList.length > 0 ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleAddStudentSubmit();
+                }}
+              >
+                <div className="form-group">
+                  <label htmlFor="studentId">Select Student:</label>
+                  <select
+                    id="studentId"
+                    value={studentIdToAdd}
+                    onChange={(e) => setStudentIdToAdd(e.target.value)}
+                    required
+                  >
+                    <option value="">-- Select a student --</option>
+                    {studentList.map((student) => (
+                      <option key={student.email} value={student.id}>
+                        {`${student.firstName} ${student.lastName} (${student.email})`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {addStudentError && <p className="error">{addStudentError}</p>}
+                <div className="popup-buttons">
+                  <button
+                    type="submit"
+                    className="VerifyButton"
+                    disabled={addStudentLoading}
+                  >
+                    {addStudentLoading ? "Adding..." : "Add Student"}
+                  </button>
+                  <button
+                    type="button"
+                    className="DeactivateButton"
+                    onClick={handleCloseAddStudentModal}
+                    disabled={addStudentLoading}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              !studentListLoading &&
+              !studentListError && <p>No students found.</p>
+            )}
           </div>
         </div>
       )}

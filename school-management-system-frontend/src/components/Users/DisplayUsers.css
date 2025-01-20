@@ -35,8 +35,8 @@
 .table td {
   padding: 12px 15px;
   text-align: center;
-  vertical-align: middle;
   border-bottom: 1px solid #ddd;
+  white-space: nowrap; /* Prevent content from wrapping within the cell */
 }
 
 .table thead {
@@ -67,11 +67,6 @@
   color: red;
   margin-top: 20px;
   font-family: "Roboto Slab", serif;
-}
-
-.table th,
-.table td {
-  padding: 12px 15px;
 }
 
 /* Styling for select fields */
@@ -472,10 +467,10 @@
 }
 
 .action-cell {
-  display: flex;
-  align-items: center; /* Align items vertically in the center */
-  justify-content: center; /* Center items horizontally */
-  gap: 8px; /* Add some space between the buttons */
+  display: inline;
+  /* align-items: center; Align items vertically in the center */
+  justify-content: center;
+  /* /* gap: 8px;  */
 }
 
 .SeeDetailsButton {
