@@ -348,3 +348,57 @@
 .subjects-table td span:hover {
   color: #2980b9;
 }
+
+/* Existing styles */
+/* ... existing styles ... */
+.edit-popup .form-group {
+  margin-bottom: 15px;
+}
+
+.edit-popup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.edit-popup input[type="text"],
+.edit-popup textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.edit-popup textarea {
+  height: 100px;
+}
+
+.edit-popup button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.edit-popup button:last-child {
+  margin-right: 0;
+  background-color: #dc3545;
+}
+
+.edit-popup button:hover {
+  background-color: #0056b3;
+}
+
+.edit-popup button:last-child:hover {
+  background-color: #c82333;
+}
+
+.edit-popup .error {
+  color: red;
+  margin-top: 10px;
+}

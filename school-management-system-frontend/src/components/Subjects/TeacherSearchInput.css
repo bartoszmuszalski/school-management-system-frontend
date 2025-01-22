@@ -1,0 +1,46 @@
+.teacher-search-container {
+  position: relative;
+  width: 100%;
+}
+
+.teacher-search-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.teacher-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1001;
+}
+
+.teacher-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.teacher-dropdown li:last-child {
+  border-bottom: none;
+}
+
+.teacher-dropdown li:hover {
+  background-color: #f0f0f0;
+}
+
+.error {
+  color: red;
+  margin-top: 5px;
+}

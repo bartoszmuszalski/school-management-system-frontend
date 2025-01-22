@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Subjects.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
+import TeacherSearchInput from "./TeacherSearchInput";
 
 function Subjects() {
   const [subjects, setSubjects] = useState([]);
@@ -9,7 +10,7 @@ function Subjects() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit] = useState(1);
+  const [limit] = useState(10);
 
   const navigate = useNavigate();
 
@@ -19,8 +20,10 @@ function Subjects() {
   const [editSubjectName, setEditSubjectName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editTeacherId, setEditTeacherId] = useState(""); // For selected teacher in edit
+  const [editTeacherName, setEditTeacherName] = useState(""); // For displaying selected teacher name
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
+  const [searchPhrase, setSearchPhrase] = useState("");
 
   // State for teachers list for Edit Popup
   const [teachers, setTeachers] = useState([]);
@@ -112,7 +115,7 @@ function Subjects() {
       }
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setSubjects(Object.values(data)); // This will convert your response to an array of subjects. Important because data is an object, not an array.
 
       // Calculate totalPages based on the length of the subjects array, since your API doesn't provide a totalCount
@@ -191,10 +194,20 @@ function Subjects() {
     setEditSubjectId(id);
     setEditSubjectName(currentName);
     setEditDescription(currentDescription);
-    setEditTeacherId(currentTeacher?.id || ""); // Set current teacher id or empty if no teacher
+    setEditTeacherId(currentTeacher?.teacherId || ""); // Set current teacher id or empty if no teacher
+    setEditTeacherName(
+      currentTeacher
+        ? `${currentTeacher.firstName} ${currentTeacher.lastName}`
+        : ""
+    );
+    setSearchPhrase(
+      currentTeacher
+        ? `${currentTeacher.firstName} ${currentTeacher.lastName}`
+        : ""
+    );
     setIsEditPopupOpen(true);
     setEditError(null);
-    await fetchTeachers(); // Fetch teachers when edit popup is opened
+    // await fetchTeachers(); // Fetch teachers when edit popup is opened
   };
 
   const closeEditPopup = () => {
@@ -243,8 +256,9 @@ function Subjects() {
               ? {
                   ...subject,
                   teacher:
-                    teachers.find((teacher) => teacher.id === editTeacherId) ||
-                    null, // Update teacher object
+                    teachers.find(
+                      (teacher) => teacher.teacherId === editTeacherId
+                    ) || null, // Update teacher object
                   name: editSubjectName,
                   description: editDescription,
                 }
@@ -673,68 +687,90 @@ function Subjects() {
         <div className="edit-popup-overlay">
           <div className="edit-popup">
             <h2>Edit Subject</h2>
-            <form onSubmit={handleEditSubmit}>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setEditLoading(true);
+                setEditError(null);
+                try {
+                  const token = localStorage.getItem("authToken");
+                  if (!token) {
+                    setEditError("Authentication token not found.");
+                    return;
+                  }
+                  const response = await fetch(
+                    `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
+                    {
+                      method: "PATCH",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        name: editSubjectName,
+                        description: editDescription,
+                        teacherId: editTeacherId,
+                      }),
+                    }
+                  );
+                  if (response.ok) {
+                    setIsEditPopupOpen(false);
+                    setSuccessMessage("Subject updated successfully.");
+                    setShowSuccess(true);
+                    setTimeout(() => setShowSuccess(false), 3000);
+                    fetchSubjects();
+                  } else {
+                    const errorData = await response.json();
+                    setEditError(
+                      errorData.message || "Failed to update subject."
+                    );
+                  }
+                } catch (err) {
+                  setEditError("An error occurred while updating.");
+                } finally {
+                  setEditLoading(false);
+                }
+              }}
+            >
               <div className="form-group">
-                <label htmlFor="editName">Subject Name:</label>
+                <label htmlFor="editSubjectName">Subject Name:</label>
                 <input
                   type="text"
-                  id="editName"
+                  id="editSubjectName"
                   value={editSubjectName}
                   onChange={(e) => setEditSubjectName(e.target.value)}
                   required
-                  placeholder="Enter new subject name"
                 />
               </div>
               <div className="form-group">
                 <label htmlFor="editDescription">Description:</label>
-                <input
-                  type="text"
+                <textarea
                   id="editDescription"
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
-                  placeholder="Enter subject description"
                 />
               </div>
               <div className="form-group">
                 <label htmlFor="editTeacher">Teacher:</label>
-                {teachersLoading ? (
-                  <p className="loading">Loading teachers...</p>
-                ) : teachersError ? (
-                  <p className="error">{teachersError}</p>
-                ) : (
-                  <select
-                    id="editTeacher"
-                    value={editTeacherId}
-                    onChange={(e) => setEditTeacherId(e.target.value)}
-                    className="edit-popup-select"
-                  >
-                    <option value="">-- Select a teacher --</option>
-                    {teachers.map((teacher) => (
-                      <option value={teacher.teacherId}>
-                        {teacher.firstName} {teacher.lastName}
-                      </option>
-                    ))}
-                  </select>
-                )}
+                <TeacherSearchInput
+                  editTeacherId={editTeacherId}
+                  setEditTeacherId={setEditTeacherId}
+                  setEditTeacherName={setEditTeacherName} // ADD THIS LINE: Pass setEditTeacherName as a prop
+                />
               </div>
-              {editError && <p className="error">{editError}</p>}
-              <div className="popup-buttons">
-                <button
-                  type="submit"
-                  className="VerifyButton"
-                  disabled={editLoading || teachersLoading}
-                >
-                  {editLoading ? "Updating..." : "Update"}
+              <div className="form-group">
+                <button type="submit" disabled={editLoading}>
+                  {editLoading ? "Updating..." : "Update Subject"}
                 </button>
                 <button
                   type="button"
-                  className="DeactivateButton"
-                  onClick={closeEditPopup}
-                  disabled={editLoading || teachersLoading}
+                  onClick={() => setIsEditPopupOpen(false)}
+                  disabled={editLoading}
                 >
                   Cancel
                 </button>
               </div>
+              {editError && <p className="error">{editError}</p>}
             </form>
           </div>
         </div>
