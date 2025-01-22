@@ -51,7 +51,7 @@ function LoginPage({ onLogin }) {
         fields={loginFields}
         submitButtonText="Sign in"
         apiEndpoint="login"
-        successMessage="Login successful"
+        successMessage=""
         verificationMessage={verificationMessage}
         onSuccess={handleLoginSuccess}
       />

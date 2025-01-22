@@ -246,3 +246,104 @@
   text-align: center;
   margin-top: 10px;
 }
+
+/* Styles for the modal/popup displaying the list of classes */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #f9f9f9;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: auto;
+  max-width: 95%;
+}
+
+.modal-content h2 {
+  text-align: center;
+  color: #333;
+  font-size: 1.7em;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.modal-content li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content li:last-child {
+  border-bottom: none;
+}
+
+.modal-content li:hover {
+  background-color: #f0f0f0;
+}
+
+.modal-content li button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  background-color: #e74c3c;
+
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.9em;
+}
+
+.modal-content li button:hover {
+  background-color: #c0392b;
+}
+
+.modal-content button {
+  /* display: flex; */
+  /* margin: 25px auto 10px; */
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1em;
+  width: auto;
+  text-align: center;
+  vertical-align: middle;
+  /* margin: 0px auto; */
+}
+
+.modal-content button:hover {
+  background-color: #2980b9;
+}
+
+/* Styles for the comma-separated list of classes in the table */
+.subjects-table td span {
+  display: inline-block;
+  cursor: pointer;
+  color: #3498db;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.subjects-table td span:hover {
+  color: #2980b9;
+}

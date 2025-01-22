@@ -28,10 +28,16 @@ function AuthPage({
 
       if (!response.ok) {
         // Odczytaj szczegóły błędu z odpowiedzi
-        let errorMessage = `Error: ${response.status} ${response.statusText}`;
         const errorData = await response.json();
+        let errorMessage = `${errorData}`;
         if (errorData.message) {
           errorMessage = errorData.message;
+        } else if (errorData.errors) {
+          if (errorData.errors.validation) {
+            errorMessage = errorData.errors.validation;
+          } else {
+            errorMessage = errorData.errors;
+          }
         }
         throw new Error(errorMessage);
       }

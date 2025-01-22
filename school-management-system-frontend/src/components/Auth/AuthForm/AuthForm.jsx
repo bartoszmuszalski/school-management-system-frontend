@@ -59,12 +59,10 @@ function AuthForm({
           setUserEmail(fieldValues.email);
           setShowModal(true);
         }
-      } else {
-        setMessage("Success");
       }
     } catch (error) {
-      setMessage(`Error: ${error.message}`);
-      console.error("handleSubmit: Error:", error);
+      setMessage(`${error.message}`);
+      // console.error("handleSubmit: Error:", error);
     }
   };
 
@@ -116,6 +114,31 @@ function AuthForm({
       });
 
       const result = await response.json();
+      if (!result.ok) {
+        let errorMessage = `Change password failed: ${result.status} ${result.statusText}`;
+        try {
+          const errorData = result;
+
+          // Zaktualizuj komunikat błędu na podstawie struktury danych z JSON
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.errors) {
+            if (errorData.errors.token) {
+              errorMessage = errorData.errors.token;
+            } else if (errorData.errors.validation) {
+              errorMessage = errorData.errors.validation;
+            } else {
+              errorMessage = JSON.stringify(errorData.errors.token); // Upewnij się, że errors jest stringiem
+            }
+          } else {
+            errorMessage = JSON.stringify(errorData.errors.token); // Jeśli nie message/errors, wyświetl cały obiekt
+          }
+        } catch (jsonError) {
+          console.error("Failed to parse error JSON:", jsonError);
+          // Jeśli parsowanie JSON się nie powiedzie, zostaw oryginalny komunikat z statusu
+        }
+        throw new Error(errorMessage);
+      }
       if (result && result.status === "ok") {
         setShowModal(false);
 
@@ -134,10 +157,6 @@ function AuthForm({
 
           const loginResult = await loginResponse.json();
           if (loginResult && loginResult.token) {
-            // Teraz, jeśli login przechodzi, załóżmy, że loginResult.user może być undefined
-            // Możesz potrzebować dodatkowego wywołania API, aby pobrać dane użytkownika,
-            // jeśli /user/login nie zwraca ich bezpośrednio.
-            // Poniżej przykład, jak można by to zrobić:
             if (loginResult.user) {
               localStorage.setItem("authToken", `Bearer ${loginResult.token}`);
               handleLoginSuccess(loginResult.user, loginResult.token);
@@ -191,7 +210,7 @@ function AuthForm({
         }
       }
     } catch (error) {
-      setVerificationStatus(`Error: ${error.message}`);
+      setVerificationStatus(`${error.message}`);
       console.error("handleVerifyToken: Error:", error);
     }
   };
@@ -256,7 +275,7 @@ function AuthForm({
             <div className="popup">
               <div className="modal-content">
                 <span className="header-correct">Email verification</span>
-                <p className="modal-text">Email: {userEmail}</p>
+                {/* <p className="modal-text">Email: {userEmail}</p> */}
                 <input
                   className="styled-input"
                   type="text"

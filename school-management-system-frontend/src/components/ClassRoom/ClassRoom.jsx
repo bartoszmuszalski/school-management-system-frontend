@@ -177,7 +177,7 @@ function ClassRoom() {
         closeEditPopup();
       } else {
         const errorData = await response.json();
-        setEditError(errorData.message || "Failed to update classroom.");
+        setEditError(errorData.errors.validation);
       }
     } catch (err) {
       setEditError("An error occurred while updating.");
@@ -265,8 +265,7 @@ function ClassRoom() {
         return;
       }
 
-      const timestamp = new Date().getTime();
-      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?_=${timestamp}`;
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list`;
       console.log("Fetching student list from:", apiUrlWithCacheBust);
 
       const response = await fetch(apiUrlWithCacheBust, {
@@ -388,8 +387,8 @@ function ClassRoom() {
         return;
       }
 
-      const timestamp = new Date().getTime();
-      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?_=${timestamp}`;
+      // const timestamp = new Date().getTime();
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/class_room/${classRoomId}/students`;
       console.log("Fetching student list from:", apiUrlWithCacheBust);
 
       const response = await fetch(apiUrlWithCacheBust, {

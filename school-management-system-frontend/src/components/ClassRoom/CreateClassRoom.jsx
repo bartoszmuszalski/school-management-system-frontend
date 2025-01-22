@@ -48,8 +48,7 @@ function CreateClassRoom() {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message ||
-          "An error occurred while creating the classroom."
+        err.response?.data?.message || "VALIDATION.CLASS_ROOM_ALREADY_EXISTS"
       );
     } finally {
       setLoading(false);

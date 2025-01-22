@@ -32,9 +32,22 @@ function ResetPasswordPage() {
         let errorMessage = `Reset failed: ${response.status} ${response.statusText}`;
         try {
           const errorData = await response.json();
-          errorMessage += ` ${errorData.message || ""}`;
+
+          // Zaktualizuj komunikat błędu na podstawie struktury danych z JSON
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.errors) {
+            if (errorData.errors.validation) {
+              errorMessage = errorData.errors.validation;
+            } else {
+              errorMessage = JSON.stringify(errorData.errors); // Upewnij się, że errors jest stringiem
+            }
+          } else {
+            errorMessage = JSON.stringify(errorData); // Jeśli nie message/errors, wyświetl cały obiekt
+          }
         } catch (jsonError) {
           console.error("Failed to parse error JSON:", jsonError);
+          // Jeśli parsowanie JSON się nie powiedzie, zostaw oryginalny komunikat z statusu
         }
         throw new Error(errorMessage);
       }
@@ -73,9 +86,22 @@ function ResetPasswordPage() {
         let errorMessage = `Change password failed: ${response.status} ${response.statusText}`;
         try {
           const errorData = await response.json();
-          errorMessage += ` ${errorData.message || ""}`;
+
+          // Zaktualizuj komunikat błędu na podstawie struktury danych z JSON
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.errors) {
+            if (errorData.errors.validation) {
+              errorMessage = errorData.errors.validation;
+            } else {
+              errorMessage = JSON.stringify(errorData.errors); // Upewnij się, że errors jest stringiem
+            }
+          } else {
+            errorMessage = JSON.stringify(errorData); // Jeśli nie message/errors, wyświetl cały obiekt
+          }
         } catch (jsonError) {
           console.error("Failed to parse error JSON:", jsonError);
+          // Jeśli parsowanie JSON się nie powiedzie, zostaw oryginalny komunikat z statusu
         }
         throw new Error(errorMessage);
       }

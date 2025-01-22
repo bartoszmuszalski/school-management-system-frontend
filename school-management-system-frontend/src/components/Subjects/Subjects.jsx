@@ -53,6 +53,14 @@ function Subjects() {
   const [unassignLoading, setUnassignLoading] = useState(false);
   const [unassignError, setUnassignError] = useState(null);
 
+  // States for Classrooms Modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [selectedClassroom, setSelectedClassroom] = useState(null);
+  const [addClassModalOpen, setAddClassModalOpen] = useState(false);
+  const [unassignedClasses, setUnassignedClasses] = useState([]);
+
   const location = useLocation();
 
   useEffect(() => {
@@ -431,6 +439,40 @@ function Subjects() {
     }
   };
 
+  useEffect(() => {
+    const fetchUnassignedClasses = async () => {
+      if (selectedSubject) {
+        try {
+          const token = localStorage.getItem("authToken");
+          if (!token) {
+            setError("Authentication token not found.");
+            setUnassignedClasses([]);
+            return;
+          }
+          const response = await fetch(
+            `${apiConfig.apiUrl}/api/v1/class_rooms/list?subjectId=${selectedSubject.id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setUnassignedClasses(data.data);
+          } else {
+            console.error("Failed to fetch unassigned classes");
+            setUnassignedClasses([]);
+          }
+        } catch (error) {
+          console.error("Error fetching unassigned classes:", error);
+          setUnassignedClasses([]);
+        }
+      }
+    };
+    fetchUnassignedClasses();
+  }, [selectedSubject, addClassModalOpen]);
+
   if (loading) {
     return <p className="loading">Loading...</p>;
   }
@@ -441,13 +483,14 @@ function Subjects() {
 
   return (
     <div className="container">
-      <p className="myParagraphClass">Subjects List</p>
+      <p className="myParagraphClass">Subjects list</p>
       <table className="table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Description</th>
             <th>Teacher</th>
+            <th>Class</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -465,6 +508,25 @@ function Subjects() {
                   {subject.teacher
                     ? `${subject.teacher.firstName} ${subject.teacher.lastName}`
                     : "N/A"}
+                </td>
+                <td>
+                  <span
+                    style={{
+                      cursor: "pointer",
+                      color: "blue",
+                      textDecoration: "underline",
+                    }}
+                    onClick={() => {
+                      setSelectedSubject(subject);
+                      setModalOpen(true);
+                    }}
+                  >
+                    {subject.classRooms
+                      ? subject.classRooms
+                          .map((classroom) => classroom.name)
+                          .join(", ")
+                      : "N/A"}
+                  </span>
                 </td>
                 <td>
                   <button
@@ -510,7 +572,7 @@ function Subjects() {
                 className="create-classroom-button"
                 onClick={handleCreateSubject}
               >
-                Create a Subject
+                Create a subject
               </button>
             </td>
           </tr>
@@ -710,6 +772,255 @@ function Subjects() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {modalOpen && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h2>Classrooms for {selectedSubject.name}</h2>
+            <ul>
+              {selectedSubject.classRooms &&
+                selectedSubject.classRooms.map((classroom) => (
+                  <li key={classroom.id}>
+                    {classroom.name}
+                    <button
+                      style={{ marginLeft: "10px" }}
+                      onClick={() => {
+                        setSelectedClassroom(classroom);
+                        setConfirmationOpen(true);
+                      }}
+                    >
+                      Remove Subject from Class
+                    </button>
+                  </li>
+                ))}
+            </ul>
+            <button
+              onClick={() => setAddClassModalOpen(true)}
+              style={{ backgroundColor: "#28a745", marginTop: "20px" }}
+            >
+              Add subject to class
+            </button>
+            <button
+              onClick={() => setModalOpen(false)}
+              style={{ backgroundColor: "#dc3545" }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {confirmationOpen && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1001,
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <p>
+              Are you sure you want to remove {selectedSubject.name} from{" "}
+              {selectedClassroom.name}?
+            </p>
+            <button
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("authToken");
+                  if (!token) {
+                    setError("Authentication token not found.");
+                    return;
+                  }
+                  const response = await fetch(
+                    `${apiConfig.apiUrl}/api/v1/subject/${selectedSubject.id}/unassign`,
+                    {
+                      method: "POST",
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        classRoomId: selectedClassroom.id,
+                      }),
+                    }
+                  );
+                  if (response.ok) {
+                    const updatedSubjects = subjects.map((subject) => {
+                      if (subject.id === selectedSubject.id) {
+                        return {
+                          ...subject,
+                          classRooms: subject.classRooms.filter(
+                            (classroom) => classroom.id !== selectedClassroom.id
+                          ),
+                        };
+                      }
+                      return subject;
+                    });
+                    setSubjects(updatedSubjects);
+                    setConfirmationOpen(false);
+                    setSuccessMessage("Classroom unassigned successfully.");
+                    setShowSuccess(true);
+                    setTimeout(() => setShowSuccess(false), 3000);
+                    fetchSubjects();
+                  } else {
+                    const errorData = await response.json();
+                    setError(
+                      errorData.message || "Failed to unassign classroom."
+                    );
+                  }
+                } catch (error) {
+                  setError("An error occurred while unassigning classroom.");
+                }
+              }}
+              style={{ backgroundColor: "#28a745", margin: "0px auto" }}
+            >
+              Confirm
+            </button>
+            <button
+              onClick={() => setConfirmationOpen(false)}
+              style={{ backgroundColor: "#dc3545", margin: "0px auto" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {addClassModalOpen && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1002,
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+            }}
+          >
+            <h2>Add Class to {selectedSubject.name}</h2>
+            <ul>
+              {unassignedClasses &&
+                unassignedClasses.map((classroom) => (
+                  <li key={classroom.id}>
+                    {classroom.name}
+                    <button
+                      style={{ marginLeft: "10px", backgroundColor: "#28a745" }}
+                      onClick={async () => {
+                        try {
+                          const token = localStorage.getItem("authToken");
+                          if (!token) {
+                            setError("Authentication token not found.");
+                            return;
+                          }
+                          const response = await fetch(
+                            `${apiConfig.apiUrl}/api/v1/subject/${selectedSubject.id}/assign`,
+                            {
+                              method: "POST",
+                              headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                classRoomId: classroom.id,
+                              }),
+                            }
+                          );
+                          if (response.ok) {
+                            const updatedSubjects = subjects.map((subject) => {
+                              if (subject.id === selectedSubject.id) {
+                                return {
+                                  ...subject,
+                                  classRooms: subject.classRooms
+                                    ? [...subject.classRooms, classroom]
+                                    : [classroom],
+                                };
+                              }
+                              return subject;
+                            });
+                            setSubjects(updatedSubjects);
+                            setAddClassModalOpen(false);
+                            setSuccessMessage(
+                              "Classroom assigned successfully."
+                            );
+                            setShowSuccess(true);
+                            setTimeout(() => setShowSuccess(false), 3000);
+                            fetchSubjects();
+                          } else {
+                            const errorData = await response.json();
+                            setError(
+                              errorData.message ||
+                                "Subject already assigned to this classroom."
+                            );
+                          }
+                        } catch (error) {
+                          setError(
+                            "An error occurred while assigning classroom."
+                          );
+                        }
+                      }}
+                    >
+                      Assign
+                    </button>
+                  </li>
+                ))}
+            </ul>
+            <button
+              onClick={() => setAddClassModalOpen(false)}
+              style={{ backgroundColor: "#dc3545" }}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
