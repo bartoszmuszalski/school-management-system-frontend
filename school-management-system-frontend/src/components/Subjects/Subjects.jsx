@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import "./Subjects.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
-import { v4 as uuidv4 } from "uuid";
 
 function Subjects() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit] = useState(1);
 
   const navigate = useNavigate();
 
@@ -19,8 +18,14 @@ function Subjects() {
   const [editSubjectId, setEditSubjectId] = useState(null);
   const [editSubjectName, setEditSubjectName] = useState("");
   const [editDescription, setEditDescription] = useState("");
+  const [editTeacherId, setEditTeacherId] = useState(""); // For selected teacher in edit
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
+
+  // State for teachers list for Edit Popup
+  const [teachers, setTeachers] = useState([]);
+  const [teachersLoading, setTeachersLoading] = useState(false);
+  const [teachersError, setTeachersError] = useState(null);
 
   // States for Delete Popup
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -60,6 +65,8 @@ function Subjects() {
   const [selectedClassroom, setSelectedClassroom] = useState(null);
   const [addClassModalOpen, setAddClassModalOpen] = useState(false);
   const [unassignedClasses, setUnassignedClasses] = useState([]);
+  const [expandedDescription, setExpandedDescription] = useState(null);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
 
   const location = useLocation();
 
@@ -72,74 +79,122 @@ function Subjects() {
     }
   }, [location, navigate]);
 
-  const fetchSubjects = async () => {
-    console.log("Fetching subjects...");
+  const fetchSubjects = async (page) => {
     setLoading(true);
     setError(null);
+
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
         setError("Authentication token not found.");
-        setSubjects([]);
         return;
       }
 
-      const response = await fetch(
-        `${apiConfig.apiUrl}/api/v1/subjects/list?page=${currentPage}&limit=${limit}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const url = `${apiConfig.apiUrl}/api/v1/subjects/list?page=${page}&limit=${limit}`;
+
+      console.log(url);
+
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 403) {
           setError("You are not authorized to access this page.");
           navigate("/dashboard");
         } else {
-          const message = `Failed to fetch subjects. Status: ${response.status}`;
-          setError(message);
+          const errorData = await response.json(); // Get potential error message from the server
+          setError(errorData.message || "Failed to fetch subjects.");
         }
-        setSubjects([]);
         return;
       }
 
       const data = await response.json();
-      console.log("Subjects fetched successfully:", data);
-      setSubjects(Object.values(data));
+      console.log(data);
+      setSubjects(Object.values(data)); // This will convert your response to an array of subjects. Important because data is an object, not an array.
+
+      // Calculate totalPages based on the length of the subjects array, since your API doesn't provide a totalCount
       setTotalPages(Math.ceil(Object.keys(data).length / limit));
+      console.log();
     } catch (err) {
       console.error("Error fetching subjects:", err);
       setError("An error occurred while fetching subjects.");
     } finally {
       setLoading(false);
-      console.log("Subjects loading finished.");
     }
   };
-
   useEffect(() => {
-    fetchSubjects();
-  }, [currentPage, limit, navigate]);
+    fetchSubjects(currentPage);
+  }, [currentPage, navigate]);
 
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  const goToPage = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
   };
 
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  // Function to go to the previous page
+  const prevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  // Function to go to the next page
+  const nextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   const handleCreateSubject = () => {
     navigate("/subject/create");
   };
 
-  const handleEditSubject = (id, currentName, currentDescription) => {
+  const fetchTeachers = async () => {
+    setTeachersLoading(true);
+    setTeachersError(null);
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setTeachersError("Authentication token not found.");
+        setTeachers([]);
+        return;
+      }
+
+      const response = await fetch(`${apiConfig.apiUrl}/api/v1/teachers/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const message = `Failed to fetch teachers. Status: ${response.status}`;
+        setTeachersError(message);
+        setTeachers([]);
+        return;
+      }
+
+      const data = await response.json();
+      setTeachers(data.data);
+    } catch (err) {
+      setTeachersError("An error occurred while fetching teachers.");
+      setTeachers([]);
+    } finally {
+      setTeachersLoading(false);
+    }
+  };
+
+  const handleEditSubject = async (
+    id,
+    currentName,
+    currentDescription,
+    currentTeacher
+  ) => {
     setEditSubjectId(id);
     setEditSubjectName(currentName);
     setEditDescription(currentDescription);
+    setEditTeacherId(currentTeacher?.id || ""); // Set current teacher id or empty if no teacher
     setIsEditPopupOpen(true);
     setEditError(null);
+    await fetchTeachers(); // Fetch teachers when edit popup is opened
   };
 
   const closeEditPopup = () => {
@@ -147,7 +202,9 @@ function Subjects() {
     setEditSubjectId(null);
     setEditSubjectName("");
     setEditDescription("");
+    setEditTeacherId("");
     setEditError(null);
+    setTeachers([]); // Clear teachers on popup close
   };
 
   const handleEditSubmit = async (e) => {
@@ -163,7 +220,6 @@ function Subjects() {
         return;
       }
 
-      // Adjust the API endpoint according to your backend
       const response = await fetch(
         `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
         {
@@ -173,8 +229,7 @@ function Subjects() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            teacherId: subjects.find((subject) => subject.id === editSubjectId)
-              ?.teacher?.id,
+            teacherId: editTeacherId || null, // Send null if no teacher selected
             name: editSubjectName,
             description: editDescription,
           }),
@@ -187,9 +242,9 @@ function Subjects() {
             subject.id === editSubjectId
               ? {
                   ...subject,
-                  teacherId: subjects.find(
-                    (subject) => subject.id === editSubjectId
-                  )?.teacher?.id,
+                  teacher:
+                    teachers.find((teacher) => teacher.id === editTeacherId) ||
+                    null, // Update teacher object
                   name: editSubjectName,
                   description: editDescription,
                 }
@@ -200,6 +255,7 @@ function Subjects() {
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
         closeEditPopup();
+        fetchSubjects(); // Refetch to update teacher name immediately
       } else {
         const errorData = await response.json();
         setEditError(errorData.message || "Failed to update subject.");
@@ -503,7 +559,30 @@ function Subjects() {
             subjects.map((subject) => (
               <tr key={subject.id}>
                 <td style={{ fontWeight: "bold" }}>{subject.name}</td>
-                <td>{subject.description}</td>
+                <td>
+                  {subject.description && subject.description.length > 30 ? (
+                    <>
+                      {subject.description.substring(0, 30)}...
+                      <span
+                        style={{
+                          color: "blue",
+                          cursor: "pointer",
+                          marginLeft: "5px",
+                          textDecoration: "underline",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedDescription(subject.description);
+                          setIsDescriptionModalOpen(true);
+                        }}
+                      >
+                        [expand]
+                      </span>
+                    </>
+                  ) : (
+                    subject.description
+                  )}
+                </td>
                 <td>
                   {subject.teacher
                     ? `${subject.teacher.firstName} ${subject.teacher.lastName}`
@@ -535,7 +614,8 @@ function Subjects() {
                       handleEditSubject(
                         subject.id,
                         subject.name,
-                        subject.description
+                        subject.description,
+                        subject.teacher // Pass current teacher data
                       )
                     }
                   >
@@ -550,18 +630,6 @@ function Subjects() {
                   >
                     Delete
                   </button>
-                  <button
-                    className="AddButton"
-                    onClick={() => handleOpenAssignPopup(subject.id)}
-                  >
-                    Assign Classroom
-                  </button>
-                  <button
-                    className="AddButton"
-                    onClick={() => handleOpenUnassignPopup(subject.id)}
-                  >
-                    Unassign Classroom
-                  </button>
                 </td>
               </tr>
             ))
@@ -571,6 +639,7 @@ function Subjects() {
               <button
                 className="create-classroom-button"
                 onClick={handleCreateSubject}
+                style={{ width: "133%" }}
               >
                 Create a subject
               </button>
@@ -580,21 +649,21 @@ function Subjects() {
       </table>
       {/* Pagination Controls */}
       <div className="pagination">
-        <button onClick={handlePrev} disabled={currentPage === 1}>
+        <button onClick={prevPage} disabled={currentPage === 1}>
           Previous
         </button>
         {Array.from({ length: totalPages }, (_, index) => index + 1).map(
           (page) => (
             <button
               key={page}
-              onClick={() => setCurrentPage(page)}
+              onClick={() => goToPage(page)}
               className={page === currentPage ? "active" : ""}
             >
               {page}
             </button>
           )
         )}
-        <button onClick={handleNext} disabled={currentPage === totalPages}>
+        <button onClick={nextPage} disabled={currentPage === totalPages}>
           Next
         </button>
       </div>
@@ -626,12 +695,34 @@ function Subjects() {
                   placeholder="Enter subject description"
                 />
               </div>
+              <div className="form-group">
+                <label htmlFor="editTeacher">Teacher:</label>
+                {teachersLoading ? (
+                  <p className="loading">Loading teachers...</p>
+                ) : teachersError ? (
+                  <p className="error">{teachersError}</p>
+                ) : (
+                  <select
+                    id="editTeacher"
+                    value={editTeacherId}
+                    onChange={(e) => setEditTeacherId(e.target.value)}
+                    className="edit-popup-select"
+                  >
+                    <option value="">-- Select a teacher --</option>
+                    {teachers.map((teacher) => (
+                      <option value={teacher.teacherId}>
+                        {teacher.firstName} {teacher.lastName}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
               {editError && <p className="error">{editError}</p>}
               <div className="popup-buttons">
                 <button
                   type="submit"
                   className="VerifyButton"
-                  disabled={editLoading}
+                  disabled={editLoading || teachersLoading}
                 >
                   {editLoading ? "Updating..." : "Update"}
                 </button>
@@ -639,7 +730,7 @@ function Subjects() {
                   type="button"
                   className="DeactivateButton"
                   onClick={closeEditPopup}
-                  disabled={editLoading}
+                  disabled={editLoading || teachersLoading}
                 >
                   Cancel
                 </button>
@@ -657,6 +748,9 @@ function Subjects() {
             <p>
               Are you sure you want to delete the subject "
               <strong>{deleteSubjectName}</strong>"?
+              <br />
+              <strong style={{ color: "red" }}>WARNING</strong>: This will
+              remove all subject-class associations.
             </p>
             {deleteError && <p className="error">{deleteError}</p>}
             <div className="popup-buttons">
@@ -812,7 +906,7 @@ function Subjects() {
                         setConfirmationOpen(true);
                       }}
                     >
-                      Remove Subject from Class
+                      Remove subject from class
                     </button>
                   </li>
                 ))}
@@ -923,7 +1017,44 @@ function Subjects() {
           </div>
         </div>
       )}
-
+      {isDescriptionModalOpen && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1003,
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              maxWidth: "80%",
+              maxHeight: "80%",
+              overflow: "auto",
+            }}
+          >
+            <h2 style={{ fontWeight: "bold" }}>Description</h2>
+            <p style={{ whiteSpace: "pre-line" }}>{expandedDescription}</p>
+            <button
+              onClick={() => setIsDescriptionModalOpen(false)}
+              style={{ backgroundColor: "#dc3545" }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       {addClassModalOpen && (
         <div
           className="modal-overlay"

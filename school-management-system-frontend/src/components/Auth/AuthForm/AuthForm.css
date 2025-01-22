@@ -179,7 +179,7 @@
 .modal-content {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Odstępy między elementami */
+  gap: 2rem; /* Odstępy między elementami */
 }
 
 .modal-text {

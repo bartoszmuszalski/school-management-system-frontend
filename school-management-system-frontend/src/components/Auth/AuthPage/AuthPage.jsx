@@ -35,6 +35,8 @@ function AuthPage({
         } else if (errorData.errors) {
           if (errorData.errors.validation) {
             errorMessage = errorData.errors.validation;
+          } else if (errorData.errors.general) {
+            errorMessage = errorData.errors.general;
           } else {
             errorMessage = errorData.errors;
           }

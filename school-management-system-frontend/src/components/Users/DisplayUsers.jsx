@@ -59,6 +59,7 @@ const DisplayUsers = () => {
       console.log("Response data:", response.data); // Debugging log
       setUsers(response.data.data);
       setTotalPages(Math.ceil(response.data.total / limit));
+      console.log(response.data.total);
     } catch (err) {
       console.error("Error fetching users:", err); // Debugging log
       setError(err);
@@ -108,6 +109,20 @@ const DisplayUsers = () => {
     } catch (error) {
       console.error("Error toggling user activation:", error);
     }
+  };
+  const goToPage = (pageNumber) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
+  };
+
+  // Function to go to the previous page
+  const prevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  // Function to go to the next page
+  const nextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   // Function to handle role change with popup
@@ -184,20 +199,6 @@ const DisplayUsers = () => {
   };
 
   // Function to navigate to a specific page
-  const goToPage = (pageNumber) => {
-    if (pageNumber < 1 || pageNumber > totalPages) return;
-    setCurrentPage(pageNumber);
-  };
-
-  // Function to go to the previous page
-  const prevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  // Function to go to the next page
-  const nextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
 
   // Handle automatic hiding of success notification
   useEffect(() => {
