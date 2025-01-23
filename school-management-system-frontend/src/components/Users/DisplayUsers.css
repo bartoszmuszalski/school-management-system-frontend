@@ -181,7 +181,7 @@
   font-weight: bold;
 }
 
-.popup-buttons {
+.popup-buttons1 {
   display: flex;
   justify-content: center;
 }
@@ -198,7 +198,9 @@
 
 .popup-button.yes {
   background-color: #4caf50;
+  font-size: 1rem;
   color: #fff;
+  font-weight: 600;
 }
 
 .popup-button.yes:hover {
@@ -208,6 +210,8 @@
 .popup-button.no {
   background-color: #f44336;
   color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .popup-button.no:hover {
@@ -364,6 +368,7 @@
   transition: background-color 0.3s ease;
   width: 100px;
   height: 40px;
+  /* margin-top: 20px; */
 }
 
 .ActivateButton {

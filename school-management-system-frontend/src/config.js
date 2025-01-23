@@ -1,5 +1,5 @@
 const apiConfig = {
-  apiUrl: "http://localhost:81",
+  apiUrl: "http://localhost:80",
 };
 
 export default apiConfig;

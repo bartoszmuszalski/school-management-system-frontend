@@ -8,9 +8,9 @@ function Subjects() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(15);
 
   const navigate = useNavigate();
 
@@ -27,8 +27,8 @@ function Subjects() {
 
   // State for teachers list for Edit Popup
   const [teachers, setTeachers] = useState([]);
-  const [teachersLoading, setTeachersLoading] = useState(false);
-  const [teachersError, setTeachersError] = useState(null);
+  // const [teachersLoading, setTeachersLoading] = useState(false);
+  // const [teachersError, setTeachersError] = useState(null);
 
   // States for Delete Popup
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
@@ -132,58 +132,58 @@ function Subjects() {
     fetchSubjects(currentPage);
   }, [currentPage, navigate]);
 
-  const goToPage = (pageNumber) => {
-    if (pageNumber < 1 || pageNumber > totalPages) return;
-    setCurrentPage(pageNumber);
-  };
+  // const goToPage = (pageNumber) => {
+  //   if (pageNumber < 1 || pageNumber > totalPages) return;
+  //   setCurrentPage(pageNumber);
+  // };
 
-  // Function to go to the previous page
-  const prevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
+  // // Function to go to the previous page
+  // const prevPage = () => {
+  //   setCurrentPage((prev) => Math.max(prev - 1, 1));
+  // };
 
-  // Function to go to the next page
-  const nextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
+  // // Function to go to the next page
+  // const nextPage = () => {
+  //   setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  // };
 
   const handleCreateSubject = () => {
     navigate("/subject/create");
   };
 
-  const fetchTeachers = async () => {
-    setTeachersLoading(true);
-    setTeachersError(null);
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setTeachersError("Authentication token not found.");
-        setTeachers([]);
-        return;
-      }
+  // const fetchTeachers = async () => {
+  //   setTeachersLoading(true);
+  //   setTeachersError(null);
+  //   try {
+  //     const token = localStorage.getItem("authToken");
+  //     if (!token) {
+  //       setTeachersError("Authentication token not found.");
+  //       setTeachers([]);
+  //       return;
+  //     }
 
-      const response = await fetch(`${apiConfig.apiUrl}/api/v1/teachers/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //     const response = await fetch(`${apiConfig.apiUrl}/api/v1/teachers/list`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      if (!response.ok) {
-        const message = `Failed to fetch teachers. Status: ${response.status}`;
-        setTeachersError(message);
-        setTeachers([]);
-        return;
-      }
+  //     if (!response.ok) {
+  //       const message = `Failed to fetch teachers. Status: ${response.status}`;
+  //       setTeachersError(message);
+  //       setTeachers([]);
+  //       return;
+  //     }
 
-      const data = await response.json();
-      setTeachers(data.data);
-    } catch (err) {
-      setTeachersError("An error occurred while fetching teachers.");
-      setTeachers([]);
-    } finally {
-      setTeachersLoading(false);
-    }
-  };
+  //     const data = await response.json();
+  //     setTeachers(data.data);
+  //   } catch (err) {
+  //     setTeachersError("An error occurred while fetching teachers.");
+  //     setTeachers([]);
+  //   } finally {
+  //     setTeachersLoading(false);
+  //   }
+  // };
 
   const handleEditSubject = async (
     id,
@@ -220,66 +220,66 @@ function Subjects() {
     setTeachers([]); // Clear teachers on popup close
   };
 
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    setEditLoading(true);
-    setEditError(null);
+  // const handleEditSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setEditLoading(true);
+  //   setEditError(null);
 
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setEditError("Authentication token not found.");
-        setEditLoading(false);
-        return;
-      }
+  //   try {
+  //     const token = localStorage.getItem("authToken");
+  //     if (!token) {
+  //       setEditError("Authentication token not found.");
+  //       setEditLoading(false);
+  //       return;
+  //     }
 
-      const response = await fetch(
-        `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            teacherId: editTeacherId || null, // Send null if no teacher selected
-            name: editSubjectName,
-            description: editDescription,
-          }),
-        }
-      );
+  //     const response = await fetch(
+  //       `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           teacherId: editTeacherId || null, // Send null if no teacher selected
+  //           name: editSubjectName,
+  //           description: editDescription,
+  //         }),
+  //       }
+  //     );
 
-      if (response.status === 204) {
-        setSubjects((prevSubjects) =>
-          prevSubjects.map((subject) =>
-            subject.id === editSubjectId
-              ? {
-                  ...subject,
-                  teacher:
-                    teachers.find(
-                      (teacher) => teacher.teacherId === editTeacherId
-                    ) || null, // Update teacher object
-                  name: editSubjectName,
-                  description: editDescription,
-                }
-              : subject
-          )
-        );
-        setSuccessMessage("Subject updated successfully.");
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 3000);
-        closeEditPopup();
-        fetchSubjects(); // Refetch to update teacher name immediately
-      } else {
-        const errorData = await response.json();
-        setEditError(errorData.message || "Failed to update subject.");
-      }
-    } catch (err) {
-      setEditError("An error occurred while updating.");
-    } finally {
-      setEditLoading(false);
-    }
-  };
+  //     if (response.status === 204) {
+  //       setSubjects((prevSubjects) =>
+  //         prevSubjects.map((subject) =>
+  //           subject.id === editSubjectId
+  //             ? {
+  //                 ...subject,
+  //                 teacher:
+  //                   teachers.find(
+  //                     (teacher) => teacher.teacherId === editTeacherId
+  //                   ) || null, // Update teacher object
+  //                 name: editSubjectName,
+  //                 description: editDescription,
+  //               }
+  //             : subject
+  //         )
+  //       );
+  //       setSuccessMessage("Subject updated successfully.");
+  //       setShowSuccess(true);
+  //       setTimeout(() => setShowSuccess(false), 3000);
+  //       closeEditPopup();
+  //       fetchSubjects(); // Refetch to update teacher name immediately
+  //     } else {
+  //       const errorData = await response.json();
+  //       setEditError(errorData.message || "Failed to update subject.");
+  //     }
+  //   } catch (err) {
+  //     setEditError("An error occurred while updating.");
+  //   } finally {
+  //     setEditLoading(false);
+  //   }
+  // };
 
   // Handlers for Delete Functionality
   const handleDeleteSubject = (id, name) => {
@@ -375,26 +375,26 @@ function Subjects() {
     }
   };
 
-  const handleOpenAssignPopup = async (id) => {
-    setAssignSubjectId(id);
-    setSelectedClassroomId("");
-    await fetchClassrooms();
+  // const handleOpenAssignPopup = async (id) => {
+  //   setAssignSubjectId(id);
+  //   setSelectedClassroomId("");
+  //   await fetchClassrooms();
 
-    const subject = subjects.find((subj) => subj.id === id);
-    if (subject) {
-      const assignedClassroomIds = subject.classRooms
-        ? subject.classRooms.map((cr) => cr.id)
-        : [];
-      setAssignClassrooms(
-        classrooms.filter((cr) => !assignedClassroomIds.includes(cr.id))
-      );
-    } else {
-      setAssignClassrooms([]);
-    }
+  //   const subject = subjects.find((subj) => subj.id === id);
+  //   if (subject) {
+  //     const assignedClassroomIds = subject.classRooms
+  //       ? subject.classRooms.map((cr) => cr.id)
+  //       : [];
+  //     setAssignClassrooms(
+  //       classrooms.filter((cr) => !assignedClassroomIds.includes(cr.id))
+  //     );
+  //   } else {
+  //     setAssignClassrooms([]);
+  //   }
 
-    setIsAssignPopupOpen(true);
-    setAssignError(null);
-  };
+  //   setIsAssignPopupOpen(true);
+  //   setAssignError(null);
+  // };
 
   const closeAssignPopup = () => {
     setIsAssignPopupOpen(false);
@@ -446,21 +446,21 @@ function Subjects() {
   };
 
   // Handlers for Unassign Classroom Functionality
-  const handleOpenUnassignPopup = (id) => {
-    setUnassignSubjectId(id);
-    setSelectedUnassignClassroomId("");
+  // const handleOpenUnassignPopup = (id) => {
+  //   setUnassignSubjectId(id);
+  //   setSelectedUnassignClassroomId("");
 
-    // Filter and set unassignClassrooms based on the subject's classRooms
-    const subject = subjects.find((subj) => subj.id === id);
-    if (subject) {
-      setUnassignClassrooms(subject.classRooms || []);
-    } else {
-      setUnassignClassrooms([]);
-    }
+  //   // Filter and set unassignClassrooms based on the subject's classRooms
+  //   const subject = subjects.find((subj) => subj.id === id);
+  //   if (subject) {
+  //     setUnassignClassrooms(subject.classRooms || []);
+  //   } else {
+  //     setUnassignClassrooms([]);
+  //   }
 
-    setIsUnassignPopupOpen(true);
-    setUnassignError(null);
-  };
+  //   setIsUnassignPopupOpen(true);
+  //   setUnassignError(null);
+  // };
 
   const closeUnassignPopup = () => {
     setIsUnassignPopupOpen(false);
@@ -662,7 +662,7 @@ function Subjects() {
         </tbody>
       </table>
       {/* Pagination Controls */}
-      <div className="pagination">
+      {/* <div className="pagination">
         <button onClick={prevPage} disabled={currentPage === 1}>
           Previous
         </button>
@@ -680,13 +680,13 @@ function Subjects() {
         <button onClick={nextPage} disabled={currentPage === totalPages}>
           Next
         </button>
-      </div>
+      </div> */}
 
       {/* Edit Subject Popup */}
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
           <div className="edit-popup">
-            <h2>Edit Subject</h2>
+            <h3>Edit Subject</h3>
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -758,14 +758,26 @@ function Subjects() {
                   setEditTeacherName={setEditTeacherName} // ADD THIS LINE: Pass setEditTeacherName as a prop
                 />
               </div>
-              <div className="form-group">
-                <button type="submit" disabled={editLoading}>
-                  {editLoading ? "Updating..." : "Update Subject"}
+              <div
+                className="form-group"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <button
+                  type="submit"
+                  disabled={editLoading}
+                  style={{ fontSize: "1rem", fontWeight: "600" }}
+                >
+                  {editLoading ? "Updating..." : "Update subject"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsEditPopupOpen(false)}
                   disabled={editLoading}
+                  style={{ fontSize: "1rem", fontWeight: "600" }}
                 >
                   Cancel
                 </button>
@@ -801,6 +813,10 @@ function Subjects() {
                 className="VerifyButton"
                 onClick={closeDeletePopup}
                 disabled={deleteLoading}
+                style={{
+                  marginLeft: "10px",
+                  backgroundColor: "rgb(220, 53, 69)",
+                }}
               >
                 Cancel
               </button>
@@ -922,14 +938,14 @@ function Subjects() {
           }}
         >
           <div
-            className="modal-content"
+            className="modal-content1"
             style={{
               backgroundColor: "white",
-              padding: "20px",
+              padding: "30px",
               borderRadius: "8px",
             }}
           >
-            <h2>Classrooms for {selectedSubject.name}</h2>
+            <h3>Classrooms for {selectedSubject.name}</h3>
             <ul>
               {selectedSubject.classRooms &&
                 selectedSubject.classRooms.map((classroom) => (
@@ -947,18 +963,29 @@ function Subjects() {
                   </li>
                 ))}
             </ul>
-            <button
-              onClick={() => setAddClassModalOpen(true)}
-              style={{ backgroundColor: "#28a745", marginTop: "20px" }}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                paddingTop: "20px",
+              }}
             >
-              Add subject to class
-            </button>
-            <button
-              onClick={() => setModalOpen(false)}
-              style={{ backgroundColor: "#dc3545" }}
-            >
-              Close
-            </button>
+              <button
+                onClick={() => setAddClassModalOpen(true)}
+                style={{
+                  backgroundColor: "#28a745",
+                  // marginTop: "20px",
+                }}
+              >
+                Add subject to class
+              </button>
+              <button
+                onClick={() => setModalOpen(false)}
+                style={{ backgroundColor: "#dc3545" }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -980,76 +1007,82 @@ function Subjects() {
           }}
         >
           <div
-            className="modal-content"
+            className="modal-content1"
             style={{
               backgroundColor: "white",
-              padding: "20px",
+              padding: "30px",
               borderRadius: "8px",
+              display: "flex",
+              flexDirection: "column", // Pozostawiamy flex-direction: column
+              alignItems: "center", // Dodajemy alignItems: 'center' aby wyśrodkować przyciski
             }}
           >
             <p>
               Are you sure you want to remove {selectedSubject.name} from{" "}
               {selectedClassroom.name}?
             </p>
-            <button
-              onClick={async () => {
-                try {
-                  const token = localStorage.getItem("authToken");
-                  if (!token) {
-                    setError("Authentication token not found.");
-                    return;
-                  }
-                  const response = await fetch(
-                    `${apiConfig.apiUrl}/api/v1/subject/${selectedSubject.id}/unassign`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        classRoomId: selectedClassroom.id,
-                      }),
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button
+                onClick={async () => {
+                  try {
+                    const token = localStorage.getItem("authToken");
+                    if (!token) {
+                      setError("Authentication token not found.");
+                      return;
                     }
-                  );
-                  if (response.ok) {
-                    const updatedSubjects = subjects.map((subject) => {
-                      if (subject.id === selectedSubject.id) {
-                        return {
-                          ...subject,
-                          classRooms: subject.classRooms.filter(
-                            (classroom) => classroom.id !== selectedClassroom.id
-                          ),
-                        };
+                    const response = await fetch(
+                      `${apiConfig.apiUrl}/api/v1/subject/${selectedSubject.id}/unassign`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          classRoomId: selectedClassroom.id,
+                        }),
                       }
-                      return subject;
-                    });
-                    setSubjects(updatedSubjects);
-                    setConfirmationOpen(false);
-                    setSuccessMessage("Classroom unassigned successfully.");
-                    setShowSuccess(true);
-                    setTimeout(() => setShowSuccess(false), 3000);
-                    fetchSubjects();
-                  } else {
-                    const errorData = await response.json();
-                    setError(
-                      errorData.message || "Failed to unassign classroom."
                     );
+                    if (response.ok) {
+                      const updatedSubjects = subjects.map((subject) => {
+                        if (subject.id === selectedSubject.id) {
+                          return {
+                            ...subject,
+                            classRooms: subject.classRooms.filter(
+                              (classroom) =>
+                                classroom.id !== selectedClassroom.id
+                            ),
+                          };
+                        }
+                        return subject;
+                      });
+                      setSubjects(updatedSubjects);
+                      setConfirmationOpen(false);
+                      setSuccessMessage("Classroom unassigned successfully.");
+                      setShowSuccess(true);
+                      setTimeout(() => setShowSuccess(false), 3000);
+                      fetchSubjects();
+                    } else {
+                      const errorData = await response.json();
+                      setError(
+                        errorData.message || "Failed to unassign classroom."
+                      );
+                    }
+                  } catch (error) {
+                    setError("An error occurred while unassigning classroom.");
                   }
-                } catch (error) {
-                  setError("An error occurred while unassigning classroom.");
-                }
-              }}
-              style={{ backgroundColor: "#28a745", margin: "0px auto" }}
-            >
-              Confirm
-            </button>
-            <button
-              onClick={() => setConfirmationOpen(false)}
-              style={{ backgroundColor: "#dc3545", margin: "0px auto" }}
-            >
-              Cancel
-            </button>
+                }}
+                style={{ backgroundColor: "#28a745", margin: "0px 5px" }}
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setConfirmationOpen(false)}
+                style={{ backgroundColor: "#dc3545", margin: "0px 5px" }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1070,21 +1103,24 @@ function Subjects() {
           }}
         >
           <div
-            className="modal-content"
+            className="modal-content1"
             style={{
               backgroundColor: "white",
-              padding: "20px",
+              padding: "30px",
               borderRadius: "8px",
               maxWidth: "80%",
               maxHeight: "80%",
               overflow: "auto",
             }}
           >
-            <h2 style={{ fontWeight: "bold" }}>Description</h2>
+            <h3>Description</h3>
             <p style={{ whiteSpace: "pre-line" }}>{expandedDescription}</p>
             <button
+              class="DeactivateButton"
               onClick={() => setIsDescriptionModalOpen(false)}
-              style={{ backgroundColor: "#dc3545" }}
+              style={{ margin: "0px auto" }}
+
+              // style={{ backgroundColor: "#dc3545", width: "40px" }}
             >
               Close
             </button>
@@ -1108,14 +1144,14 @@ function Subjects() {
           }}
         >
           <div
-            className="modal-content"
+            className="modal-content1"
             style={{
               backgroundColor: "white",
-              padding: "20px",
+              padding: "30px",
               borderRadius: "8px",
             }}
           >
-            <h2>Add Class to {selectedSubject.name}</h2>
+            <h3>Add class to {selectedSubject.name}</h3>
             <ul>
               {unassignedClasses &&
                 unassignedClasses.map((classroom) => (
@@ -1184,7 +1220,11 @@ function Subjects() {
             </ul>
             <button
               onClick={() => setAddClassModalOpen(false)}
-              style={{ backgroundColor: "#dc3545" }}
+              style={{
+                backgroundColor: "#dc3545",
+                margin: "0px auto",
+                marginTop: "20px",
+              }}
             >
               Close
             </button>

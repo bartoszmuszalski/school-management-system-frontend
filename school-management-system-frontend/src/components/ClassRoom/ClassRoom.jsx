@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./ClassRoom.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
-import { v4 as uuidv4 } from "uuid";
 
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
@@ -273,6 +272,7 @@ function ClassRoom() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response);
 
       if (!response.ok) {
         const message = `Failed to fetch student list. Status: ${response.status}`;
@@ -282,21 +282,9 @@ function ClassRoom() {
       }
 
       const data = await response.json();
-      console.log(
-        "Student list fetched successfully (with potential duplicates):",
-        data.data
-      );
+      console.log("Student list fetched successfully:", data.data);
 
-      // Filtrowanie duplikatów po emailu
-      const uniqueStudents = data.data.filter(
-        (student, index, self) =>
-          index === self.findIndex((t) => t.email === student.email)
-      );
-      console.log(
-        "Student list after removing duplicates (by email):",
-        uniqueStudents
-      );
-      setStudentList(uniqueStudents);
+      setStudentList(data.data);
     } catch (err) {
       console.error("Error fetching student list:", err);
       setStudentListError("Failed to load student list.");
@@ -340,6 +328,7 @@ function ClassRoom() {
           body: JSON.stringify({ studentId: studentIdToAdd }),
         }
       );
+      console.log(studentIdToAdd);
 
       if (response.status === 200) {
         console.log("Student added to classroom successfully.");
@@ -372,6 +361,7 @@ function ClassRoom() {
       classRoomId
     );
     setDeleteStudentClassRoomId(classRoomId);
+
     setStudentIdToDelete("");
     setDeleteStudentError(null);
     setIsDeleteStudentModalOpen(true);
@@ -396,6 +386,7 @@ function ClassRoom() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(response);
 
       if (!response.ok) {
         const message = `Failed to fetch student list. Status: ${response.status}`;
@@ -407,11 +398,11 @@ function ClassRoom() {
       const data = await response.json();
       console.log(
         "Student list fetched successfully (with potential duplicates):",
-        data.data
+        data
       );
 
       // Filtrowanie duplikatów po emailu
-      const uniqueStudents = data.data.filter(
+      const uniqueStudents = data.filter(
         (student, index, self) =>
           index === self.findIndex((t) => t.email === student.email)
       );
@@ -419,6 +410,7 @@ function ClassRoom() {
         "Student list after removing duplicates (by email):",
         uniqueStudents
       );
+
       setStudentList(uniqueStudents);
     } catch (err) {
       console.error("Error fetching student list:", err);
@@ -451,13 +443,27 @@ function ClassRoom() {
         setDeleteStudentLoading(false);
         return;
       }
+      console.log(studentIdToDelete);
+      const selectedStudent = studentList.find(
+        (student) =>
+          `${student.firstName} ${student.lastName} (${student.email})` ===
+          studentIdToDelete
+      );
+      console.log("Selected student:", selectedStudent.studentId);
+      // console.log(selectedStudent);
+      if (!selectedStudent) {
+        setDeleteStudentError("Invalid student selected.");
+        setDeleteStudentLoading(false);
+        return;
+      }
 
       const response = await fetch(
-        `${apiConfig.apiUrl}/api/v1/student/${studentIdToDelete}/remove_class_room`,
+        `${apiConfig.apiUrl}/api/v1/student/${selectedStudent.studentId}/remove_class_room`,
         {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -515,12 +521,8 @@ function ClassRoom() {
             classRooms.map((classRoom) => (
               <tr key={classRoom.id}>
                 <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
-                <td>{classRoom.createdAt.date.slice(5, 19)}</td>
-                <td>
-                  {classRoom.updatedAt
-                    ? classRoom.updatedAt.date.slice(5, 19)
-                    : "-"}
-                </td>
+                <td>{classRoom.createdAt}</td>
+                <td>{classRoom.updatedAt ? classRoom.updatedAt : "-"}</td>
                 <td>
                   <button
                     className="VerifyButton"
@@ -548,6 +550,7 @@ function ClassRoom() {
                   <button
                     className="DeactivateButton"
                     onClick={() => handleOpenDeleteStudentModal(classRoom.id)}
+                    style={{ width: "auto" }}
                   >
                     Remove Student
                   </button>
@@ -592,7 +595,7 @@ function ClassRoom() {
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
           <div className="edit-popup">
-            <h2>Edit Classroom</h2>
+            <h3>Edit Classroom</h3>
             <form onSubmit={handleEditSubmit}>
               <div className="form-group">
                 <label htmlFor="editName">Classroom Name:</label>
@@ -606,7 +609,7 @@ function ClassRoom() {
                 />
               </div>
               {editError && <p className="error">{editError}</p>}
-              <div className="popup-buttons">
+              <div className="popup-buttons1">
                 <button
                   type="submit"
                   className="VerifyButton"
@@ -632,13 +635,13 @@ function ClassRoom() {
       {isDeletePopupOpen && (
         <div className="delete-popup-overlay">
           <div className="delete-popup">
-            <h2>Delete Classroom</h2>
+            <h3>Delete Classroom</h3>
             <p>
               Are you sure you want to delete the classroom "
               <strong>{deleteClassRoomName}</strong>"?
             </p>
             {deleteError && <p className="error">{deleteError}</p>}
-            <div className="popup-buttons">
+            <div className="popup-buttons1">
               <button
                 className="DeactivateButton"
                 onClick={confirmDeleteClassRoom}
@@ -650,6 +653,7 @@ function ClassRoom() {
                 className="VerifyButton"
                 onClick={closeDeletePopup}
                 disabled={deleteLoading}
+                style={{ backgroundColor: "#e54646", marginLeft: "20px" }}
               >
                 Cancel
               </button>
@@ -662,7 +666,7 @@ function ClassRoom() {
       {isAddStudentModalOpen && (
         <div className="add-student-modal-overlay">
           <div className="add-student-modal">
-            <h2>Add Student to Classroom</h2>
+            <h3>Add student to classroom</h3>
             {studentListLoading && (
               <p className="loading">Loading students...</p>
             )}
@@ -691,11 +695,12 @@ function ClassRoom() {
                   </select>
                 </div>
                 {addStudentError && <p className="error">{addStudentError}</p>}
-                <div className="popup-buttons">
+                <div className="popup-buttons1" style={{ textAlign: "center" }}>
                   <button
                     type="submit"
                     className="VerifyButton"
                     disabled={addStudentLoading}
+                    style={{ marginRight: "20px" }}
                   >
                     {addStudentLoading ? "Adding..." : "Add Student"}
                   </button>
@@ -721,7 +726,7 @@ function ClassRoom() {
       {isDeleteStudentModalOpen && (
         <div className="add-student-modal-overlay">
           <div className="add-student-modal">
-            <h2>Remove Student from Classroom</h2>
+            <h3>Remove Student from Classroom</h3>
             {studentListLoading && (
               <p className="loading">Loading students...</p>
             )}
@@ -742,17 +747,21 @@ function ClassRoom() {
                     required
                   >
                     <option value="">-- Select a student --</option>
-                    {studentList.map((student) => (
-                      <option key={student.email} value={student.id}>
-                        {`${student.firstName} ${student.lastName} (${student.email})`}
-                      </option>
-                    ))}
+                    {studentList.map((student) => {
+                      console.log("Rendering student in dropdown:", student);
+
+                      return (
+                        <option key={student.email} value={student.id}>
+                          {`${student.firstName} ${student.lastName} (${student.email})`}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 {deleteStudentError && (
                   <p className="error">{deleteStudentError}</p>
                 )}
-                <div className="popup-buttons">
+                <div className="popup-buttons1">
                   <button
                     type="submit"
                     className="DeactivateButton"

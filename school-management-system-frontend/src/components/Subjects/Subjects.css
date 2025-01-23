@@ -117,7 +117,7 @@
 .popup-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  /* gap: 10px; */
   margin-top: 20px;
 }
 
@@ -216,7 +216,7 @@
 .assign-popup .popup-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  /* gap: 10px; */
   margin-top: 20px;
 }
 
@@ -260,9 +260,10 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.modal-content1 {
   background-color: #f9f9f9;
   padding: 25px;
   border-radius: 12px;
@@ -271,18 +272,34 @@
   max-width: 95%;
 }
 
-.modal-content h2 {
-  text-align: center;
+.modal-content1 h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.8rem; /* Larger heading */
+  font-weight: 700;
   color: #333;
-  font-size: 1.7em;
+  border-bottom: 2px solid #eee; /* Separator line below the heading */
+  padding-bottom: 10px;
+  text-align: center;
 }
 
-.modal-content ul {
+h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.8rem; /* Larger heading */
+  font-weight: 700;
+  color: #333;
+  border-bottom: 2px solid #eee; /* Separator line below the heading */
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.modal-content1 ul {
   list-style: none;
   padding: 0;
 }
 
-.modal-content li {
+.modal-content1 li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -291,49 +308,50 @@
   transition: background-color 0.3s ease;
 }
 
-.modal-content li:last-child {
+.modal-content1 li:last-child {
   border-bottom: none;
 }
 
-.modal-content li:hover {
+.modal-content1 li:hover {
   background-color: #f0f0f0;
 }
 
-.modal-content li button {
+.modal-content1 li button {
   padding: 10px 15px;
   border: none;
   border-radius: 6px;
   background-color: #e74c3c;
-
+  justify-content: space-between;
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
   font-size: 0.9em;
 }
 
-.modal-content li button:hover {
+.modal-content1 li button:hover {
   background-color: #c0392b;
 }
 
-.modal-content button {
-  /* display: flex; */
-  /* margin: 25px auto 10px; */
-  padding: 12px 20px;
+.modal-content1 button {
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  align-items: center;
+  padding: 10px 20px; /* Increased padding for better appearance */
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-left: 10px;
+  background-color: #e54646; /* Matching the table header color */
   border: none;
-  border-radius: 8px;
-  background-color: #3498db;
-  color: white;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  font-size: 1em;
-  width: auto;
-  text-align: center;
-  vertical-align: middle;
-  /* margin: 0px auto; */
+  /* margin: 0 auto; */
 }
 
-.modal-content button:hover {
-  background-color: #2980b9;
+.modal-content1 button:hover {
+  background-color: #cd3e3e;
 }
 
 /* Styles for the comma-separated list of classes in the table */
@@ -379,7 +397,7 @@
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
   cursor: pointer;
   margin-right: 10px;
@@ -391,7 +409,7 @@
 }
 
 .edit-popup button:hover {
-  background-color: #0056b3;
+  background-color: #218d3b;
 }
 
 .edit-popup button:last-child:hover {
@@ -401,4 +419,8 @@
 .edit-popup .error {
   color: red;
   margin-top: 10px;
+}
+
+.modal-content1 p {
+  margin-bottom: 20px;
 }

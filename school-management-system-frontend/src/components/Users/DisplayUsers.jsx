@@ -400,7 +400,11 @@ const DisplayUsers = () => {
             <p>
               <strong>Role:</strong> {selectedUserDetails.role}
             </p>
-            <button className="DeactivateButton" onClick={closeDetailsPopup}>
+            <button
+              className="DeactivateButton"
+              onClick={closeDetailsPopup}
+              style={{ marginTop: "20px" }}
+            >
               Close
             </button>
           </div>

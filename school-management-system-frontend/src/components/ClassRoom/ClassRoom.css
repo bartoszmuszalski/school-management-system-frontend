@@ -98,6 +98,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: auto;
   /* margin-bottom: 20px; Space below the button */
 }
 
@@ -315,6 +316,12 @@
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
+}
+
+.popup p {
+  margin-bottom: 20px;
+  font-size: 1rem;
+  color: #333;
 }
 
 .popup p {
@@ -569,6 +576,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .add-student-modal {
