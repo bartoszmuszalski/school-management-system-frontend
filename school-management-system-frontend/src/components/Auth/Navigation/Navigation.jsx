@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext";
 import "./Navigation.css";
@@ -13,12 +13,45 @@ import classroom_pic from "../../Files/user_classroom.png";
 import useradd_pic from "../../Files/user-add.png";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../../../config";
+import EmailVerificationPopUp from "./EmailVerificationPopup.jsx"; // Import EmailVerificationPopup
 
 function Navigation({ onLogout }) {
-  const { isLoggedIn, user, loading } = useContext(AuthContext);
+  const { isLoggedIn, user, loading, setUser } = useContext(AuthContext); // Get setUser from context
   const navigate = useNavigate();
+  const [showEmailVerificationPopup, setShowEmailVerificationPopup] =
+    useState(false); // State for popup
 
-  // console.log("Navigation.jsx: User role:", user?.roles);
+  useEffect(() => {
+    if (isLoggedIn && user && !user.isVerified) {
+      setShowEmailVerificationPopup(true);
+    } else {
+      setShowEmailVerificationPopup(false);
+    }
+  }, [isLoggedIn, user]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (isLoggedIn) {
+        try {
+          const token = localStorage.getItem("authToken");
+          const response = await fetch(`${apiConfig.apiUrl}/api/v1/user/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData); // Update user data in context, including isVerified
+          } else {
+            console.error("Failed to fetch user data in Navigation");
+          }
+        } catch (error) {
+          console.error("Error fetching user data in Navigation:", error);
+        }
+      }
+    };
+    fetchUserData();
+  }, [isLoggedIn, setUser]); // Fetch user data on login status change and setUser
 
   if (loading) {
     return (
@@ -31,8 +64,8 @@ function Navigation({ onLogout }) {
               className="mx-auto h-16 w-auto cursor-pointer hover:opacity-80"
             />
           </Link>
+          <div>Loading...</div>
         </div>
-        <div>Loading...</div>
       </div>
     );
   }
@@ -49,6 +82,12 @@ function Navigation({ onLogout }) {
         </Link>
       </div>
       <nav className="sidebar-nav">
+        {showEmailVerificationPopup && user && user.email && (
+          <EmailVerificationPopUp
+            onClose={() => setShowEmailVerificationPopup(false)}
+            email={user.email}
+          />
+        )}
         {!isLoggedIn ? (
           <>
             <Link
@@ -173,6 +212,13 @@ function Navigation({ onLogout }) {
             {user?.roles?.includes("ROLE_ADMIN") && (
               <>
                 <Link
+                  to="/users"
+                  className="sidebar-link-img"
+                  data-tooltip="Users"
+                >
+                  <img src={users_pic} alt="Users" className="register-icon" />
+                </Link>
+                <Link
                   to="/subjects"
                   className="sidebar-link-img"
                   data-tooltip="Subjects"
@@ -183,13 +229,7 @@ function Navigation({ onLogout }) {
                     className="register-icon"
                   />
                 </Link>
-                <Link
-                  to="/users"
-                  className="sidebar-link-img"
-                  data-tooltip="Users"
-                >
-                  <img src={users_pic} alt="Users" className="register-icon" />
-                </Link>
+
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"

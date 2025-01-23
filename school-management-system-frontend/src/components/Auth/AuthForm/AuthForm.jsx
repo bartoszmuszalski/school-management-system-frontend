@@ -1,14 +1,12 @@
 import React, { useState, useContext } from "react";
-import "./AuthForm.css"; // Import stylów
+import "./AuthForm.css";
 import Modal from "../Shared/Modal";
 import { useNavigate } from "react-router-dom";
 import logo from "../../Files/logo.png";
 import apiConfig from "../../../config";
 import registerFields from "../../../pages/RegisterPage/registerFields";
-import { useNotification } from "../../../contexts/NotificationContext"; // Importuj kontekst powiadomień
-import AuthPage from "../AuthPage/AuthPage";
+import { useNotification } from "../../../contexts/NotificationContext";
 import { Link } from "react-router-dom";
-import LoginPage from "../../../pages/LoginPage/LoginPage"; // Assuming this exists
 import { AuthContext } from "../../../contexts/AuthContext";
 
 function AuthForm({
@@ -30,7 +28,7 @@ function AuthForm({
   const [token, setToken] = useState("");
   const [verificationStatus, setVerificationStatus] = useState(null);
   const navigate = useNavigate();
-  const { login, onLogin } = useContext(AuthContext);
+  const { login } = useContext(AuthContext); // Usunięte onLogin, jeśli nie jest używane
   const { showNotification } = useNotification();
 
   const handleLoginSuccess = (userData, token) => {
@@ -45,24 +43,25 @@ function AuthForm({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(fieldValues);
+    console.log("handleSubmit: fieldValues", fieldValues);
 
     try {
       const result = await onSubmit(fieldValues);
+      console.log("handleSubmit: result", result);
+
       if (result && result.message) {
         setMessage(result.message);
         const token = result.token;
         localStorage.setItem("authToken", `Bearer ${token}`);
-        if (result.endpoint) {
-        }
+
         if (apiEndpoint === "register") {
           setUserEmail(fieldValues.email);
           setShowModal(true);
         }
       }
     } catch (error) {
-      setMessage(`${error.message}`);
-      // console.error("handleSubmit: Error:", error);
+      setMessage(`Error: ${error.message}`);
+      console.error("handleSubmit: Error:", error);
     }
   };
 
@@ -83,10 +82,14 @@ function AuthForm({
         body: JSON.stringify(resendToken),
       });
       const result = await response.json();
+      console.log("handleResendToken: result", result);
+
       if (result && result.status === "ok") {
         setVerificationStatus("Token resent");
       } else {
-        setVerificationStatus(result.errors.validation);
+        setVerificationStatus(
+          result.errors?.validation || "Failed to resend token"
+        ); // Dodatkowe zabezpieczenie
       }
     } catch (error) {
       setVerificationStatus(`Error: ${error.message}`);
@@ -102,7 +105,7 @@ function AuthForm({
       token: token,
     };
     const verifyEndpoint = `${apiConfig.apiUrl}/api/v1/user/verify_email`;
-    const loginEndpoint = `${apiConfig.apiUrl}/api/v1/user/login`; // Poprawiony endpoint logowania
+    const loginEndpoint = `${apiConfig.apiUrl}/api/v1/user/login`;
 
     try {
       const response = await fetch(verifyEndpoint, {
@@ -114,35 +117,11 @@ function AuthForm({
       });
 
       const result = await response.json();
-      if (!result.ok) {
-        let errorMessage = `Change password failed: ${result.status} ${result.statusText}`;
-        try {
-          const errorData = result;
+      console.log("handleVerifyToken: result", result);
 
-          // Zaktualizuj komunikat błędu na podstawie struktury danych z JSON
-          if (errorData.message) {
-            errorMessage = errorData.message;
-          } else if (errorData.errors) {
-            if (errorData.errors.token) {
-              errorMessage = errorData.errors.token;
-            } else if (errorData.errors.validation) {
-              errorMessage = errorData.errors.validation;
-            } else {
-              errorMessage = JSON.stringify(errorData.errors.token); // Upewnij się, że errors jest stringiem
-            }
-          } else {
-            errorMessage = JSON.stringify(errorData.errors.token); // Jeśli nie message/errors, wyświetl cały obiekt
-          }
-        } catch (jsonError) {
-          console.error("Failed to parse error JSON:", jsonError);
-          // Jeśli parsowanie JSON się nie powiedzie, zostaw oryginalny komunikat z statusu
-        }
-        throw new Error(errorMessage);
-      }
       if (result && result.status === "ok") {
         setShowModal(false);
 
-        // Wywołanie endpointu logowania po udanej weryfikacji
         try {
           const loginResponse = await fetch(loginEndpoint, {
             method: "POST",
@@ -150,19 +129,20 @@ function AuthForm({
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              username: fieldValues.email, // Zmieniono 'email' na 'username'
+              username: fieldValues.email, // Używamy email jako username (zgodnie z kodem)
               password: fieldValues.password,
             }),
           });
 
           const loginResult = await loginResponse.json();
+          console.log("handleVerifyToken: loginResult", loginResult);
+
           if (loginResult && loginResult.token) {
             if (loginResult.user) {
               localStorage.setItem("authToken", `Bearer ${loginResult.token}`);
               handleLoginSuccess(loginResult.user, loginResult.token);
             } else {
-              // Jeśli brak danych użytkownika w odpowiedzi logowania, pobierz je osobno
-              const fetchUserEndpoint = `${apiConfig.apiUrl}/api/v1/user/me`; // Załóżmy, że taki jest endpoint
+              const fetchUserEndpoint = `${apiConfig.apiUrl}/api/v1/user/me`;
               try {
                 const userResponse = await fetch(fetchUserEndpoint, {
                   headers: {
@@ -170,6 +150,8 @@ function AuthForm({
                   },
                 });
                 const userData = await userResponse.json();
+                console.log("handleVerifyToken: userData", userData);
+
                 if (userData) {
                   localStorage.setItem(
                     "authToken",
@@ -203,14 +185,14 @@ function AuthForm({
           console.error("Login error after verification:", loginError);
         }
       } else {
-        if (result && result.message) {
-          setVerificationStatus(result.message);
-        } else {
-          setVerificationStatus(result.errors.validation);
-        }
+        setVerificationStatus(
+          result.message ||
+            result.errors?.validation ||
+            "Token verification failed"
+        ); // Poprawiona obsługa błędów
       }
     } catch (error) {
-      setVerificationStatus(`${error.message}`);
+      setVerificationStatus(`Error: ${error.message}`);
       console.error("handleVerifyToken: Error:", error);
     }
   };
