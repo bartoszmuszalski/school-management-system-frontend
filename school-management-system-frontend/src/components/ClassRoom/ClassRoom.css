@@ -493,7 +493,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   backdrop-filter: blur(4px);
 }
 
@@ -575,7 +575,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 2000;
   backdrop-filter: blur(4px);
 }
 
@@ -585,6 +585,7 @@
   border-radius: 8px;
   width: 600px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  /* z-index: 2000; */
 }
 
 .add-student-modal h2 {
@@ -653,4 +654,17 @@
 
 .add-student-modal .popup-buttons .DeactivateButton:hover {
   background-color: #c82333;
+}
+.popup-buttons3 {
+  text-align: center; /* Przycisk Close wyrównany do prawej */
+}
+
+.popup-buttons5 {
+  display: flex; /* Użyj Flexboxa */
+  justify-content: center; /* Wyśrodkuj przyciski poziomo */
+  margin-top: 10px; /* Dodaj trochę odstępu od góry */
+}
+
+.popup-buttons5 button {
+  margin: 0 5px; /* Odstęp między przyciskami */
 }

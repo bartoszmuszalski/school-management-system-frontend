@@ -16,7 +16,7 @@ function LoginPage({ onLogin }) {
   ];
 
   const handleLoginSuccess = async (data) => {
-    console.log("Login Success Data:", data);
+    // console.log("Login Success Data:", data);
     const token = data.token;
 
     try {

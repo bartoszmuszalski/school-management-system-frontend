@@ -46,7 +46,7 @@ const useEmailVerification = () => {
         );
       } else {
         // Optionally, show a success message
-        console.log("Verification email resent successfully.");
+        // console.log("Verification email resent successfully.");
       }
     } catch (err) {
       setEmailVerificationError(

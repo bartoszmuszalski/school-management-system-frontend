@@ -99,7 +99,7 @@ function EmailVerificationPopUp({ onClose, email }) {
   return (
     <div className="email-verification-overlay">
       <div className="email-verification-popup">
-        <h2>Verify Your Email</h2>
+        <h2 style={{ fontSize: "1.8rem" }}>Verify Your Email</h2>
         <p>
           Your email address has not yet been verified. Please verify your email
           to access all features.

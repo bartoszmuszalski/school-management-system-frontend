@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(false);
     setUser(null);
     setToken(null);
-    console.log("Wylogowano.");
+    // console.log("Wylogowano.");
   }, []);
 
   const fetchUser = useCallback(
@@ -86,8 +86,19 @@ export const AuthProvider = ({ children }) => {
       getAuthToken,
       getUserName,
       loading,
+      setUser,
     }),
-    [isLoggedIn, user, token, login, logout, getAuthToken, getUserName, loading]
+    [
+      isLoggedIn,
+      user,
+      token,
+      login,
+      logout,
+      getAuthToken,
+      getUserName,
+      loading,
+      setUser,
+    ]
   );
 
   return (

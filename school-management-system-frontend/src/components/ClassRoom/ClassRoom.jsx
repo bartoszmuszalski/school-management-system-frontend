@@ -39,9 +39,6 @@ function ClassRoom() {
   const [studentIdToAdd, setStudentIdToAdd] = useState("");
   const [addStudentLoading, setAddStudentLoading] = useState(false);
   const [addStudentError, setAddStudentError] = useState(null);
-  const [studentList, setStudentList] = useState([]);
-  const [studentListLoading, setStudentListLoading] = useState(false);
-  const [studentListError, setStudentListError] = useState(null);
 
   // States for Delete Student Modal
   const [isDeleteStudentModalOpen, setIsDeleteStudentModalOpen] =
@@ -51,6 +48,15 @@ function ClassRoom() {
   const [studentIdToDelete, setStudentIdToDelete] = useState("");
   const [deleteStudentLoading, setDeleteStudentLoading] = useState(false);
   const [deleteStudentError, setDeleteStudentError] = useState(null);
+
+  // State and Handlers for Details Popup
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState(false);
+  const [detailsClassRoom, setDetailsClassRoom] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
+  const [studentList, setStudentList] = useState([]);
+  const [studentListLoading, setStudentListLoading] = useState(false);
+  const [studentListError, setStudentListError] = useState(null);
 
   useEffect(() => {
     if (location.state && location.state.successMessage) {
@@ -63,7 +69,7 @@ function ClassRoom() {
 
   useEffect(() => {
     const fetchClassRooms = async () => {
-      console.log("Fetching classrooms...");
+      // console.log("Fetching classrooms...");
       setLoading(true);
       setError(null);
       try {
@@ -96,7 +102,7 @@ function ClassRoom() {
         }
 
         const data = await response.json();
-        console.log("Classrooms fetched successfully:", data);
+        // console.log("Classrooms fetched successfully:", data);
         setClassRooms(data.data);
         setTotalPages(data.totalPages);
       } catch (err) {
@@ -104,7 +110,7 @@ function ClassRoom() {
         setError("An error occurred while fetching classrooms.");
       } finally {
         setLoading(false);
-        console.log("Classrooms loading finished.");
+        // console.log("Classrooms loading finished.");
       }
     };
 
@@ -244,10 +250,10 @@ function ClassRoom() {
 
   // Handlers for Add Student Modal
   const handleOpenAddStudentModal = async (classRoomId) => {
-    console.log(
-      "handleOpenAddStudentModal called for classroom ID:",
-      classRoomId
-    );
+    // console.log(
+    //   "handleOpenAddStudentModal called for classroom ID:",
+    //   classRoomId
+    // );
     setAddStudentClassRoomId(classRoomId);
     setStudentIdToAdd("");
     setAddStudentError(null);
@@ -264,15 +270,15 @@ function ClassRoom() {
         return;
       }
 
-      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list`;
-      console.log("Fetching student list from:", apiUrlWithCacheBust);
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?fetchAll=0`;
+      // console.log("Fetching student list from:", apiUrlWithCacheBust);
 
       const response = await fetch(apiUrlWithCacheBust, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      // console.log(response);
 
       if (!response.ok) {
         const message = `Failed to fetch student list. Status: ${response.status}`;
@@ -282,7 +288,7 @@ function ClassRoom() {
       }
 
       const data = await response.json();
-      console.log("Student list fetched successfully:", data.data);
+      // console.log("Student list fetched successfully:", data.data);
 
       setStudentList(data.data);
     } catch (err) {
@@ -290,12 +296,12 @@ function ClassRoom() {
       setStudentListError("Failed to load student list.");
     } finally {
       setStudentListLoading(false);
-      console.log("Student list loading finished.");
+      // console.log("Student list loading finished.");
     }
   };
 
   const handleCloseAddStudentModal = () => {
-    console.log("handleCloseAddStudentModal called.");
+    // console.log("handleCloseAddStudentModal called.");
     setIsAddStudentModalOpen(false);
     setAddStudentClassRoomId(null);
     setStudentIdToAdd("");
@@ -305,7 +311,7 @@ function ClassRoom() {
   };
 
   const handleAddStudentSubmit = async () => {
-    console.log("handleAddStudentSubmit called.");
+    // console.log("handleAddStudentSubmit called.");
     setAddStudentLoading(true);
     setAddStudentError(null);
 
@@ -328,14 +334,15 @@ function ClassRoom() {
           body: JSON.stringify({ studentId: studentIdToAdd }),
         }
       );
-      console.log(studentIdToAdd);
+      // console.log(studentIdToAdd);
 
       if (response.status === 200) {
-        console.log("Student added to classroom successfully.");
+        // console.log("Student added to classroom successfully.");
         setSuccessMessage("Student added to classroom successfully.");
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
         handleCloseAddStudentModal();
+        window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Failed to add student to classroom.", errorData);
@@ -350,89 +357,32 @@ function ClassRoom() {
       );
     } finally {
       setAddStudentLoading(false);
-      console.log("handleAddStudentSubmit finished.");
+      // console.log("handleAddStudentSubmit finished.");
     }
   };
 
   // Handlers for Delete Student Modal
   const handleOpenDeleteStudentModal = async (classRoomId) => {
-    console.log(
-      "handleOpenDeleteStudentModal called for classroom ID:",
-      classRoomId
-    );
+    // console.log(
+    //   "handleOpenDeleteStudentModal called for classroom ID:",
+    //   classRoomId
+    // );
     setDeleteStudentClassRoomId(classRoomId);
-
     setStudentIdToDelete("");
     setDeleteStudentError(null);
     setIsDeleteStudentModalOpen(true);
-    setStudentList([]);
-    setStudentListError(null);
-    setStudentListLoading(true);
-
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setStudentListError("Authentication token not found.");
-        setStudentListLoading(false);
-        return;
-      }
-
-      // const timestamp = new Date().getTime();
-      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/class_room/${classRoomId}/students`;
-      console.log("Fetching student list from:", apiUrlWithCacheBust);
-
-      const response = await fetch(apiUrlWithCacheBust, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(response);
-
-      if (!response.ok) {
-        const message = `Failed to fetch student list. Status: ${response.status}`;
-        setStudentListError(message);
-        setStudentListLoading(false);
-        return;
-      }
-
-      const data = await response.json();
-      console.log(
-        "Student list fetched successfully (with potential duplicates):",
-        data
-      );
-
-      // Filtrowanie duplikatów po emailu
-      const uniqueStudents = data.filter(
-        (student, index, self) =>
-          index === self.findIndex((t) => t.email === student.email)
-      );
-      console.log(
-        "Student list after removing duplicates (by email):",
-        uniqueStudents
-      );
-
-      setStudentList(uniqueStudents);
-    } catch (err) {
-      console.error("Error fetching student list:", err);
-      setStudentListError("Failed to load student list.");
-    } finally {
-      setStudentListLoading(false);
-      console.log("Student list loading finished.");
-    }
   };
 
   const handleCloseDeleteStudentModal = () => {
-    console.log("handleCloseDeleteStudentModal called.");
+    // console.log("handleCloseDeleteStudentModal called.");
     setIsDeleteStudentModalOpen(false);
     setDeleteStudentClassRoomId(null);
     setStudentIdToDelete("");
     setDeleteStudentError(null);
-    setStudentList([]);
-    setStudentListError(null);
   };
 
   const handleDeleteStudentSubmit = async () => {
-    console.log("handleDeleteStudentSubmit called.");
+    // console.log("handleDeleteStudentSubmit called.");
     setDeleteStudentLoading(true);
     setDeleteStudentError(null);
 
@@ -443,13 +393,13 @@ function ClassRoom() {
         setDeleteStudentLoading(false);
         return;
       }
-      console.log(studentIdToDelete);
+      // console.log(studentIdToDelete);
       const selectedStudent = studentList.find(
         (student) =>
           `${student.firstName} ${student.lastName} (${student.email})` ===
           studentIdToDelete
       );
-      console.log("Selected student:", selectedStudent.studentId);
+      // console.log("Selected student:", selectedStudent.studentId);
       // console.log(selectedStudent);
       if (!selectedStudent) {
         setDeleteStudentError("Invalid student selected.");
@@ -469,11 +419,12 @@ function ClassRoom() {
       );
 
       if (response.status === 204) {
-        console.log("Student removed from classroom successfully.");
+        // console.log("Student removed from classroom successfully.");
         setSuccessMessage("Student removed from classroom successfully.");
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
         handleCloseDeleteStudentModal();
+        window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Failed to remove student from classroom.", errorData);
@@ -490,6 +441,115 @@ function ClassRoom() {
       setDeleteStudentLoading(false);
       console.log("handleDeleteStudentSubmit finished.");
     }
+  };
+
+  // State and Handlers for Details Popup
+  const handleDetailsClassRoom = async (id) => {
+    // console.log("handleDetailsClassRoom called for classroom ID:", id);
+    setDetailsClassRoom(null);
+    setDetailsError(null);
+    setIsDetailsPopupOpen(true);
+    setDetailsLoading(true);
+    setStudentList([]); // Clear student list when opening details
+    setStudentListError(null);
+    setStudentListLoading(true);
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setDetailsError("Authentication token not found.");
+        setDetailsLoading(false);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const classroomResponse = await fetch(
+        `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=1&limit=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!classroomResponse.ok) {
+        const message = `Failed to fetch classroom list. Status: ${classroomResponse.status}`;
+        setDetailsError(message);
+        setDetailsLoading(false);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const classroomData = await classroomResponse.json();
+      // console.log(
+      //   "Classrooms fetched for details successfully:",
+      //   classroomData.data
+      // );
+      const classroomDetails = classroomData.data.find(
+        (classroom) => classroom.id === id
+      );
+
+      if (classroomDetails) {
+        // console.log("Classroom details found:", classroomDetails);
+        setDetailsClassRoom(classroomDetails);
+      } else {
+        setDetailsError("Classroom details not found.");
+        setDetailsClassRoom(null);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const studentResponse = await fetch(
+        `${apiConfig.apiUrl}/api/v1/class_room/${id}/students`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!studentResponse.ok) {
+        const message = `Failed to fetch student list. Status: ${studentResponse.status}`;
+        setStudentListError(message);
+        setStudentListLoading(false);
+        setDetailsLoading(false);
+        return;
+      }
+
+      const studentData = await studentResponse.json();
+      // console.log(
+      //   "Student list fetched successfully (with potential duplicates):",
+      //   studentData
+      // );
+
+      // Filtrowanie duplikatów po emailu
+      const uniqueStudents = studentData.filter(
+        (student, index, self) =>
+          index === self.findIndex((t) => t.email === student.email)
+      );
+      // console.log(
+      //   "Student list after removing duplicates (by email):",
+      //   uniqueStudents
+      // );
+
+      setStudentList(uniqueStudents);
+    } catch (err) {
+      console.error("Error fetching classroom details:", err);
+      setDetailsError("Failed to load classroom details.");
+      setStudentListError("Failed to load student list.");
+    } finally {
+      setDetailsLoading(false);
+      setStudentListLoading(false);
+      // console.log("Classroom details loading finished.");
+    }
+  };
+
+  const closeDetailsPopup = () => {
+    setIsDetailsPopupOpen(false);
+    setDetailsClassRoom(null);
+    setDetailsError(null);
+    setStudentList([]);
+    setStudentListError(null);
   };
 
   if (loading) {
@@ -532,27 +592,12 @@ function ClassRoom() {
                   >
                     Edit
                   </button>
-
-                  <button
-                    className="DeactivateButton"
-                    onClick={() =>
-                      handleDeleteClassRoom(classRoom.id, classRoom.name)
-                    }
-                  >
-                    Delete
-                  </button>
                   <button
                     className="AddButton"
-                    onClick={() => handleOpenAddStudentModal(classRoom.id)}
+                    onClick={() => handleDetailsClassRoom(classRoom.id)}
+                    style={{ marginLeft: "10px" }}
                   >
-                    Add Student
-                  </button>
-                  <button
-                    className="DeactivateButton"
-                    onClick={() => handleOpenDeleteStudentModal(classRoom.id)}
-                    style={{ width: "auto" }}
-                  >
-                    Remove Student
+                    Details
                   </button>
                 </td>
               </tr>
@@ -596,6 +641,7 @@ function ClassRoom() {
         <div className="edit-popup-overlay">
           <div className="edit-popup">
             <h3>Edit Classroom</h3>
+
             <form onSubmit={handleEditSubmit}>
               <div className="form-group">
                 <label htmlFor="editName">Classroom Name:</label>
@@ -727,62 +773,161 @@ function ClassRoom() {
         <div className="add-student-modal-overlay">
           <div className="add-student-modal">
             <h3>Remove Student from Classroom</h3>
-            {studentListLoading && (
-              <p className="loading">Loading students...</p>
-            )}
-            {studentListError && <p className="error">{studentListError}</p>}
-            {studentList.length > 0 ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleDeleteStudentSubmit();
-                }}
-              >
-                <div className="form-group">
-                  <label htmlFor="studentId">Select Student:</label>
-                  <select
-                    id="studentId"
-                    value={studentIdToDelete}
-                    onChange={(e) => setStudentIdToDelete(e.target.value)}
-                    required
-                  >
-                    <option value="">-- Select a student --</option>
-                    {studentList.map((student) => {
-                      console.log("Rendering student in dropdown:", student);
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleDeleteStudentSubmit();
+              }}
+            >
+              <div className="form-group">
+                <label htmlFor="studentId">Select Student:</label>
+                <select
+                  id="studentId"
+                  value={studentIdToDelete}
+                  onChange={(e) => setStudentIdToDelete(e.target.value)}
+                  required
+                >
+                  <option value="">-- Select a student --</option>
+                  {studentList.map((student) => {
+                    // console.log("Rendering student in dropdown:", student);
 
-                      return (
-                        <option key={student.email} value={student.id}>
-                          {`${student.firstName} ${student.lastName} (${student.email})`}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                {deleteStudentError && (
-                  <p className="error">{deleteStudentError}</p>
+                    return (
+                      <option
+                        key={student.email}
+                        value={`${student.firstName} ${student.lastName} (${student.email})`}
+                      >
+                        {`${student.firstName} ${student.lastName} (${student.email})`}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              {deleteStudentError && (
+                <p className="error">{deleteStudentError}</p>
+              )}
+              <div className="popup-buttons1">
+                <button
+                  type="submit"
+                  className="DeactivateButton"
+                  disabled={deleteStudentLoading}
+                >
+                  {deleteStudentLoading ? "Removing..." : "Remove Student"}
+                </button>
+                <button
+                  type="button"
+                  className="VerifyButton"
+                  onClick={handleCloseDeleteStudentModal}
+                  disabled={deleteStudentLoading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Details Classroom Popup */}
+      {isDetailsPopupOpen && (
+        <div className="edit-popup-overlay">
+          <div className="edit-popup">
+            {detailsLoading && (
+              <p className="loading">Loading classroom details...</p>
+            )}
+            {detailsError && <p className="error">{detailsError}</p>}
+            {detailsClassRoom ? (
+              <>
+                <h3>Details for Classroom: {detailsClassRoom.name}</h3>
+                <h2 style={{ textAlign: "left", marginLeft: "40px" }}>
+                  Classroom students list:{" "}
+                </h2>
+                {studentListLoading ? (
+                  <p className="loading">Loading students...</p>
+                ) : studentListError ? (
+                  <p className="error">{studentListError}</p>
+                ) : studentList.length > 0 ? (
+                  <table className="table" style={{ margin: "0 auto" }}>
+                    <thead>
+                      <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        {/* <th>Email</th> */}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {studentList.map((student) => (
+                        <tr key={student.studentId}>
+                          <td>{student.firstName}</td>
+                          <td>{student.lastName}</td>
+                          {/* <td>{student.email}</td> */}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No students found in this classroom.</p>
                 )}
-                <div className="popup-buttons1">
+                <div
+                  className="popup-buttons5"
+                  style={{ flexDirection: "column" }}
+                >
                   <button
-                    type="submit"
                     className="DeactivateButton"
-                    disabled={deleteStudentLoading}
+                    style={{
+                      backgroundColor: "#28a745",
+                      width: "auto",
+                      marginBottom: "10px",
+                    }}
+                    onClick={() =>
+                      handleOpenAddStudentModal(detailsClassRoom.id)
+                    }
                   >
-                    {deleteStudentLoading ? "Removing..." : "Remove Student"}
+                    Add student
                   </button>
+                  <button
+                    className="DeactivateButton"
+                    style={{
+                      backgroundColor: "#ffc107",
+                      width: "auto",
+                      height: "auto",
+                      marginBottom: "10px",
+                    }}
+                    onClick={() =>
+                      handleOpenDeleteStudentModal(detailsClassRoom.id)
+                    }
+                  >
+                    Remove student
+                  </button>
+                  <button
+                    className="DeactivateButton"
+                    style={{
+                      backgroundColor: "#dc3545",
+                      width: "auto",
+                      height: "auto",
+                      marginBottom: "10px",
+                    }}
+                    onClick={() =>
+                      handleDeleteClassRoom(
+                        detailsClassRoom.id,
+                        detailsClassRoom.name
+                      )
+                    }
+                  >
+                    Delete classroom
+                  </button>
+                </div>
+                <div className="popup-buttons3">
                   <button
                     type="button"
                     className="VerifyButton"
-                    onClick={handleCloseDeleteStudentModal}
-                    disabled={deleteStudentLoading}
+                    onClick={closeDetailsPopup}
+                    disabled={detailsLoading}
                   >
-                    Cancel
+                    Close
                   </button>
                 </div>
-              </form>
-            ) : (
-              !studentListLoading &&
-              !studentListError && <p>No students found.</p>
-            )}
+              </>
+            ) : null}
           </div>
         </div>
       )}

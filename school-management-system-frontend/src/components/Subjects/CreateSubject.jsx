@@ -80,7 +80,6 @@ function CreateSubject() {
           },
         }
       );
-
       if (response.status === 200) {
         navigate("/subjects", {
           state: {

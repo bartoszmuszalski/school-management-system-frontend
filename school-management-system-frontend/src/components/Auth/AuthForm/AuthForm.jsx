@@ -43,11 +43,11 @@ function AuthForm({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("handleSubmit: fieldValues", fieldValues);
+    // console.log("handleSubmit: fieldValues", fieldValues);
 
     try {
       const result = await onSubmit(fieldValues);
-      console.log("handleSubmit: result", result);
+      // console.log("handleSubmit: result", result);
 
       if (result && result.message) {
         setMessage(result.message);
@@ -82,7 +82,7 @@ function AuthForm({
         body: JSON.stringify(resendToken),
       });
       const result = await response.json();
-      console.log("handleResendToken: result", result);
+      // console.log("handleResendToken: result", result);
 
       if (result && result.status === "ok") {
         setVerificationStatus("Token resent");
@@ -117,7 +117,7 @@ function AuthForm({
       });
 
       const result = await response.json();
-      console.log("handleVerifyToken: result", result);
+      // console.log("handleVerifyToken: result", result);
 
       if (result && result.status === "ok") {
         setShowModal(false);
@@ -135,7 +135,7 @@ function AuthForm({
           });
 
           const loginResult = await loginResponse.json();
-          console.log("handleVerifyToken: loginResult", loginResult);
+          // console.log("handleVerifyToken: loginResult", loginResult);
 
           if (loginResult && loginResult.token) {
             if (loginResult.user) {
@@ -150,7 +150,7 @@ function AuthForm({
                   },
                 });
                 const userData = await userResponse.json();
-                console.log("handleVerifyToken: userData", userData);
+                // console.log("handleVerifyToken: userData", userData);
 
                 if (userData) {
                   localStorage.setItem(

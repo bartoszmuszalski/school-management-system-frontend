@@ -16,7 +16,11 @@ import apiConfig from "../../../config";
 import EmailVerificationPopUp from "./EmailVerificationPopup.jsx"; // Import EmailVerificationPopup
 
 function Navigation({ onLogout }) {
-  const { isLoggedIn, user, loading, setUser } = useContext(AuthContext); // Get setUser from context
+  // console.log("AuthContext w Navigation:", AuthContext); // Debug: Wyświetl sam kontekst
+  const context = useContext(AuthContext);
+  // console.log("Wynik useContext(AuthContext):", context); // Debug: Wyświetl obiekt kontekstu
+  const { isLoggedIn, user, loading, setUser } = context; // Rozpakowanie kontekstu
+
   const navigate = useNavigate();
   const [showEmailVerificationPopup, setShowEmailVerificationPopup] =
     useState(false); // State for popup

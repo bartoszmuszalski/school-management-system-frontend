@@ -17,6 +17,9 @@ const DisplayUsers = () => {
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [limit, setLimit] = useState(10); // Number of users per page
 
+  // State for search phrase
+  const [searchPhrase, setSearchPhrase] = useState("");
+
   // State for popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -43,23 +46,27 @@ const DisplayUsers = () => {
     }
   }, []);
 
-  // Function to fetch users with pagination
-  const fetchUsers = async (page) => {
+  // Function to fetch users with pagination and search
+  const fetchUsers = async (page, searchPhrase = "") => {
     setLoading(true);
     setError(null);
     const token = localStorage.getItem("authToken"); // Retrieve token from localStorage
     try {
-      const url = `${apiConfig.apiUrl}/api/v1/users/list?page=${page}&limit=${limit}`;
+      // Construct URL with search phrase if provided
+      let url = `${apiConfig.apiUrl}/api/v1/users/list?page=${page}&limit=${limit}`;
+      if (searchPhrase) {
+        url += `&searchPhrase=${searchPhrase}`;
+      }
       // console.log("Fetching users from:", url); // Debugging log
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`, // Add Bearer token to headers
         },
       });
-      console.log("Response data:", response.data); // Debugging log
+      // console.log("Response data:", response.data); // Debugging log
       setUsers(response.data.data);
       setTotalPages(Math.ceil(response.data.total / limit));
-      console.log(response.data.total);
+      // console.log(response.data.total);
     } catch (err) {
       console.error("Error fetching users:", err); // Debugging log
       setError(err);
@@ -68,14 +75,14 @@ const DisplayUsers = () => {
     }
   };
 
-  // Fetch users when component mounts or when currentPage changes
+  // Fetch users when component mounts or when currentPage or searchPhrase changes
   useEffect(() => {
-    console.log(userRole);
+    // console.log(userRole);
 
     if (userRole === ROLE_ADMIN) {
-      fetchUsers(currentPage);
+      fetchUsers(currentPage); // Fetch initial users without search phrase
     }
-  }, [currentPage, userRole]);
+  }, [currentPage, userRole]); // Removed searchPhrase from dependency array
 
   // Function to verify a user (without API calls)
   const handleActivationToggle = async (userId, isActivated) => {
@@ -133,7 +140,7 @@ const DisplayUsers = () => {
   };
 
   const handleSeeDetails = (user) => {
-    console.log(user);
+    // console.log(user);
     setSelectedUserDetails(user);
     setIsDetailsPopupOpen(true);
   };
@@ -198,7 +205,11 @@ const DisplayUsers = () => {
     setNewUserRole("");
   };
 
-  // Function to navigate to a specific page
+  // Function to handle search button click
+  const handleSearch = () => {
+    fetchUsers(1, searchPhrase); // Fetch users with the current search phrase, starting from page 1
+    setCurrentPage(1); // Reset to page 1 after search
+  };
 
   // Handle automatic hiding of success notification
   useEffect(() => {
@@ -237,6 +248,21 @@ const DisplayUsers = () => {
   return (
     <div className="container">
       <p className="myParagraphClass">User list in the system</p>
+
+      {/* Search input field and button */}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search users..."
+          className="search-input"
+          value={searchPhrase}
+          onChange={(e) => setSearchPhrase(e.target.value)}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          Search
+        </button>
+      </div>
+
       <table className="table">
         <thead>
           <tr>

@@ -502,3 +502,47 @@
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5); /* Add a focus outline for accessibility */
 }
+
+.search-container {
+  display: flex;
+  justify-content: center; /* Align to the right */
+  margin-bottom: 20px; /* Add some space below the search bar */
+  width: 100%; /* Take full width of the container */
+  align-items: center; /* Vertically align items in the center */
+}
+
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-right: 10px; /* Space between input and button */
+  flex-grow: 1; /* Allow input to grow and take available space */
+  max-width: 300px; /* Limit maximum width of the input */
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4f46e5; /* Focus color from your theme */
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3); /* Softer focus shadow */
+}
+
+.search-button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #4f46e5; /* Primary color from your theme */
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #453ed0; /* Darker shade on hover */
+}
+
+.search-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.5); /* Focus shadow */
+}

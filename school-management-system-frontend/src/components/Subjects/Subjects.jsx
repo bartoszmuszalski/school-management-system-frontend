@@ -95,7 +95,7 @@ function Subjects() {
 
       const url = `${apiConfig.apiUrl}/api/v1/subjects/list?page=${page}&limit=${limit}`;
 
-      console.log(url);
+      // console.log(url);
 
       const response = await fetch(url, {
         headers: {
@@ -120,7 +120,6 @@ function Subjects() {
 
       // Calculate totalPages based on the length of the subjects array, since your API doesn't provide a totalCount
       setTotalPages(Math.ceil(Object.keys(data).length / limit));
-      console.log();
     } catch (err) {
       console.error("Error fetching subjects:", err);
       setError("An error occurred while fetching subjects.");
