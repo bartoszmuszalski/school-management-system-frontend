@@ -36,6 +36,7 @@
   padding: 12px 15px;
   text-align: center;
   border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
 }
 
 .table thead {
@@ -425,7 +426,7 @@
 .edit-popup {
   background-color: #fff;
   padding: 30px;
-  width: 400px;
+  width: auto;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -667,4 +668,11 @@
 
 .popup-buttons5 button {
   margin: 0 5px; /* Odstęp między przyciskami */
+}
+
+.student-list {
+  max-height: 100px;
+  overflow: scroll;
+  overflow-x: hidden;
+  margin-bottom: 20px;
 }

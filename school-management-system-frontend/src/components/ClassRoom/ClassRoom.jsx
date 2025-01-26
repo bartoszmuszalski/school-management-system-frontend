@@ -39,6 +39,7 @@ function ClassRoom() {
   const [studentIdToAdd, setStudentIdToAdd] = useState("");
   const [addStudentLoading, setAddStudentLoading] = useState(false);
   const [addStudentError, setAddStudentError] = useState(null);
+  const [studentSearchPhrase, setStudentSearchPhrase] = useState(""); // New state for search phrase
 
   // States for Delete Student Modal
   const [isDeleteStudentModalOpen, setIsDeleteStudentModalOpen] =
@@ -57,6 +58,7 @@ function ClassRoom() {
   const [studentList, setStudentList] = useState([]);
   const [studentListLoading, setStudentListLoading] = useState(false);
   const [studentListError, setStudentListError] = useState(null);
+  const [searchPhrase, setSearchPhrase] = useState("");
 
   useEffect(() => {
     if (location.state && location.state.successMessage) {
@@ -248,20 +250,91 @@ function ClassRoom() {
     }
   };
 
-  // Handlers for Add Student Modal
-  const handleOpenAddStudentModal = async (classRoomId) => {
-    // console.log(
-    //   "handleOpenAddStudentModal called for classroom ID:",
-    //   classRoomId
-    // );
-    setAddStudentClassRoomId(classRoomId);
-    setStudentIdToAdd("");
-    setAddStudentError(null);
-    setIsAddStudentModalOpen(true);
-    setStudentList([]);
-    setStudentListError(null);
+  const fetchClassRoomDetails = async (classRoomId) => {
+    setDetailsLoading(true);
     setStudentListLoading(true);
+    setDetailsError(null);
+    setStudentListError(null);
 
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setDetailsError("Authentication token not found.");
+        setDetailsLoading(false);
+        setStudentListLoading(false);
+        return;
+      }
+
+      // Pobierz dane klasy
+      const classroomResponse = await fetch(
+        `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=1&limit=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!classroomResponse.ok) {
+        const message = `Failed to fetch classroom list. Status: ${classroomResponse.status}`;
+        setDetailsError(message);
+        setDetailsLoading(false);
+        setStudentListLoading(false);
+        return;
+      }
+
+      const classroomData = await classroomResponse.json();
+      const classroomDetails = classroomData.data.find(
+        (classroom) => classroom.id === classRoomId
+      );
+
+      if (classroomDetails) {
+        setDetailsClassRoom(classroomDetails);
+      } else {
+        setDetailsError("Classroom details not found.");
+        setDetailsClassRoom(null);
+        setStudentListLoading(false);
+        return;
+      }
+
+      // Pobierz listę studentów
+      const studentResponse = await fetch(
+        `${apiConfig.apiUrl}/api/v1/class_room/${classRoomId}/students`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!studentResponse.ok) {
+        const message = `Failed to fetch student list. Status: ${studentResponse.status}`;
+        setStudentListError(message);
+        setStudentListLoading(false);
+        setDetailsLoading(false);
+        return;
+      }
+
+      const studentData = await studentResponse.json();
+      const uniqueStudents = studentData.filter(
+        (student, index, self) =>
+          index === self.findIndex((t) => t.email === student.email)
+      );
+
+      setStudentList(uniqueStudents);
+    } catch (err) {
+      console.error("Error fetching classroom details:", err);
+      setDetailsError("Failed to load classroom details.");
+      setStudentListError("Failed to load student list.");
+    } finally {
+      setDetailsLoading(false);
+      setStudentListLoading(false);
+    }
+  };
+  // Function to fetch student list (extracted from handleOpenAddStudentModal)
+  const fetchStudentList = async () => {
+    setStudentListLoading(true);
+    setStudentListError(null);
     try {
       const token = localStorage.getItem("authToken");
       if (!token) {
@@ -270,15 +343,12 @@ function ClassRoom() {
         return;
       }
 
-      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?fetchAll=0`;
-      // console.log("Fetching student list from:", apiUrlWithCacheBust);
-
+      const apiUrlWithCacheBust = `${apiConfig.apiUrl}/api/v1/students/list?searchPhrase=${studentSearchPhrase}&fetchAll=0`;
       const response = await fetch(apiUrlWithCacheBust, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(response);
 
       if (!response.ok) {
         const message = `Failed to fetch student list. Status: ${response.status}`;
@@ -288,17 +358,34 @@ function ClassRoom() {
       }
 
       const data = await response.json();
-      // console.log("Student list fetched successfully:", data.data);
-
       setStudentList(data.data);
     } catch (err) {
       console.error("Error fetching student list:", err);
       setStudentListError("Failed to load student list.");
     } finally {
       setStudentListLoading(false);
-      // console.log("Student list loading finished.");
     }
   };
+
+  // Handlers for Add Student Modal
+  const handleOpenAddStudentModal = async (classRoomId) => {
+    closeDetailsPopup();
+    setAddStudentClassRoomId(classRoomId);
+    setStudentIdToAdd("");
+    setAddStudentError(null);
+    setIsAddStudentModalOpen(true);
+    setStudentList([]);
+    setStudentListError(null);
+    setStudentListLoading(true);
+    fetchStudentList(); // Fetch students when modal opens
+  };
+
+  useEffect(() => {
+    // Fetch students whenever search phrase changes
+    if (isAddStudentModalOpen) {
+      fetchStudentList();
+    }
+  }, [studentSearchPhrase, isAddStudentModalOpen]); // Depend on studentSearchPhrase and isAddStudentModalOpen
 
   const handleCloseAddStudentModal = () => {
     // console.log("handleCloseAddStudentModal called.");
@@ -308,6 +395,7 @@ function ClassRoom() {
     setAddStudentError(null);
     setStudentList([]);
     setStudentListError(null);
+    setStudentSearchPhrase(""); // Clear search phrase on modal close
   };
 
   const handleAddStudentSubmit = async () => {
@@ -381,6 +469,33 @@ function ClassRoom() {
     setDeleteStudentError(null);
   };
 
+  const handleRemoveStudentFromClassRoom = async (studentId) => {
+    const response = await fetch(
+      `${apiConfig.apiUrl}/api/v1/student/${studentId}/remove_class_room`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status === 204) {
+      setSuccessMessage("Student removed from classroom successfully.");
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      // window.location.reload();
+    } else {
+      const errorData = response.json();
+      console.error("Failed to remove student from classroom.", errorData);
+      setDeleteStudentError(
+        errorData.message || "Failed to remove student from classroom."
+      );
+    }
+    await fetchClassRoomDetails(detailsClassRoom.id);
+  };
+
   const handleDeleteStudentSubmit = async () => {
     // console.log("handleDeleteStudentSubmit called.");
     setDeleteStudentLoading(true);
@@ -441,6 +556,14 @@ function ClassRoom() {
       setDeleteStudentLoading(false);
       console.log("handleDeleteStudentSubmit finished.");
     }
+  };
+
+  const handleGoToGrades = (studentId) => {
+    console.log(studentId);
+    if (studentId) {
+      navigate(`/student/${studentId}/grades`);
+    }
+    closeDetailsPopup();
   };
 
   // State and Handlers for Details Popup
@@ -717,53 +840,67 @@ function ClassRoom() {
               <p className="loading">Loading students...</p>
             )}
             {studentListError && <p className="error">{studentListError}</p>}
-            {studentList.length > 0 ? (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleAddStudentSubmit();
-                }}
-              >
-                <div className="form-group">
-                  <label htmlFor="studentId">Select Student:</label>
-                  <select
-                    id="studentId"
-                    value={studentIdToAdd}
-                    onChange={(e) => setStudentIdToAdd(e.target.value)}
-                    required
-                  >
-                    <option value="">-- Select a student --</option>
-                    {studentList.map((student) => (
-                      <option key={student.email} value={student.id}>
-                        {`${student.firstName} ${student.lastName} (${student.email})`}
-                      </option>
-                    ))}
-                  </select>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleAddStudentSubmit();
+              }}
+            >
+              <div className="form-group">
+                <label htmlFor="studentSearch">Search Student:</label>
+                <input
+                  type="text"
+                  id="studentSearch"
+                  placeholder="Enter student name or email"
+                  value={studentSearchPhrase}
+                  onChange={(e) => setStudentSearchPhrase(e.target.value)}
+                />
+              </div>
+              {studentList.length > 0 ? (
+                <div className="student-list">
+                  {" "}
+                  {/* Display student list */}
+                  {studentList.map((student) => (
+                    <div
+                      key={student.id}
+                      className="student-item"
+                      onClick={() => setStudentIdToAdd(student.id)} // Select student by clicking
+                      style={{
+                        padding: "10px",
+                        borderBottom: "1px solid #ccc",
+                        cursor: "pointer",
+                        backgroundColor:
+                          studentIdToAdd === student.id ? "lightgray" : "white", // Highlight selected student
+                      }}
+                    >
+                      {`${student.firstName} ${student.lastName} (${student.email})`}
+                    </div>
+                  ))}
                 </div>
-                {addStudentError && <p className="error">{addStudentError}</p>}
-                <div className="popup-buttons1" style={{ textAlign: "center" }}>
-                  <button
-                    type="submit"
-                    className="VerifyButton"
-                    disabled={addStudentLoading}
-                    style={{ marginRight: "20px" }}
-                  >
-                    {addStudentLoading ? "Adding..." : "Add Student"}
-                  </button>
-                  <button
-                    type="button"
-                    className="DeactivateButton"
-                    onClick={handleCloseAddStudentModal}
-                    disabled={addStudentLoading}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              !studentListLoading &&
-              !studentListError && <p>No students found.</p>
-            )}
+              ) : (
+                !studentListLoading &&
+                studentSearchPhrase && <p>No students found.</p> // Show "No students found" only when searched and no results
+              )}
+              {addStudentError && <p className="error">{addStudentError}</p>}
+              <div className="popup-buttons1" style={{ textAlign: "center" }}>
+                <button
+                  type="submit"
+                  className="VerifyButton"
+                  disabled={addStudentLoading}
+                  style={{ marginRight: "20px" }}
+                >
+                  {addStudentLoading ? "Adding..." : "Add Student"}
+                </button>
+                <button
+                  type="button"
+                  className="DeactivateButton"
+                  onClick={handleCloseAddStudentModal}
+                  disabled={addStudentLoading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -784,7 +921,7 @@ function ClassRoom() {
                 <select
                   id="studentId"
                   value={studentIdToDelete}
-                  onChange={(e) => setStudentIdToDelete(e.target.value)}
+                  onClick={(e) => setStudentIdToDelete(e.target.value)}
                   required
                 >
                   <option value="">-- Select a student --</option>
@@ -838,7 +975,13 @@ function ClassRoom() {
             {detailsClassRoom ? (
               <>
                 <h3>Details for Classroom: {detailsClassRoom.name}</h3>
-                <h2 style={{ textAlign: "left", marginLeft: "40px" }}>
+                <h2
+                  style={{
+                    textAlign: "left",
+                    marginLeft: "0px",
+                    fontSize: "1.5rem",
+                  }}
+                >
                   Classroom students list:{" "}
                 </h2>
                 {studentListLoading ? (
@@ -849,20 +992,51 @@ function ClassRoom() {
                   <table className="table" style={{ margin: "0 auto" }}>
                     <thead>
                       <tr>
-                        <th>First Name</th>
-                        <th>Last Name</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
                         {/* <th>Email</th> */}
                       </tr>
                     </thead>
                     <tbody>
                       {studentList.map((student) => (
                         <tr key={student.studentId}>
-                          <td>{student.firstName}</td>
-                          <td>{student.lastName}</td>
-                          {/* <td>{student.email}</td> */}
+                          <td>{student.firstName + " " + student.lastName} </td>
+                          {/* <td>{student.lastName}</td> */}
+                          <td>{student.email}</td>
+                          <td>
+                            <button
+                              style={{
+                                backgroundColor: "#dc3545",
+                                fontWeight: "700",
+                              }}
+                              onClick={() =>
+                                handleRemoveStudentFromClassRoom(
+                                  student.studentId
+                                )
+                              }
+                            >
+                              Remove student from classroom
+                            </button>
+                            <button
+                              className="DeactivateButton"
+                              onClick={() =>
+                                handleGoToGrades(student.studentId)
+                              }
+                              style={{
+                                width: "auto",
+                                fontSize: "18px",
+                                height: "47px",
+                                backgroundColor: "lightblue",
+                              }}
+                            >
+                              Display students grade
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
+                    <tbody></tbody>
                   </table>
                 ) : (
                   <p>No students found in this classroom.</p>
@@ -875,7 +1049,9 @@ function ClassRoom() {
                     className="DeactivateButton"
                     style={{
                       backgroundColor: "#28a745",
-                      width: "auto",
+                      width: "160px",
+
+                      margin: "0 auto",
                       marginBottom: "10px",
                     }}
                     onClick={() =>
@@ -884,7 +1060,7 @@ function ClassRoom() {
                   >
                     Add student
                   </button>
-                  <button
+                  {/* <button
                     className="DeactivateButton"
                     style={{
                       backgroundColor: "#ffc107",
@@ -897,13 +1073,14 @@ function ClassRoom() {
                     }
                   >
                     Remove student
-                  </button>
+                  </button> */}
                   <button
                     className="DeactivateButton"
                     style={{
                       backgroundColor: "#dc3545",
-                      width: "auto",
+                      width: "160px",
                       height: "auto",
+                      margin: "0 auto",
                       marginBottom: "10px",
                     }}
                     onClick={() =>

@@ -21,6 +21,7 @@ import Subjects from "../components/Subjects/Subjects";
 import CreateSubject from "../components/Subjects/CreateSubject";
 import ClassRoom from "../components/ClassRoom/ClassRoom";
 import CreateClassRoom from "../components/ClassRoom/CreateClassRoom";
+import StudentGrade from "../components/Grade/StudentGrade";
 import { NotificationProvider } from "../contexts/NotificationContext"; // Import NotificationProvider
 import { useNotification } from "../contexts/NotificationContext";
 import styled from "styled-components";
@@ -113,6 +114,7 @@ const AppContent = () => {
         <Route path="/subjects" element={<Subjects />} />
         <Route path="/subject/create" element={<CreateSubject />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/student/:studentId/grades" element={<StudentGrade />} />
         <Route
           path="/users"
           element={isAdmin ? <DisplayUsers /> : <Navigate to="/dashboard" />}

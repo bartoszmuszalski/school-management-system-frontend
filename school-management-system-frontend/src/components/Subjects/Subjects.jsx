@@ -613,8 +613,9 @@ function Subjects() {
                       setModalOpen(true);
                     }}
                   >
-                    {subject.classRooms
+                    {subject.classRooms && subject.classRooms.length > 0
                       ? subject.classRooms
+                          .filter((classroom) => classroom && classroom.name)
                           .map((classroom) => classroom.name)
                           .join(", ")
                       : "N/A"}
@@ -947,20 +948,22 @@ function Subjects() {
             <h3>Classrooms for {selectedSubject.name}</h3>
             <ul>
               {selectedSubject.classRooms &&
-                selectedSubject.classRooms.map((classroom) => (
-                  <li key={classroom.id}>
-                    {classroom.name}
-                    <button
-                      style={{ marginLeft: "10px" }}
-                      onClick={() => {
-                        setSelectedClassroom(classroom);
-                        setConfirmationOpen(true);
-                      }}
-                    >
-                      Remove subject from class
-                    </button>
-                  </li>
-                ))}
+                selectedSubject.classRooms
+                  .filter((classroom) => classroom && classroom.name) // Apply the filter here
+                  .map((classroom) => (
+                    <li key={classroom.id}>
+                      {classroom.name}
+                      <button
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => {
+                          setSelectedClassroom(classroom);
+                          setConfirmationOpen(true);
+                        }}
+                      >
+                        Remove subject from class
+                      </button>
+                    </li>
+                  ))}
             </ul>
             <div
               style={{

@@ -4,12 +4,15 @@ import "./DisplayUsers.css";
 import verified from "../Files/verified.png";
 import unverified from "../Files/unverified.png";
 import apiConfig from "../../config";
+import StudentGrade from "../Grade/StudentGrade";
+import { useNavigate } from "react-router-dom";
 
 // Constants for user roles
 const ROLE_ADMIN = "ROLE_ADMIN";
 
 const DisplayUsers = () => {
   // State for users, loading, error, and pagination
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -211,6 +214,12 @@ const DisplayUsers = () => {
     setCurrentPage(1); // Reset to page 1 after search
   };
 
+  const handleGoToGrades = () => {
+    if (selectedUserDetails) {
+      navigate(`/student/${selectedUserDetails.id}/grades`);
+    }
+    closeDetailsPopup();
+  };
   // Handle automatic hiding of success notification
   useEffect(() => {
     if (showSuccess) {
@@ -404,16 +413,16 @@ const DisplayUsers = () => {
               <strong>ID:</strong> {selectedUserDetails.id}
             </p>
             <p>
-              <strong>First Name:</strong> {selectedUserDetails.firstName}
+              <strong>First name:</strong> {selectedUserDetails.firstName}
             </p>
             <p>
-              <strong>Last Name:</strong> {selectedUserDetails.lastName}
+              <strong>Last name:</strong> {selectedUserDetails.lastName}
             </p>
             <p>
               <strong>Email:</strong> {selectedUserDetails.email}
             </p>
             <p>
-              <strong>Created At:</strong> {selectedUserDetails.createdAt.date}
+              <strong>Created at:</strong> {selectedUserDetails.createdAt}
             </p>
             <p>
               <strong>Activated:</strong>{" "}

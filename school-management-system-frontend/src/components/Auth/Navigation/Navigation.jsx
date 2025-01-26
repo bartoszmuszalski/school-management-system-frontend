@@ -151,7 +151,7 @@ function Navigation({ onLogout }) {
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
-                  data-tooltip="User classroom"
+                  data-tooltip="Classrooms"
                 >
                   <img
                     src={classroom_pic}
@@ -190,7 +190,7 @@ function Navigation({ onLogout }) {
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
-                  data-tooltip="User classroom"
+                  data-tooltip="Classrooms"
                 >
                   <img
                     src={classroom_pic}
@@ -237,7 +237,7 @@ function Navigation({ onLogout }) {
                 <Link
                   to="/classroom"
                   className="sidebar-link-img"
-                  data-tooltip="User classroom"
+                  data-tooltip="All classrooms"
                 >
                   <img
                     src={classroom_pic}

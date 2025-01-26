@@ -15,16 +15,7 @@ const TeacherSearchInput = ({
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Fetch teachers when search phrase changes
-  useEffect(() => {
-    if (searchPhraseInput) {
-      fetchTeachers(searchPhraseInput);
-    } else {
-      setTeachers([]);
-      setIsDropdownOpen(false);
-    }
-  }, [searchPhraseInput]);
-
+  // Function to fetch teachers (moved out of useEffect for reusability)
   const fetchTeachers = async (searchPhrase) => {
     setLoading(true);
     setError(null);
@@ -49,7 +40,7 @@ const TeacherSearchInput = ({
 
       const data = await response.json();
       setTeachers(data.data);
-      setIsDropdownOpen(true);
+      setIsDropdownOpen(true); // Keep dropdown open after fetching
     } catch (err) {
       setError(err.message);
       setTeachers([]);
@@ -57,6 +48,15 @@ const TeacherSearchInput = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    // Fetch teachers on initial focus or when searchPhraseInput changes
+    if (isDropdownOpen) {
+      fetchTeachers(searchPhraseInput);
+    } else {
+      setTeachers([]); // Clear teachers when dropdown is closed
+    }
+  }, [searchPhraseInput, isDropdownOpen]);
 
   const handleTeacherSelect = (teacherId) => {
     // Find the selected teacher by teacherId
@@ -98,7 +98,7 @@ const TeacherSearchInput = ({
         placeholder="Search for a teacher..."
         value={searchPhraseInput}
         onChange={(e) => setSearchPhrase(e.target.value)}
-        onFocus={() => setIsDropdownOpen(true)}
+        onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
         className="teacher-search-input"
       />
       {loading && <p>Loading...</p>}
