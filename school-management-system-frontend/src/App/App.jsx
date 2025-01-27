@@ -48,6 +48,16 @@ const AppContent = () => {
     user.roles &&
     user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
 
+  const isTeacher =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_TEACHER");
+
+  const isStudent =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_STUDENT");
+
   // console.log("AppContent: isAdmin status", {
   //   isAdmin,
   //   userRoles: user?.roles,
@@ -119,9 +129,12 @@ const AppContent = () => {
           path="/users"
           element={isAdmin ? <DisplayUsers /> : <Navigate to="/dashboard" />}
         />
+        {/* <Route path="/classroom" element={<ClassRoom />} /> */}
         <Route
           path="/classroom"
-          element={isAdmin ? <ClassRoom /> : <Navigate to="/dashboard" />}
+          element={
+            isAdmin || isTeacher ? <ClassRoom /> : <Navigate to="/dashboard" />
+          }
         />
         <Route path="/classroom/create" element={<CreateClassRoom />} />
         <Route

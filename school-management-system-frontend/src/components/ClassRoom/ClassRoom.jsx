@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./ClassRoom.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
+// import React from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
 function ClassRoom() {
   const [classRooms, setClassRooms] = useState([]);
@@ -32,7 +34,7 @@ function ClassRoom() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const location = useLocation();
-
+  const { user } = useContext(AuthContext);
   // States for Add Student Modal
   const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
   const [addStudentClassRoomId, setAddStudentClassRoomId] = useState(null);
@@ -59,6 +61,11 @@ function ClassRoom() {
   const [studentListLoading, setStudentListLoading] = useState(false);
   const [studentListError, setStudentListError] = useState(null);
   const [searchPhrase, setSearchPhrase] = useState("");
+
+  const isAdmin =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
 
   useEffect(() => {
     if (location.state && location.state.successMessage) {
@@ -707,14 +714,16 @@ function ClassRoom() {
                 <td>{classRoom.createdAt}</td>
                 <td>{classRoom.updatedAt ? classRoom.updatedAt : "-"}</td>
                 <td>
-                  <button
-                    className="VerifyButton"
-                    onClick={() =>
-                      handleEditClassRoom(classRoom.id, classRoom.name)
-                    }
-                  >
-                    Edit
-                  </button>
+                  {isAdmin && (
+                    <button
+                      className="VerifyButton"
+                      onClick={() =>
+                        handleEditClassRoom(classRoom.id, classRoom.name)
+                      }
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
                     className="AddButton"
                     onClick={() => handleDetailsClassRoom(classRoom.id)}
@@ -726,16 +735,18 @@ function ClassRoom() {
               </tr>
             ))
           )}
-          <tr>
-            <td colSpan="4">
-              <button
-                className="create-classroom-button"
-                onClick={handleCreateClassRoom}
-              >
-                Create a Classroom
-              </button>
-            </td>
-          </tr>
+          {isAdmin && (
+            <tr>
+              <td colSpan="4">
+                <button
+                  className="create-classroom-button"
+                  onClick={handleCreateClassRoom}
+                >
+                  Create a Classroom
+                </button>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       {/* Pagination Controls */}
@@ -802,8 +813,8 @@ function ClassRoom() {
 
       {/* Delete Classroom Popup */}
       {isDeletePopupOpen && (
-        <div className="delete-popup-overlay">
-          <div className="delete-popup">
+        <div className="delete-popup-overlay1">
+          <div className="delete-popup1">
             <h3>Delete Classroom</h3>
             <p>
               Are you sure you want to delete the classroom "
@@ -1005,19 +1016,21 @@ function ClassRoom() {
                           {/* <td>{student.lastName}</td> */}
                           <td>{student.email}</td>
                           <td>
-                            <button
-                              style={{
-                                backgroundColor: "#dc3545",
-                                fontWeight: "700",
-                              }}
-                              onClick={() =>
-                                handleRemoveStudentFromClassRoom(
-                                  student.studentId
-                                )
-                              }
-                            >
-                              Remove student from classroom
-                            </button>
+                            {isAdmin && (
+                              <button
+                                style={{
+                                  backgroundColor: "#dc3545",
+                                  fontWeight: "700",
+                                }}
+                                onClick={() =>
+                                  handleRemoveStudentFromClassRoom(
+                                    student.studentId
+                                  )
+                                }
+                              >
+                                Remove student from classroom
+                              </button>
+                            )}
                             <button
                               className="DeactivateButton"
                               onClick={() =>
@@ -1045,21 +1058,23 @@ function ClassRoom() {
                   className="popup-buttons5"
                   style={{ flexDirection: "column" }}
                 >
-                  <button
-                    className="DeactivateButton"
-                    style={{
-                      backgroundColor: "#28a745",
-                      width: "160px",
+                  {isAdmin && (
+                    <button
+                      className="DeactivateButton"
+                      style={{
+                        backgroundColor: "#28a745",
+                        width: "160px",
 
-                      margin: "0 auto",
-                      marginBottom: "10px",
-                    }}
-                    onClick={() =>
-                      handleOpenAddStudentModal(detailsClassRoom.id)
-                    }
-                  >
-                    Add student
-                  </button>
+                        margin: "0 auto",
+                        marginBottom: "10px",
+                      }}
+                      onClick={() =>
+                        handleOpenAddStudentModal(detailsClassRoom.id)
+                      }
+                    >
+                      Add student
+                    </button>
+                  )}
                   {/* <button
                     className="DeactivateButton"
                     style={{
@@ -1074,24 +1089,26 @@ function ClassRoom() {
                   >
                     Remove student
                   </button> */}
-                  <button
-                    className="DeactivateButton"
-                    style={{
-                      backgroundColor: "#dc3545",
-                      width: "160px",
-                      height: "auto",
-                      margin: "0 auto",
-                      marginBottom: "10px",
-                    }}
-                    onClick={() =>
-                      handleDeleteClassRoom(
-                        detailsClassRoom.id,
-                        detailsClassRoom.name
-                      )
-                    }
-                  >
-                    Delete classroom
-                  </button>
+                  {isAdmin && (
+                    <button
+                      className="DeactivateButton"
+                      style={{
+                        backgroundColor: "#dc3545",
+                        width: "160px",
+                        height: "auto",
+                        margin: "0 auto",
+                        marginBottom: "10px",
+                      }}
+                      onClick={() =>
+                        handleDeleteClassRoom(
+                          detailsClassRoom.id,
+                          detailsClassRoom.name
+                        )
+                      }
+                    >
+                      Delete classroom
+                    </button>
+                  )}
                 </div>
                 <div className="popup-buttons3">
                   <button

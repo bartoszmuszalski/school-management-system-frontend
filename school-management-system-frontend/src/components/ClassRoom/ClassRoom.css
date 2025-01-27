@@ -484,7 +484,7 @@
 
 /* Add these styles to ClassRoom.css */
 
-.delete-popup-overlay {
+.delete-popup-overlay1 {
   position: fixed;
   top: 0;
   left: 0;
@@ -494,11 +494,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 3000;
   backdrop-filter: blur(4px);
 }
 
-.delete-popup {
+.delete-popup1 {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
@@ -507,11 +507,11 @@
   text-align: center;
 }
 
-.delete-popup h2 {
+.delete-popup1 h2 {
   margin-bottom: 10px;
 }
 
-.delete-popup p {
+.delete-popup1 p {
   margin-bottom: 20px;
 }
 

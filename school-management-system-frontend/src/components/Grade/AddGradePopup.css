@@ -1,0 +1,42 @@
+/* src/components/Grade/AddGradePopup.css */
+
+.add-grade-popup .popup-title {
+  color: #333;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+}
+
+.add-grade-form .form-group {
+  margin-bottom: 15px;
+}
+
+.add-grade-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.add-grade-form input[type="text"],
+.add-grade-form input[type="number"],
+.add-grade-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+.add-grade-form textarea {
+  resize: vertical; /* Allow vertical resizing of textarea */
+  min-height: 100px;
+}
+
+.popup-buttons .save-button {
+  background-color: #4caf50; /* Green color for save */
+  color: white;
+}
+
+.popup-buttons .cancel-button {
+  background-color: #ccc; /* Grey for cancel */
+  color: #333;
+}
