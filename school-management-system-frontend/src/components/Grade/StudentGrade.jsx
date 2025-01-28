@@ -1,19 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import apiConfig from "../../config";
 import { useParams } from "react-router-dom";
 import "./StudentGrade.css";
 import GradeDetailsPopup from "./GradeDetailsPopup"; // Import the new popup component
 import AddGradePopup from "./AddGradePopup"; // Import the AddGradePopup component
+import { AuthContext } from "../../contexts/AuthContext";
 
 const StudentGrade = () => {
   const { studentId } = useParams();
+  const { user } = useContext(AuthContext);
   const [subjects, setSubjects] = useState([]);
+  const [fullName, setFullName] = useState();
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [errorSubjects, setErrorSubjects] = useState(null);
   const [isAddGradePopupVisible, setIsAddGradePopupVisible] = useState(false); // State for AddGradePopup
   const [selectedSubjectIdForGrade, setSelectedSubjectIdForGrade] =
     useState(null); // Track subject for adding grade
+  const isAdmin =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
+
+  const isTeacher =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_TEACHER");
 
   useEffect(() => {
     fetchSubjects(); // Call fetchSubjects on component mount
@@ -34,11 +46,19 @@ const StudentGrade = () => {
       );
       const subjectsWithGrades = await Promise.all(
         response.data.subjects.map(async (subject) => {
-          const grades = await fetchGrades(subject.id);
-          return { ...subject, grades: grades };
+          const gradesData = await fetchGrades(subject.id); // Fetch grades data (including average)
+          return {
+            ...subject,
+            grades: gradesData.grades, // Extract grades array
+            average: gradesData.average, // Extract average
+          };
         })
       );
+      // console.log(fullName);
       setSubjects(subjectsWithGrades);
+      setFullName(
+        response.data.studentFirstName + " " + response.data.studentLastName
+      );
     } catch (err) {
       setErrorSubjects(err);
     } finally {
@@ -57,10 +77,11 @@ const StudentGrade = () => {
           },
         }
       );
-      return response.data;
+
+      return response.data; // Return the entire response data
     } catch (error) {
       console.error(`Error fetching grades for subject ${subjectId}:`, error);
-      return null;
+      return { grades: null, average: null }; // Return nulls in case of error
     }
   };
 
@@ -76,7 +97,7 @@ const StudentGrade = () => {
 
   return (
     <div className="student-grades-container">
-      <h1>Student's grades ID: {studentId}</h1>
+      <h1>Student's grades ID: {fullName}</h1>
       {loadingSubjects && <p className="loading">Ładowanie przedmiotów...</p>}
       {errorSubjects && (
         <p className="error">
@@ -90,7 +111,8 @@ const StudentGrade = () => {
               <th>Subject</th>
               <th>Lead</th>
               <th>Grades</th>
-              <th>Action</th> {/* New Action column */}
+              <th>Average</th> {/* New Average column */}
+              {isTeacher && <th>Action</th>} {/* New Action column */}
             </tr>
           </thead>
           <tbody>
@@ -105,14 +127,18 @@ const StudentGrade = () => {
                     refreshGradesList={fetchSubjects} // Pass fetchSubjects function
                   />
                 </td>
-                <td>
-                  <button
-                    className="AddButton" // Add class for styling if needed
-                    onClick={() => handleOpenAddGradePopup(subject.id)}
-                  >
-                    Add Grade
-                  </button>
-                </td>
+                <td>{subject.average ? subject.average.toFixed(2) : "N/A"}</td>{" "}
+                {/* Display Average */}
+                {isTeacher && (
+                  <td>
+                    <button
+                      className="AddButton" // Add class for styling if needed
+                      onClick={() => handleOpenAddGradePopup(subject.id)}
+                    >
+                      Add grade
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -232,7 +258,7 @@ const GradesDisplay = ({ grades, subjectId, refreshGradesList }) => {
       </>
     );
   } else {
-    return <p>Brak ocen</p>;
+    return <p>No grades</p>;
   }
 };
 

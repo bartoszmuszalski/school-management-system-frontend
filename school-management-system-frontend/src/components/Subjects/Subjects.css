@@ -53,7 +53,8 @@
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
-  width: 100%;
+  width: 50%;
+  margin: 0 auto;
 }
 
 .create-classroom-button:hover {

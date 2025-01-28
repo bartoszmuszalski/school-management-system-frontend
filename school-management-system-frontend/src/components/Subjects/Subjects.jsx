@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./Subjects.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
 import TeacherSearchInput from "./TeacherSearchInput";
+import { AuthContext } from "../../contexts/AuthContext";
 
 function Subjects() {
   const [subjects, setSubjects] = useState([]);
@@ -11,7 +12,7 @@ function Subjects() {
   const [currentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit] = useState(15);
-
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // States for Edit Popup
@@ -73,6 +74,16 @@ function Subjects() {
 
   const location = useLocation();
 
+  const isAdmin =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
+
+  const isTeacher =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_TEACHER");
+
   useEffect(() => {
     if (location.state && location.state.successMessage) {
       setSuccessMessage(location.state.successMessage);
@@ -92,10 +103,13 @@ function Subjects() {
         setError("Authentication token not found.");
         return;
       }
-
-      const url = `${apiConfig.apiUrl}/api/v1/subjects/list?page=${page}&limit=${limit}`;
-
-      // console.log(url);
+      let url;
+      if (isAdmin) {
+        url = `${apiConfig.apiUrl}/api/v1/subjects/list?page=${page}&limit=${limit}`;
+      } else if (isTeacher) {
+        url = `${apiConfig.apiUrl}/api/v1/teacher/my_subjects`;
+      }
+      console.log(url);
 
       const response = await fetch(url, {
         headers: {
@@ -552,13 +566,15 @@ function Subjects() {
 
   return (
     <div className="container">
-      <p className="myParagraphClass">Subjects list</p>
+      {isAdmin && <p className="myParagraphClass">Subjects list</p>}
+      {isTeacher && <p className="myParagraphClass">My subjects</p>}
       <table className="table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Description</th>
-            <th>Teacher</th>
+            {isAdmin && <th>Teacher</th>}
+
             <th>Class</th>
             <th>Actions</th>
           </tr>
@@ -596,30 +612,74 @@ function Subjects() {
                     subject.description
                   )}
                 </td>
+                {isAdmin && (
+                  <td>
+                    {subject.teacher
+                      ? `${subject.teacher.firstName} ${subject.teacher.lastName}`
+                      : "Me"}
+                  </td>
+                )}
+
                 <td>
-                  {subject.teacher
-                    ? `${subject.teacher.firstName} ${subject.teacher.lastName}`
-                    : "N/A"}
-                </td>
-                <td>
-                  <span
-                    style={{
-                      cursor: "pointer",
-                      color: "blue",
-                      textDecoration: "underline",
-                    }}
-                    onClick={() => {
-                      setSelectedSubject(subject);
-                      setModalOpen(true);
-                    }}
-                  >
-                    {subject.classRooms && subject.classRooms.length > 0
-                      ? subject.classRooms
+                  {isAdmin ? (
+                    <span
+                      style={{
+                        cursor: "pointer",
+                        color: "blue",
+                        textDecoration: "underline",
+                      }}
+                      onClick={() => {
+                        setSelectedSubject(subject);
+                        setModalOpen(true);
+                      }}
+                    >
+                      {subject.classRooms && subject.classRooms.length > 0
+                        ? (() => {
+                            const validClassrooms = subject.classRooms.filter(
+                              (classroom) => classroom && classroom.name
+                            );
+                            return validClassrooms.length > 0
+                              ? validClassrooms
+                                  .map((classroom) => classroom.name)
+                                  .join(", ")
+                              : "N/A";
+                          })()
+                        : "N/A"}
+                    </span>
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px",
+                      }}
+                    >
+                      {subject.classRooms && subject.classRooms.length > 0 ? (
+                        subject.classRooms
                           .filter((classroom) => classroom && classroom.name)
-                          .map((classroom) => classroom.name)
-                          .join(", ")
-                      : "N/A"}
-                  </span>
+                          .map((classroom) => (
+                            <span
+                              key={classroom.id}
+                              style={{
+                                backgroundColor: "blue",
+                                padding: "5px",
+                                borderRadius: "5px",
+                                cursor: "pointer",
+                                color: "white",
+                              }}
+                              onClick={() => {
+                                setSelectedSubject(subject);
+                                setModalOpen(true);
+                              }}
+                            >
+                              {classroom.name}
+                            </span>
+                          ))
+                      ) : (
+                        <span>N/A</span>
+                      )}
+                    </div>
+                  )}
                 </td>
                 <td>
                   <button
@@ -648,17 +708,19 @@ function Subjects() {
               </tr>
             ))
           )}
-          <tr>
-            <td colSpan="4">
-              <button
-                className="create-classroom-button"
-                onClick={handleCreateSubject}
-                style={{ width: "133%" }}
-              >
-                Create a subject
-              </button>
-            </td>
-          </tr>
+          {isAdmin && (
+            <tr>
+              <td colSpan="4">
+                <button
+                  className="create-classroom-button"
+                  onClick={handleCreateSubject}
+                  style={{ width: "131% ", backgroundColor: "#4f46e5" }}
+                >
+                  Create a subject
+                </button>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       {/* Pagination Controls */}

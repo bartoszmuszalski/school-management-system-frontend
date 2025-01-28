@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import "./DisplayUsers.css";
 import verified from "../Files/verified.png";
@@ -6,12 +6,14 @@ import unverified from "../Files/unverified.png";
 import apiConfig from "../../config";
 import StudentGrade from "../Grade/StudentGrade";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 // Constants for user roles
 const ROLE_ADMIN = "ROLE_ADMIN";
 
 const DisplayUsers = () => {
   // State for users, loading, error, and pagination
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,15 @@ const DisplayUsers = () => {
   const [currentPage, setCurrentPage] = useState(1); // Current page
   const [totalPages, setTotalPages] = useState(1); // Total number of pages
   const [limit, setLimit] = useState(10); // Number of users per page
+  const isAdmin =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
 
+  const isTeacher =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_TEACHER");
   // State for search phrase
   const [searchPhrase, setSearchPhrase] = useState("");
 
@@ -266,6 +276,11 @@ const DisplayUsers = () => {
           className="search-input"
           value={searchPhrase}
           onChange={(e) => setSearchPhrase(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
         />
         <button className="search-button" onClick={handleSearch}>
           Search

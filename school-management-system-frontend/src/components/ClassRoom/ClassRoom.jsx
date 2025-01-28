@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import "./ClassRoom.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import apiConfig from "../../config";
-// import React from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
 function ClassRoom() {
@@ -66,6 +65,10 @@ function ClassRoom() {
     user &&
     user.roles &&
     user.roles.some((role) => role.toUpperCase() === "ROLE_ADMIN");
+  const isTeacher =
+    user &&
+    user.roles &&
+    user.roles.some((role) => role.toUpperCase() === "ROLE_TEACHER");
 
   useEffect(() => {
     if (location.state && location.state.successMessage) {
@@ -78,7 +81,6 @@ function ClassRoom() {
 
   useEffect(() => {
     const fetchClassRooms = async () => {
-      // console.log("Fetching classrooms...");
       setLoading(true);
       setError(null);
       try {
@@ -88,43 +90,79 @@ function ClassRoom() {
           setClassRooms([]);
           return;
         }
+        let response;
+        let data;
+        if (isAdmin) {
+          response = await fetch(
+            `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=${currentPage}&limit=${limit}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-        const response = await fetch(
-          `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=${currentPage}&limit=${limit}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+          if (!response.ok) {
+            if (response.status === 403) {
+              setError("You are not authorized to access this page.");
+              navigate("/dashboard");
+            } else {
+              const message = `Failed to fetch classrooms. Status: ${response.status}`;
+              setError(message);
+            }
+            setClassRooms([]);
+            return;
           }
-        );
-
-        if (!response.ok) {
-          if (response.status === 403) {
-            setError("You are not authorized to access this page.");
-            navigate("/dashboard");
+          data = await response.json();
+          setClassRooms(data.data);
+          setTotalPages(data.totalPages);
+        } else if (isTeacher) {
+          response = await fetch(
+            `${apiConfig.apiUrl}/api/v1/teacher/my_class_rooms`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          if (!response.ok) {
+            if (response.status === 403) {
+              setError("You are not authorized to access this page.");
+              navigate("/dashboard");
+            } else {
+              const message = `Failed to fetch classrooms. Status: ${response.status}`;
+              setError(message);
+            }
+            setClassRooms([]);
+            return;
+          }
+          data = await response.json();
+          // Check if data is an array or an object with a data property
+          if (Array.isArray(data)) {
+            setClassRooms(data); // If it's an array, use it directly
+            setTotalPages(1); // Set to 1 since there's no pagination for teacher
+          } else if (data && Array.isArray(data.data)) {
+            setClassRooms(data.data); // If data.data is an array
+            setTotalPages(1);
           } else {
-            const message = `Failed to fetch classrooms. Status: ${response.status}`;
-            setError(message);
+            setClassRooms([]); // Set to empty array if no data
+            setTotalPages(1);
           }
-          setClassRooms([]);
+        } else {
+          // If neither admin nor teacher return from here
           return;
         }
-
-        const data = await response.json();
-        // console.log("Classrooms fetched successfully:", data);
-        setClassRooms(data.data);
-        setTotalPages(data.totalPages);
       } catch (err) {
         console.error("Error fetching classrooms:", err);
         setError("An error occurred while fetching classrooms.");
+        setClassRooms([]);
       } finally {
         setLoading(false);
-        // console.log("Classrooms loading finished.");
       }
     };
 
     fetchClassRooms();
-  }, [currentPage, limit, navigate]);
+  }, [currentPage, limit, navigate, isAdmin, isTeacher]);
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -692,18 +730,19 @@ function ClassRoom() {
 
   return (
     <div className="container">
-      <p className="myParagraphClass">Classroom List</p>
+      {isAdmin && <p className="myParagraphClass">Classroom list</p>}
+      {isTeacher && <p className="myParagraphClass">My classrooms</p>}
       <table className="table">
         <thead>
           <tr>
             <th>Name</th>
-            <th>Created At</th>
-            <th>Updated At</th>
+            {isAdmin && <th>Created At</th>}
+            {isAdmin && <th>Updated At</th>}
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {classRooms.length === 0 ? (
+          {!classRooms || classRooms.length === 0 ? (
             <tr>
               <td colSpan="6">No classrooms found.</td>
             </tr>
@@ -711,8 +750,10 @@ function ClassRoom() {
             classRooms.map((classRoom) => (
               <tr key={classRoom.id}>
                 <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
-                <td>{classRoom.createdAt}</td>
-                <td>{classRoom.updatedAt ? classRoom.updatedAt : "-"}</td>
+                {isAdmin && <td>{classRoom.createdAt}</td>}
+                {isAdmin && (
+                  <td>{classRoom.updatedAt ? classRoom.updatedAt : "-"}</td>
+                )}
                 <td>
                   {isAdmin && (
                     <button
@@ -741,6 +782,7 @@ function ClassRoom() {
                 <button
                   className="create-classroom-button"
                   onClick={handleCreateClassRoom}
+                  style={{ width: "90%" }}
                 >
                   Create a Classroom
                 </button>
@@ -750,26 +792,27 @@ function ClassRoom() {
         </tbody>
       </table>
       {/* Pagination Controls */}
-      <div className="pagination">
-        <button onClick={handlePrev} disabled={currentPage === 1}>
-          Previous
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={page === currentPage ? "active" : ""}
-            >
-              {page}
-            </button>
-          )
-        )}
-        <button onClick={handleNext} disabled={currentPage === totalPages}>
-          Next
-        </button>
-      </div>
-
+      {isAdmin && (
+        <div className="pagination">
+          <button onClick={handlePrev} disabled={currentPage === 1}>
+            Previous
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+            (page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={page === currentPage ? "active" : ""}
+              >
+                {page}
+              </button>
+            )
+          )}
+          <button onClick={handleNext} disabled={currentPage === totalPages}>
+            Next
+          </button>
+        </div>
+      )}
       {/* Edit Classroom Popup */}
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
