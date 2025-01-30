@@ -7,6 +7,8 @@
   width: 100%;
   /* border-collapse: collapse; */
   margin-bottom: 20px;
+  margin-left: auto; /* Add this line to center the table horizontally */
+  margin-right: auto;
 }
 
 .subjects-table th,
@@ -46,7 +48,7 @@
 }
 
 .create-classroom-button {
-  background-color: #28a745;
+  background-color: #4f46e5;
   color: white;
   padding: 10px 15px;
   border: none;
@@ -58,7 +60,7 @@
 }
 
 .create-classroom-button:hover {
-  background-color: #218838;
+  background-color: #4942cf;
 }
 
 .edit-popup-overlay,
@@ -111,7 +113,7 @@
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin: auto;
+  /* margin: auto; */
   display: block;
 }
 
@@ -131,6 +133,10 @@
 
 .VerifyButton {
   background-color: #28a745;
+  color: white;
+}
+.VerifyButton:hover {
+  background-color: #1f8a38;
   color: white;
 }
 
@@ -343,17 +349,17 @@ h3 {
   font-weight: 600;
   color: #fff;
   margin-left: 10px;
-  background-color: #e54646; /* Matching the table header color */
+  /* background-color: #e54646; Matching the table header color */
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
   /* margin: 0 auto; */
 }
-
+/* 
 .modal-content1 button:hover {
   background-color: #cd3e3e;
-}
+} */
 
 /* Styles for the comma-separated list of classes in the table */
 .subjects-table td span {
@@ -424,4 +430,19 @@ h3 {
 
 .modal-content1 p {
   margin-bottom: 20px;
+}
+
+.subject-average {
+  margin-bottom: 10px;
+  /* text-decoration: ; */
+}
+
+.subject-list-inline {
+  display: flex;
+  flex-direction: column;
+}
+
+.subject-list-inline li {
+  margin-bottom: 10px;
+  border-radius: 10px;
 }

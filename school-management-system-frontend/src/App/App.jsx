@@ -25,6 +25,7 @@ import StudentGrade from "../components/Grade/StudentGrade";
 import { NotificationProvider } from "../contexts/NotificationContext"; // Import NotificationProvider
 import { useNotification } from "../contexts/NotificationContext";
 import styled from "styled-components";
+import ClassRoomList from "../components/ClassRoom/ClassRoomList";
 
 function App() {
   return (
@@ -129,7 +130,6 @@ const AppContent = () => {
           path="/users"
           element={isAdmin ? <DisplayUsers /> : <Navigate to="/dashboard" />}
         />
-        {/* <Route path="/classroom" element={<ClassRoom />} /> */}
         <Route
           path="/classroom"
           element={
@@ -137,6 +137,11 @@ const AppContent = () => {
           }
         />
         <Route path="/classroom/create" element={<CreateClassRoom />} />
+        <Route
+          path="/classroom/:classRoomID/students"
+          element={<ClassRoomList />}
+        />
+
         <Route
           path="/dashboard"
           element={

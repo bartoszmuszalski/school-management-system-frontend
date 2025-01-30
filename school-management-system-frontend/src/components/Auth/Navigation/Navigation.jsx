@@ -11,6 +11,7 @@ import users_pic from "../../Files/users.png";
 import subjects_pic from "../../Files/subjects.png";
 import classroom_pic from "../../Files/user_classroom.png";
 import useradd_pic from "../../Files/user-add.png";
+import grades from "../../Files/grades.png";
 import { useNavigate } from "react-router-dom";
 import apiConfig from "../../../config";
 import EmailVerificationPopUp from "./EmailVerificationPopup.jsx"; // Import EmailVerificationPopup
@@ -155,6 +156,17 @@ function Navigation({ onLogout }) {
                 >
                   <img
                     src={classroom_pic}
+                    alt="User classroom"
+                    className="register-icon"
+                  />
+                </Link>
+                <Link
+                  to="/classroom"
+                  className="sidebar-link-img"
+                  data-tooltip="My grades"
+                >
+                  <img
+                    src={grades}
                     alt="User classroom"
                     className="register-icon"
                   />

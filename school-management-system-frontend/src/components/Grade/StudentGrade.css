@@ -46,12 +46,12 @@
   justify-content: center;
 }
 
-.grades-table li {
+/* .grades-table li {
   margin-left: 10px;
   border-style: solid;
-  background-color: #000000;
+  background-color: #000080;
   padding: 5px;
-}
+} */
 .loading {
   text-align: center;
   margin-top: 20px;
@@ -73,9 +73,19 @@
 }
 
 .grade-item {
-  margin-right: 5px; /* Optional: spacing between grades if in a row */
-  cursor: pointer; /* Indicate it's interactive */
-  padding: 5px; /* Add some padding to the grade item */
+  margin-right: 5px;
+  cursor: pointer;
+  padding: 8px 12px;
+  background-color: #6c757d;
+  border-radius: 5px;
+  color: white;
+  margin-bottom: 5px;
+  display: inline-block; /* Allows for horizontal arrangement */
+  transition: background-color 0.3s ease;
+}
+
+.grade-item:hover {
+  background-color: #5a6268;
 }
 
 /* Tooltip styles - these might have limited effect on default browser tooltips */

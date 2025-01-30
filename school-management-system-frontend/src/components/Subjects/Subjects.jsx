@@ -218,6 +218,7 @@ function Subjects() {
         ? `${currentTeacher.firstName} ${currentTeacher.lastName}`
         : ""
     );
+
     setIsEditPopupOpen(true);
     setEditError(null);
     // await fetchTeachers(); // Fetch teachers when edit popup is opened
@@ -661,15 +662,14 @@ function Subjects() {
                             <span
                               key={classroom.id}
                               style={{
-                                backgroundColor: "blue",
+                                backgroundColor: "#2F4F4F",
                                 padding: "5px",
                                 borderRadius: "5px",
                                 cursor: "pointer",
                                 color: "white",
                               }}
                               onClick={() => {
-                                setSelectedSubject(subject);
-                                setModalOpen(true);
+                                navigate(`/classroom/${classroom.id}/students`);
                               }}
                             >
                               {classroom.name}
@@ -748,7 +748,7 @@ function Subjects() {
       {isEditPopupOpen && (
         <div className="edit-popup-overlay">
           <div className="edit-popup">
-            <h3>Edit Subject</h3>
+            <h3>Edit subject</h3>
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -795,7 +795,7 @@ function Subjects() {
               }}
             >
               <div className="form-group">
-                <label htmlFor="editSubjectName">Subject Name:</label>
+                <label htmlFor="editSubjectName">Subject name:</label>
                 <input
                   type="text"
                   id="editSubjectName"
@@ -815,6 +815,7 @@ function Subjects() {
               <div className="form-group">
                 <label htmlFor="editTeacher">Teacher:</label>
                 <TeacherSearchInput
+                  // value={editTeacherId}
                   editTeacherId={editTeacherId}
                   setEditTeacherId={setEditTeacherId}
                   setEditTeacherName={setEditTeacherName} // ADD THIS LINE: Pass setEditTeacherName as a prop

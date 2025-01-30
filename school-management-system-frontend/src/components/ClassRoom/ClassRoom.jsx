@@ -736,8 +736,8 @@ function ClassRoom() {
         <thead>
           <tr>
             <th>Name</th>
-            {isAdmin && <th>Created At</th>}
-            {isAdmin && <th>Updated At</th>}
+            {isAdmin && <th>Created at</th>}
+            {isAdmin && <th>Updated at</th>}
             <th>Actions</th>
           </tr>
         </thead>
@@ -765,13 +765,26 @@ function ClassRoom() {
                       Edit
                     </button>
                   )}
-                  <button
-                    className="AddButton"
-                    onClick={() => handleDetailsClassRoom(classRoom.id)}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    Details
-                  </button>
+                  {isAdmin && (
+                    <button
+                      className="AddButton"
+                      onClick={() => handleDetailsClassRoom(classRoom.id)}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Details
+                    </button>
+                  )}
+                  {isTeacher && (
+                    <button
+                      className="AddButton"
+                      onClick={() => {
+                        navigate(`/classroom/${classRoom.id}/students`);
+                      }}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Details
+                    </button>
+                  )}
                 </td>
               </tr>
             ))
@@ -784,7 +797,7 @@ function ClassRoom() {
                   onClick={handleCreateClassRoom}
                   style={{ width: "90%" }}
                 >
-                  Create a Classroom
+                  Create a classroom
                 </button>
               </td>
             </tr>

@@ -6,7 +6,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     background-color: white; /* Changed from gradient to white */
     font-family: 'Roboto', sans-serif;
-    min-height: 100vh;
+    min-height: auto;
   }
 `;
 

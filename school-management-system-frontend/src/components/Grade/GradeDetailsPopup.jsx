@@ -69,7 +69,10 @@ const GradeDetailsPopup = ({
       }
     } catch (error) {
       console.error("Error updating grade details:", error);
-      setUpdateError(error);
+      console.log("CATCH BLOCK EXECUTED!"); // Add this line
+      setUpdateError(
+        error.response?.data?.message || error.message || "An error occurred"
+      ); // Access nested message if available, or fallback
       setUpdateSuccess(false);
     } finally {
       setUpdateLoading(false);
@@ -128,17 +131,16 @@ const GradeDetailsPopup = ({
       <div className="popup edit-popup grade-details-popup">
         {" "}
         {/* Added grade-details-popup class */}
-        <h2 className="popup-title">Grade Details</h2>{" "}
-        {/* Added popup-title class */}
+        <h3>Grade details</h3> {/* Added popup-title class */}
         {updateSuccess && !isEditMode && (
           <p className="success-notification">
             Grade details updated successfully!
           </p>
         )}
-        {updateError && !isEditMode && (
-          <p className="error">
-            Error updating grade details: {updateError.message}
-          </p>
+        {console.log("updateError:", updateError, "isEditMode:", isEditMode)}{" "}
+        {/* Add this line for debugging */}
+        {updateError && (
+          <p className="error">Error updating grade details: {updateError}</p>
         )}
         {updateLoading && !isEditMode && (
           <p className="loading">Updating grade details...</p>
@@ -165,20 +167,23 @@ const GradeDetailsPopup = ({
               {/* Added detail-item class */}
               <strong>Weight:</strong> {gradeDetails?.weight}
             </p>
+            <p className="detail-item">
+              {" "}
+              {}
+              <strong>Description:</strong> {gradeDetails?.description}
+            </p>
             {gradeDetails?.createdAt && (
               <p className="detail-item">
                 {" "}
                 {/* Added detail-item class */}
-                <strong>Created At:</strong>{" "}
-                {new Date(gradeDetails.createdAt).toLocaleString()}
+                <strong>Created at:</strong> {gradeDetails.createdAt}
               </p>
             )}
             {gradeDetails?.updatedAt && (
               <p className="detail-item">
                 {" "}
                 {/* Added detail-item class */}
-                <strong>Updated At:</strong>{" "}
-                {new Date(gradeDetails.updatedAt).toLocaleString()}
+                <strong>Updated at:</strong> {gradeDetails.updatedAt}
               </p>
             )}
             {/* {gradeDetails?.teacherFirstName && (
@@ -192,7 +197,7 @@ const GradeDetailsPopup = ({
               <p className="detail-item">
                 {" "}
                 {/* Added detail-item class */}
-                <strong>Teacher Last Name:</strong>{" "}
+                <strong>Teacher's name:</strong>{" "}
                 {gradeDetails.teacherFirstName +
                   " " +
                   gradeDetails.teacherLastName}
@@ -202,7 +207,7 @@ const GradeDetailsPopup = ({
               <p className="detail-item">
                 {" "}
                 {/* Added detail-item class */}
-                <strong>Teacher Email:</strong> {gradeDetails.teacherEmail}
+                <strong>Teacher email:</strong> {gradeDetails.teacherEmail}
               </p>
             )}
             <p className="detail-item">
@@ -249,20 +254,20 @@ const GradeDetailsPopup = ({
           {!isEditMode ? (
             <>
               <button
-                className="popup-button close-button no"
-                onClick={handleDeleteClick}
-              >
-                {" "}
-                {/* Added delete-grade-button class */}
-                Delete Grade
-              </button>
-              <button
                 className="popup-button edit-grade-button yes"
                 onClick={handleEditClick}
               >
                 {" "}
                 {/* Added edit-grade-button class */}
                 Edit
+              </button>
+              <button
+                className="popup-button close-button no"
+                onClick={handleDeleteClick}
+              >
+                {" "}
+                {/* Added delete-grade-button class */}
+                Delete
               </button>
               <button
                 className="popup-button close-button no"

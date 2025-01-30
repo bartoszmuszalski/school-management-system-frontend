@@ -24,7 +24,8 @@
 
 /* Enhanced table styling */
 .table {
-  width: 80%;
+  width: auto;
+  min-width: 300px;
   max-width: 1000px;
   margin-top: 20px;
   border-collapse: collapse;

@@ -7,6 +7,30 @@ import GradeDetailsPopup from "./GradeDetailsPopup"; // Import the new popup com
 import AddGradePopup from "./AddGradePopup"; // Import the AddGradePopup component
 import { AuthContext } from "../../contexts/AuthContext";
 
+const getGradeColor = (grade) => {
+  const gradeValue = parseInt(grade, 10);
+  if (isNaN(gradeValue)) {
+    return "gray";
+  }
+
+  switch (gradeValue) {
+    case 1:
+      return "#008080"; // Teal/Ciemny turkusowy
+    case 2:
+      return "#4682B4"; // Steel Blue/Stalowy niebieski
+    case 3:
+      return "#66CDAA"; // Medium Aquamarine/Średni akwamarynowy
+    case 4:
+      return "#3CB371"; // Medium Sea Green/Średni morski zielony
+    case 5:
+      return "#FFD700"; // Gold/Złoty
+    case 6:
+      return "#FF8C00"; // Dark Orange/Ciemny pomarańczowy
+    default:
+      return "lightgray";
+  }
+};
+
 const StudentGrade = () => {
   const { studentId } = useParams();
   const { user } = useContext(AuthContext);
@@ -239,7 +263,10 @@ const GradesDisplay = ({ grades, subjectId, refreshGradesList }) => {
               className="grade-item"
               key={grade.id}
               onClick={() => handleGradeClick(grade.id)}
-              style={{ cursor: "pointer" }} // Make it visually clickable
+              style={{
+                cursor: "pointer",
+                backgroundColor: getGradeColor(grade.grade),
+              }} // Make it visually clickable
             >
               {grade.grade}
             </li>
