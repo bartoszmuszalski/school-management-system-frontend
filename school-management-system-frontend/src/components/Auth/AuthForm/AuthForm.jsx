@@ -60,7 +60,7 @@ function AuthForm({
         }
       }
     } catch (error) {
-      setMessage(`Error: ${error.message}`);
+      setMessage(`${error.message}`);
       console.error("handleSubmit: Error:", error);
     }
   };
@@ -92,7 +92,7 @@ function AuthForm({
         ); // Dodatkowe zabezpieczenie
       }
     } catch (error) {
-      setVerificationStatus(`Error: ${error.message}`);
+      setVerificationStatus(`${error.message}`);
       console.error("handleResendToken: Error:", error);
     }
   };
@@ -192,7 +192,7 @@ function AuthForm({
         ); // Poprawiona obsługa błędów
       }
     } catch (error) {
-      setVerificationStatus(`Error: ${error.message}`);
+      setVerificationStatus(`${error.message}`);
       console.error("handleVerifyToken: Error:", error);
     }
   };

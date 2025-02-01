@@ -226,7 +226,7 @@ const DisplayUsers = () => {
 
   const handleGoToGrades = () => {
     if (selectedUserDetails) {
-      navigate(`/student/${selectedUserDetails.id}/grades`);
+      navigate(`/student/${selectedUserDetails.studentId}/grades`);
     }
     closeDetailsPopup();
   };
@@ -247,11 +247,7 @@ const DisplayUsers = () => {
   }
 
   if (error) {
-    return (
-      <p className="error">
-        Error: You are not authorized to access this page.
-      </p>
-    );
+    return <p className="error">You are not authorized to access this page.</p>;
   }
 
   // Conditional rendering based on user role
@@ -457,6 +453,21 @@ const DisplayUsers = () => {
             >
               Close
             </button>
+            {selectedUserDetails.role === "ROLE_STUDENT" && (
+              <button
+                className="DeactivateButton"
+                onClick={() => handleGoToGrades()}
+                style={{
+                  width: "auto",
+                  fontSize: "18px",
+                  height: "47px",
+                  backgroundColor: "lightblue",
+                  marginTop: "10px",
+                }}
+              >
+                Display student grade
+              </button>
+            )}
           </div>
         </div>
       )}

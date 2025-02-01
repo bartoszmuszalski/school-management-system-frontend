@@ -562,7 +562,7 @@ function Subjects() {
   }
 
   if (error) {
-    return <p className="error">Error: {error}</p>;
+    return <p className="error">{error}</p>;
   }
 
   return (
@@ -625,9 +625,54 @@ function Subjects() {
                   {isAdmin ? (
                     <span
                       style={{
-                        cursor: "pointer",
-                        color: "blue",
-                        textDecoration: "underline",
+                        // textDecoration:
+                        //   subject.classRooms &&
+                        //   subject.classRooms.length > 0 &&
+                        //   subject.classRooms.filter(
+                        //     (classroom) => classroom && classroom.name
+                        //   ).length > 0
+                        //     ? "underline"
+                        //     : "none",
+                        color:
+                          subject.classRooms &&
+                          subject.classRooms.length > 0 &&
+                          subject.classRooms.filter(
+                            (classroom) => classroom && classroom.name
+                          ).length > 0
+                            ? "white"
+                            : "inherit",
+                        cursor:
+                          subject.classRooms &&
+                          subject.classRooms.length > 0 &&
+                          subject.classRooms.filter(
+                            (classroom) => classroom && classroom.name
+                          ).length > 0
+                            ? "pointer"
+                            : "default",
+                        backgroundColor:
+                          subject.classRooms &&
+                          subject.classRooms.length > 0 &&
+                          subject.classRooms.filter(
+                            (classroom) => classroom && classroom.name
+                          ).length > 0
+                            ? "rgb(0, 128, 128)"
+                            : "inherit",
+                        borderRadius:
+                          subject.classRooms &&
+                          subject.classRooms.length > 0 &&
+                          subject.classRooms.filter(
+                            (classroom) => classroom && classroom.name
+                          ).length > 0
+                            ? "10px"
+                            : "inherit",
+                        padding:
+                          subject.classRooms &&
+                          subject.classRooms.length > 0 &&
+                          subject.classRooms.filter(
+                            (classroom) => classroom && classroom.name
+                          ).length > 0
+                            ? "0.5rem"
+                            : "inherit",
                       }}
                       onClick={() => {
                         setSelectedSubject(subject);
@@ -639,11 +684,17 @@ function Subjects() {
                             const validClassrooms = subject.classRooms.filter(
                               (classroom) => classroom && classroom.name
                             );
-                            return validClassrooms.length > 0
-                              ? validClassrooms
-                                  .map((classroom) => classroom.name)
-                                  .join(", ")
-                              : "N/A";
+                            return validClassrooms.length > 0 ? (
+                              validClassrooms
+                                .map((classroom) => classroom.name)
+                                .join(", ")
+                            ) : (
+                              <>
+                                <span style={{ textDecoration: "none" }}>
+                                  x
+                                </span>
+                              </>
+                            );
                           })()
                         : "N/A"}
                     </span>

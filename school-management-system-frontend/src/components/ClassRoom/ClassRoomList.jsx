@@ -153,7 +153,7 @@ function ClassRoomList() {
   };
 
   if (loading) return <p className="loading">Loading students...</p>;
-  if (error) return <p className="error">Error: {error}</p>;
+  if (error) return <p className="error">{error}</p>;
 
   return (
     <div className="container">
@@ -172,93 +172,81 @@ function ClassRoomList() {
             </tr>
           </thead>
           <tbody>
-            {students.map((student) => (
-              <tr key={student.studentId}>
-                <td>{student.fullName}</td>
-                <td>
-                  {student.subjects && student.subjects.length > 0 ? (
-                    <ul className="subject-list-inline">
-                      {student.subjects.map((subject) => (
-                        <li
-                          key={subject.subjectId}
-                          style={
-                            subject.subjectName.toLowerCase() === "jeden"
-                              ? { color: "#800080" }
-                              : {}
-                          }
-                        >
-                          {subject.subjectName}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="no-data-message">No subjects assigned</div>
-                  )}
-                </td>
-                <td>
-                  {student.subjects && student.subjects.length > 0 ? (
-                    student.subjects.map((subject) => (
-                      <div key={subject.subjectId} className="subject-grades">
-                        <div className="grades-list">
-                          {subject.grades && subject.grades.length > 0 ? (
-                            subject.grades.map((grade) => (
-                              <span
-                                key={grade.id}
-                                className="grade-item"
-                                onClick={() => handleOpenGradeDetails(grade)}
-                                style={{
-                                  backgroundColor: getGradeColor(grade.grade),
-                                }}
-                              >
-                                {grade.grade}
-                              </span>
-                            ))
-                          ) : (
-                            <div className="no-data-message">No grades</div>
-                          )}
-                        </div>
-                      </div>
+            {students.map((student) => {
+              const subjectCount = student.subjects.length || 1; // Ilość przedmiotów ucznia
+
+              return (
+                <React.Fragment key={student.studentId}>
+                  {student.subjects.length > 0 ? (
+                    student.subjects.map((subject, index) => (
+                      <tr key={`${student.studentId}-${subject.subjectId}`}>
+                        {/* Pierwsza kolumna "Student" - rowspan tylko dla pierwszego przedmiotu */}
+                        {index === 0 && (
+                          <td
+                            rowSpan={subjectCount}
+                            style={{ verticalAlign: "middle" }}
+                          >
+                            {student.fullName}
+                          </td>
+                        )}
+                        {/* Kolumna "Subjects" */}
+                        <td>{subject.subjectName}</td>
+                        {/* Kolumna "Grades" */}
+                        <td>
+                          <div className="grades-list">
+                            {subject.grades && subject.grades.length > 0 ? (
+                              subject.grades.map((grade) => (
+                                <span
+                                  key={grade.id}
+                                  className="grade-item"
+                                  onClick={() => handleOpenGradeDetails(grade)}
+                                  style={{
+                                    backgroundColor: getGradeColor(grade.grade),
+                                  }}
+                                >
+                                  {grade.grade}
+                                </span>
+                              ))
+                            ) : (
+                              <div className="no-data-message">No grades</div>
+                            )}
+                          </div>
+                        </td>
+                        {/* Kolumna "Average" */}
+                        <td>{subject.average?.toFixed(2) || "N/A"}</td>
+                        {/* Kolumna "Actions" - przycisk tylko dla danego przedmiotu */}
+                        {isTeacher && (
+                          <td>
+                            <button
+                              className="VerifyButton"
+                              onClick={() =>
+                                handleOpenAddGrade(
+                                  student.studentId,
+                                  subject.subjectId
+                                )
+                              }
+                            >
+                              Add Grade
+                            </button>
+                          </td>
+                        )}
+                      </tr>
                     ))
                   ) : (
-                    <div className="no-data-message"></div> // Empty div if no subjects to align with subject columns
+                    <tr key={student.studentId}>
+                      {/* Gdy uczeń nie ma przedmiotów */}
+                      <td rowSpan={1}>{student.fullName}</td>
+                      <td
+                        colSpan={isTeacher ? 4 : 3}
+                        className="no-data-message"
+                      >
+                        No subjects assigned
+                      </td>
+                    </tr>
                   )}
-                </td>
-                <td>
-                  {student.subjects && student.subjects.length > 0 ? (
-                    student.subjects.map((subject) => (
-                      <div key={subject.subjectId} className="subject-average">
-                        {subject.average?.toFixed(2) || "N/A"}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="no-data-message"></div> // Empty div if no subjects to align with subject columns
-                  )}
-                </td>
-                {isTeacher && (
-                  <td>
-                    {student.subjects && student.subjects.length > 0 ? (
-                      student.subjects.map((subject) => (
-                        <button
-                          key={subject.subjectId}
-                          className="VerifyButton"
-                          style={{ display: "flex", marginBottom: "10px" }}
-                          onClick={() =>
-                            handleOpenAddGrade(
-                              student.studentId,
-                              subject.subjectId
-                            )
-                          }
-                        >
-                          Add Grade
-                        </button>
-                      ))
-                    ) : (
-                      <div></div> // Empty div if no subjects to align with subject columns
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       )}

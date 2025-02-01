@@ -57,6 +57,7 @@
   margin-top: 10px;
   width: 50%;
   margin: 0 auto;
+  margin-top: 1rem;
 }
 
 .create-classroom-button:hover {
@@ -109,7 +110,7 @@
 .form-group input,
 .form-group textarea,
 .form-group select {
-  width: calc(100% - 20px);
+  /* width: calc(100% - 20px); */
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -443,6 +444,7 @@ h3 {
 }
 
 .subject-list-inline li {
+  background-color: #007bff;
   margin-bottom: 10px;
   border-radius: 10px;
 }

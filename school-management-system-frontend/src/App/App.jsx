@@ -26,6 +26,7 @@ import { NotificationProvider } from "../contexts/NotificationContext"; // Impor
 import { useNotification } from "../contexts/NotificationContext";
 import styled from "styled-components";
 import ClassRoomList from "../components/ClassRoom/ClassRoomList";
+import AnnouncementsList from "../components/Announcement/AnnouncementsList";
 
 function App() {
   return (
@@ -156,6 +157,13 @@ const AppContent = () => {
             <ProtectedRoute>
               <UserProfile />
             </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/announcements"
+          element={
+            isAdmin ? <AnnouncementsList /> : <Navigate to="/dashboard" />
           }
         />
       </Routes>

@@ -44,7 +44,7 @@ function VerificationModal({ email, onClose, onVerified }) {
         }
       }
     } catch (error) {
-      setApiError(`Error: ${error.message}`);
+      setApiError(`${error.message}`);
     }
   };
 

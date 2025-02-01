@@ -137,13 +137,15 @@ function ClassRoom() {
             return;
           }
           data = await response.json();
+          console.log(data);
           // Check if data is an array or an object with a data property
           if (Array.isArray(data)) {
             setClassRooms(data); // If it's an array, use it directly
             setTotalPages(1); // Set to 1 since there's no pagination for teacher
           } else if (data && Array.isArray(data.data)) {
-            setClassRooms(data.data); // If data.data is an array
+            setClassRooms(data); // If data.data is an array
             setTotalPages(1);
+            console.log("XD");
           } else {
             setClassRooms([]); // Set to empty array if no data
             setTotalPages(1);
@@ -725,7 +727,7 @@ function ClassRoom() {
   }
 
   if (error) {
-    return <p className="error">Error: {error}</p>;
+    return <p className="error">{error}</p>;
   }
 
   return (
@@ -749,7 +751,14 @@ function ClassRoom() {
           ) : (
             classRooms.map((classRoom) => (
               <tr key={classRoom.id}>
-                <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
+                {isTeacher && (
+                  <td style={{ fontWeight: "bold" }}>
+                    {classRoom.classRoomName}
+                  </td>
+                )}
+                {isAdmin && (
+                  <td style={{ fontWeight: "bold" }}>{classRoom.name}</td>
+                )}
                 {isAdmin && <td>{classRoom.createdAt}</td>}
                 {isAdmin && (
                   <td>{classRoom.updatedAt ? classRoom.updatedAt : "-"}</td>
@@ -778,7 +787,9 @@ function ClassRoom() {
                     <button
                       className="AddButton"
                       onClick={() => {
-                        navigate(`/classroom/${classRoom.id}/students`);
+                        navigate(
+                          `/classroom/${classRoom.classRoomId}/students`
+                        );
                       }}
                       style={{ marginLeft: "10px" }}
                     >

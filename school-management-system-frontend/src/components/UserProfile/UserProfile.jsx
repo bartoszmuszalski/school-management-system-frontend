@@ -69,7 +69,7 @@ const UserProfile = () => {
         });
 
         if (!response.ok) {
-          const message = `Error: ${response.status}`;
+          const message = `${response.status}`;
           throw new Error(message);
         }
 
