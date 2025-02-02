@@ -13,6 +13,9 @@ const Announcement = () => {
   const [announcementId, setAnnouncementId] = useState(null);
   const [announcementTitle, setAnnouncementTitle] = useState("");
   const [announcementMessage, setAnnouncementMessage] = useState("");
+  //State for message
+  const [expandedMessage, setExpandedMessage] = useState(null);
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
 
   useEffect(() => {
     fetch(`${apiConfig.apiUrl}/api/v1/announcements`)
@@ -48,7 +51,30 @@ const Announcement = () => {
             announcements.map((announcement) => (
               <tr key={announcement.id}>
                 <td>{announcement.title}</td>
-                <td>{announcement.message}</td>
+                <td>
+                  {announcement.message && announcement.message.length > 30 ? (
+                    <>
+                      {announcement.message.substring(0, 30)}...
+                      <span
+                        style={{
+                          color: "blue",
+                          cursor: "pointer",
+                          marginLeft: "5px",
+                          textDecoration: "underline",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedMessage(announcement.message);
+                          setIsMessageModalOpen(true);
+                        }}
+                      >
+                        [expand]
+                      </span>
+                    </>
+                  ) : (
+                    announcement.message
+                  )}
+                </td>
                 <td>{announcement.createdAt}</td>
                 <td>{announcement.updatedAt ?? "--"}</td>
                 <td>
@@ -185,6 +211,47 @@ const Announcement = () => {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {isMessageModalOpen && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1003,
+          }}
+        >
+          <div
+            className="modal-content1"
+            style={{
+              backgroundColor: "white",
+              padding: "30px",
+              borderRadius: "8px",
+              maxWidth: "80%",
+              maxHeight: "80%",
+              overflow: "auto",
+            }}
+          >
+            <h3>Message:</h3>
+            <p style={{ whiteSpace: "pre-line" }}>{expandedMessage}</p>
+            <button
+              class="DeactivateButton"
+              onClick={() => setIsMessageModalOpen(false)}
+              style={{ margin: "0px auto" }}
+
+              // style={{ backgroundColor: "#dc3545", width: "40px" }}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

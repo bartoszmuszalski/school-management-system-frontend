@@ -16,6 +16,7 @@
   min-width: 800px;
   margin-top: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Roboto Slab", serif;
 }
 
 .grades-table th,
@@ -25,6 +26,8 @@
   border-bottom: 1px solid #ddd;
   white-space: nowrap;
   vertical-align: middle;
+  /* align-items: center; */
+  /* justify-content: center; */
 }
 
 .grades-table thead {
@@ -44,7 +47,7 @@
   display: flex;
   color: white;
   vertical-align: middle;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 /* .grades-table li {

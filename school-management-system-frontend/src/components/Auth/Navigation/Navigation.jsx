@@ -139,7 +139,18 @@ function Navigation({ onLogout }) {
             {user?.roles?.includes("ROLE_STUDENT") && (
               <>
                 <Link
-                  to="/subjects"
+                  to="/my_grades"
+                  className="sidebar-link-img"
+                  data-tooltip="My grades"
+                >
+                  <img
+                    src={grades}
+                    alt="User classroom"
+                    className="register-icon"
+                  />
+                </Link>
+                <Link
+                  to="/my_subjects"
                   className="sidebar-link-img"
                   data-tooltip="Subjects"
                 >
@@ -150,26 +161,22 @@ function Navigation({ onLogout }) {
                   />
                 </Link>
                 <Link
-                  to="/classroom"
+                  style={{ marginTop: "840px", marginLeft: "10px" }}
+                  to="/profile"
                   className="sidebar-link-img"
-                  data-tooltip="Classrooms"
+                  data-tooltip="Profile settings"
                 >
-                  <img
-                    src={classroom_pic}
-                    alt="User classroom"
+                  <svg
                     className="register-icon"
-                  />
-                </Link>
-                <Link
-                  to="/classroom"
-                  className="sidebar-link-img"
-                  data-tooltip="My grades"
-                >
-                  <img
-                    src={grades}
-                    alt="User classroom"
-                    className="register-icon"
-                  />
+                    xmlns="http://www.w3.org/2000/svg"
+                    id="Layer_1"
+                    data-name="Layer 1"
+                    viewBox="0 0 24 24"
+                    width="512"
+                    height="512"
+                  >
+                    <path d="M9,12c3.309,0,6-2.691,6-6S12.309,0,9,0,3,2.691,3,6s2.691,6,6,6Zm0-10c2.206,0,4,1.794,4,4s-1.794,4-4,4-4-1.794-4-4,1.794-4,4-4Zm14.122,9.879c-1.134-1.134-3.11-1.134-4.243,0l-7.879,7.878v4.243h4.243l7.878-7.878c.567-.567,.879-1.32,.879-2.122s-.312-1.555-.878-2.121Zm-1.415,2.828l-7.292,7.293h-1.415v-1.415l7.293-7.292c.377-.378,1.036-.378,1.414,0,.189,.188,.293,.439,.293,.707s-.104,.518-.293,.707Zm-9.778,1.293H5c-1.654,0-3,1.346-3,3v5H0v-5c0-2.757,2.243-5,5-5H13c.289,0,.568,.038,.844,.085l-1.915,1.915Z" />
+                  </svg>
                 </Link>
                 <button
                   onClick={onLogout}
@@ -209,6 +216,24 @@ function Navigation({ onLogout }) {
                     alt="User classroom"
                     className="register-icon"
                   />
+                </Link>
+                <Link
+                  style={{ marginTop: "840px", marginLeft: "10px" }}
+                  to="/profile"
+                  className="sidebar-link-img"
+                  data-tooltip="Profile settings"
+                >
+                  <svg
+                    className="register-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    id="Layer_1"
+                    data-name="Layer 1"
+                    viewBox="0 0 24 24"
+                    width="512"
+                    height="512"
+                  >
+                    <path d="M9,12c3.309,0,6-2.691,6-6S12.309,0,9,0,3,2.691,3,6s2.691,6,6,6Zm0-10c2.206,0,4,1.794,4,4s-1.794,4-4,4-4-1.794-4-4,1.794-4,4-4Zm14.122,9.879c-1.134-1.134-3.11-1.134-4.243,0l-7.879,7.878v4.243h4.243l7.878-7.878c.567-.567,.879-1.32,.879-2.122s-.312-1.555-.878-2.121Zm-1.415,2.828l-7.292,7.293h-1.415v-1.415l7.293-7.292c.377-.378,1.036-.378,1.414,0,.189,.188,.293,.439,.293,.707s-.104,.518-.293,.707Zm-9.778,1.293H5c-1.654,0-3,1.346-3,3v5H0v-5c0-2.757,2.243-5,5-5H13c.289,0,.568,.038,.844,.085l-1.915,1.915Z" />
+                  </svg>
                 </Link>
                 <button
                   onClick={onLogout}
@@ -281,7 +306,24 @@ function Navigation({ onLogout }) {
                     <path d="M12 8h0l4.524 -3.77a.9 .9 0 0 1 1.476 .692v12.156a.9 .9 0 0 1 -1.476 .692l-4.524 -3.77h-8a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h8" />
                   </svg>
                 </Link>
-
+                <Link
+                  style={{ marginTop: "840px", marginLeft: "10px" }}
+                  to="/profile"
+                  className="sidebar-link-img"
+                  data-tooltip="Profile settings"
+                >
+                  <svg
+                    className="register-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    id="Layer_1"
+                    data-name="Layer 1"
+                    viewBox="0 0 24 24"
+                    width="512"
+                    height="512"
+                  >
+                    <path d="M9,12c3.309,0,6-2.691,6-6S12.309,0,9,0,3,2.691,3,6s2.691,6,6,6Zm0-10c2.206,0,4,1.794,4,4s-1.794,4-4,4-4-1.794-4-4,1.794-4,4-4Zm14.122,9.879c-1.134-1.134-3.11-1.134-4.243,0l-7.879,7.878v4.243h4.243l7.878-7.878c.567-.567,.879-1.32,.879-2.122s-.312-1.555-.878-2.121Zm-1.415,2.828l-7.292,7.293h-1.415v-1.415l7.293-7.292c.377-.378,1.036-.378,1.414,0,.189,.188,.293,.439,.293,.707s-.104,.518-.293,.707Zm-9.778,1.293H5c-1.654,0-3,1.346-3,3v5H0v-5c0-2.757,2.243-5,5-5H13c.289,0,.568,.038,.844,.085l-1.915,1.915Z" />
+                  </svg>
+                </Link>
                 <button
                   onClick={onLogout}
                   className="sidebar-link-img"

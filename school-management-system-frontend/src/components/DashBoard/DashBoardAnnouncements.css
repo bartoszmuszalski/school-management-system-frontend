@@ -1,0 +1,73 @@
+.announcement-container {
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  display: flex;
+  flex-direction: column; /* Elementy układają się jeden pod drugim */
+  gap: 40px; /* Odstęp między kartami */
+}
+
+.announcement-item {
+  display: flex;
+  flex-direction: row; /* Układ poziomy: obraz z lewej, tekst z prawej */
+  background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 10px;
+  overflow: hidden; /* Zapobieganie wychodzeniu zawartości poza kartę */
+  padding: 20px;
+  align-items: center; /* Wyśrodkowanie obrazu i tekstu w pionie */
+}
+
+.announcement-image {
+  flex: 0 0 150px; /* Stała szerokość dla obrazu */
+  margin-right: 20px; /* Odstęp między obrazem a tekstem */
+}
+
+.announcement-image img {
+  width: 100%; /* Obraz wypełnia miejsce na obraz */
+  border-radius: 8px;
+}
+
+.announcement-text {
+  flex: 1; /* Tekst zajmuje pozostałą szerokość */
+  display: flex;
+  flex-direction: column;
+}
+
+.announcement-title {
+  font-family: "Roboto Slab", serif;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.announcement-message {
+  font-family: "Roboto Slab", serif;
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5; /* Lepsza czytelność tekstu */
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.8rem; /* Larger heading */
+  font-weight: 700;
+  color: #333;
+  border-bottom: 2px solid #eee; /* Separator line below the heading */
+  padding-bottom: 10px;
+  text-align: center;
+  font-family: "Roboto Slab", serif;
+}
+
+.DeactivateButton {
+  background-color: #dc3545;
+  color: white;
+  font-family: "Roboto Slab", serif;
+}
+
+p {
+  font-family: "Roboto Slab", serif;
+}

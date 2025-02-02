@@ -4,6 +4,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext"; // Importuj kontekst powiadomień
 import styled from "styled-components";
 import apiConfig from "../../config";
+import DashBoardAnnouncements from "./DashBoardAnnouncements";
 
 const getUserName = () => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -36,6 +37,9 @@ const DashBoard = () => {
           <p>{notification}</p>
         </SuccessNotification>
       )}
+      <div>
+        <DashBoardAnnouncements></DashBoardAnnouncements>
+      </div>
     </>
   );
 };
