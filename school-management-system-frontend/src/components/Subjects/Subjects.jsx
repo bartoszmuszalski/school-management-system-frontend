@@ -20,7 +20,7 @@ function Subjects() {
   const [editSubjectId, setEditSubjectId] = useState(null);
   const [editSubjectName, setEditSubjectName] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [editTeacherId, setEditTeacherId] = useState(""); // For selected teacher in edit
+  const [editTeacherId, setEditTeacherId] = useState(null); // For selected teacher in edit
   const [editTeacherName, setEditTeacherName] = useState(""); // For displaying selected teacher name
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState(null);
@@ -109,7 +109,7 @@ function Subjects() {
       } else if (isTeacher) {
         url = `${apiConfig.apiUrl}/api/v1/teacher/my_subjects`;
       }
-      console.log(url);
+      // console.log(url);
 
       const response = await fetch(url, {
         headers: {
@@ -207,7 +207,13 @@ function Subjects() {
     setEditSubjectId(id);
     setEditSubjectName(currentName);
     setEditDescription(currentDescription);
-    setEditTeacherId(currentTeacher?.teacherId || ""); // Set current teacher id or empty if no teacher
+    // console.log("handleEditSubject - currentTeacher:", currentTeacher); // ADD LOG HERE
+    // console.log(
+    //   "handleEditSubject - currentTeacher?.teacherId:",
+    //   currentTeacher?.teacherId
+    // ); // ADD LOG HERE
+    // console.log("XD", currentTeacher.id);
+    setEditTeacherId(currentTeacher.id || null);
     setEditTeacherName(
       currentTeacher
         ? `${currentTeacher.firstName} ${currentTeacher.lastName}`
@@ -219,9 +225,12 @@ function Subjects() {
         : ""
     );
 
+    // console.log(
+    //   "handleEditSubject - Setting editTeacherId:",
+    //   currentTeacher?.teacherId || null
+    // ); // LOG HERE
     setIsEditPopupOpen(true);
     setEditError(null);
-    // await fetchTeachers(); // Fetch teachers when edit popup is opened
   };
 
   const closeEditPopup = () => {
@@ -229,71 +238,79 @@ function Subjects() {
     setEditSubjectId(null);
     setEditSubjectName("");
     setEditDescription("");
-    setEditTeacherId("");
+    setEditTeacherId(null);
+    setEditTeacherName("");
+    setSearchPhrase("");
     setEditError(null);
-    setTeachers([]); // Clear teachers on popup close
+    setTeachers([]);
+    // console.log("closeEditPopup - Resetting editTeacherId to null"); // LOG HERE
   };
 
-  // const handleEditSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setEditLoading(true);
-  //   setEditError(null);
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+    setEditError(null);
 
-  //   try {
-  //     const token = localStorage.getItem("authToken");
-  //     if (!token) {
-  //       setEditError("Authentication token not found.");
-  //       setEditLoading(false);
-  //       return;
-  //     }
+    // console.log("editTeacherId przed wysłaniem:", editTeacherId); // DODAJ TEN LOG
+    // console.log(
+    //   "handleEditSubmit - editTeacherId before fetch:",
+    //   editTeacherId
+    // ); // LOG HERE - ALREADY ADDED BEFORE
 
-  //     const response = await fetch(
-  //       `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
-  //       {
-  //         method: "PATCH",
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           teacherId: editTeacherId || null, // Send null if no teacher selected
-  //           name: editSubjectName,
-  //           description: editDescription,
-  //         }),
-  //       }
-  //     );
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setEditError("Authentication token not found.");
+        setEditLoading(false);
+        return;
+      }
 
-  //     if (response.status === 204) {
-  //       setSubjects((prevSubjects) =>
-  //         prevSubjects.map((subject) =>
-  //           subject.id === editSubjectId
-  //             ? {
-  //                 ...subject,
-  //                 teacher:
-  //                   teachers.find(
-  //                     (teacher) => teacher.teacherId === editTeacherId
-  //                   ) || null, // Update teacher object
-  //                 name: editSubjectName,
-  //                 description: editDescription,
-  //               }
-  //             : subject
-  //         )
-  //       );
-  //       setSuccessMessage("Subject updated successfully.");
-  //       setShowSuccess(true);
-  //       setTimeout(() => setShowSuccess(false), 3000);
-  //       closeEditPopup();
-  //       fetchSubjects(); // Refetch to update teacher name immediately
-  //     } else {
-  //       const errorData = await response.json();
-  //       setEditError(errorData.message || "Failed to update subject.");
-  //     }
-  //   } catch (err) {
-  //     setEditError("An error occurred while updating.");
-  //   } finally {
-  //     setEditLoading(false);
-  //   }
-  // };
+      // Prepare request body
+      const requestBody = {
+        name: editSubjectName,
+        description: editDescription,
+      };
+
+      if (editTeacherId !== null) {
+        requestBody.teacherId = editTeacherId;
+      } else {
+        requestBody.teacherId = null;
+      }
+      // console.log(requestBody);
+      // console.log("Request Body for Edit:", requestBody);
+      // console.log(
+      //   "handleEditSubmit - Request Body teacherId:",
+      //   requestBody.teacherId
+      // ); // LOG HERE
+
+      const response = await fetch(
+        `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (response.ok) {
+        setIsEditPopupOpen(false);
+        setSuccessMessage("Subject updated successfully.");
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+        fetchSubjects();
+      } else {
+        const errorData = await response.json();
+        setEditError(errorData.message || "Failed to update subject.");
+      }
+    } catch (err) {
+      setEditError("An error occurred while updating.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   // Handlers for Delete Functionality
   const handleDeleteSubject = (id, name) => {
@@ -340,6 +357,7 @@ function Subjects() {
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
         closeDeletePopup();
+        window.location.reload();
       } else {
         const errorData = await response.json();
         setDeleteError(errorData.message || "Failed to delete subject.");
@@ -577,7 +595,7 @@ function Subjects() {
             {isAdmin && <th>Teacher</th>}
 
             <th>Class</th>
-            <th>Actions</th>
+            {isAdmin && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -588,7 +606,9 @@ function Subjects() {
           ) : (
             subjects.map((subject) => (
               <tr key={subject.id}>
-                <td style={{ fontWeight: "bold" }}>{subject.name}</td>
+                <td>
+                  <p style={{ fontWeight: "bold" }}>{subject.name}</p>
+                </td>
                 <td>
                   {subject.description && subject.description.length > 30 ? (
                     <>
@@ -691,12 +711,12 @@ function Subjects() {
                             ) : (
                               <>
                                 <span style={{ textDecoration: "none" }}>
-                                  x
+                                  --
                                 </span>
                               </>
                             );
                           })()
-                        : "N/A"}
+                        : "--"}
                     </span>
                   ) : (
                     <div
@@ -727,53 +747,56 @@ function Subjects() {
                             </span>
                           ))
                       ) : (
-                        <span>N/A</span>
+                        <span>--</span>
                       )}
                     </div>
                   )}
                 </td>
                 <td>
-                  <button
-                    className="VerifyButton"
-                    onClick={() =>
-                      handleEditSubject(
-                        subject.id,
-                        subject.name,
-                        subject.description,
-                        subject.teacher // Pass current teacher data
-                      )
-                    }
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    className="DeactivateButton"
-                    onClick={() =>
-                      handleDeleteSubject(subject.id, subject.name)
-                    }
-                  >
-                    Delete
-                  </button>
+                  {isAdmin && (
+                    <button
+                      className="VerifyButton"
+                      onClick={() =>
+                        handleEditSubject(
+                          subject.id,
+                          subject.name,
+                          subject.description,
+                          subject.teacher // Pass current teacher data
+                        )
+                      }
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {isAdmin && (
+                    <button
+                      className="DeactivateButton"
+                      onClick={() =>
+                        handleDeleteSubject(subject.id, subject.name)
+                      }
+                    >
+                      Delete
+                    </button>
+                  )}
                 </td>
               </tr>
             ))
           )}
-          {isAdmin && (
-            <tr>
-              <td colSpan="4">
-                <button
-                  className="create-classroom-button"
-                  onClick={handleCreateSubject}
-                  style={{ width: "131% ", backgroundColor: "#4f46e5" }}
-                >
-                  Create a subject
-                </button>
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
+      {isAdmin && (
+        <tr>
+          <td colSpan="5">
+            <button
+              className="create-classroom-button"
+              onClick={handleCreateSubject}
+              style={{ width: "auto" }}
+            >
+              Create a subject
+            </button>
+          </td>
+        </tr>
+      )}
       {/* Pagination Controls */}
       {/* <div className="pagination">
         <button onClick={prevPage} disabled={currentPage === 1}>
@@ -801,49 +824,7 @@ function Subjects() {
           <div className="edit-popup">
             <h3>Edit subject</h3>
             <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                setEditLoading(true);
-                setEditError(null);
-                try {
-                  const token = localStorage.getItem("authToken");
-                  if (!token) {
-                    setEditError("Authentication token not found.");
-                    return;
-                  }
-                  const response = await fetch(
-                    `${apiConfig.apiUrl}/api/v1/subject/${editSubjectId}/edit`,
-                    {
-                      method: "PATCH",
-                      headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        name: editSubjectName,
-                        description: editDescription,
-                        teacherId: editTeacherId,
-                      }),
-                    }
-                  );
-                  if (response.ok) {
-                    setIsEditPopupOpen(false);
-                    setSuccessMessage("Subject updated successfully.");
-                    setShowSuccess(true);
-                    setTimeout(() => setShowSuccess(false), 3000);
-                    fetchSubjects();
-                  } else {
-                    const errorData = await response.json();
-                    setEditError(
-                      errorData.message || "Failed to update subject."
-                    );
-                  }
-                } catch (err) {
-                  setEditError("An error occurred while updating.");
-                } finally {
-                  setEditLoading(false);
-                }
-              }}
+              onSubmit={handleEditSubmit} // Use the handler directly
             >
               <div className="form-group">
                 <label htmlFor="editSubjectName">Subject name:</label>
@@ -866,7 +847,7 @@ function Subjects() {
               <div className="form-group">
                 <label htmlFor="editTeacher">Teacher:</label>
                 <TeacherSearchInput
-                  // value={editTeacherId}
+                  teacherName={editTeacherName}
                   editTeacherId={editTeacherId}
                   setEditTeacherId={setEditTeacherId}
                   setEditTeacherName={setEditTeacherName} // ADD THIS LINE: Pass setEditTeacherName as a prop
@@ -889,7 +870,7 @@ function Subjects() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsEditPopupOpen(false)}
+                  onClick={closeEditPopup}
                   disabled={editLoading}
                   style={{ fontSize: "1rem", fontWeight: "600" }}
                 >
@@ -929,7 +910,6 @@ function Subjects() {
                 disabled={deleteLoading}
                 style={{
                   marginLeft: "10px",
-                  backgroundColor: "rgb(220, 53, 69)",
                 }}
               >
                 Cancel
@@ -1170,6 +1150,7 @@ function Subjects() {
                             ),
                           };
                         }
+                        // window.location.reload();
                         return subject;
                       });
                       setSubjects(updatedSubjects);
@@ -1226,17 +1207,23 @@ function Subjects() {
               borderRadius: "8px",
               maxWidth: "80%",
               maxHeight: "80%",
-              overflow: "auto",
             }}
           >
             <h3>Description</h3>
-            <p style={{ whiteSpace: "pre-line" }}>{expandedDescription}</p>
+            <div
+              style={{
+                maxHeight: "20vh", // adjust as needed
+                overflowY: "auto", // allows vertical scrolling
+                whiteSpace: "pre-wrap", // allows text wrapping
+                wordBreak: "break-word", // prevents long words from overflowing
+              }}
+            >
+              {expandedDescription}
+            </div>
             <button
-              class="DeactivateButton"
+              className="DeactivateButton"
               onClick={() => setIsDescriptionModalOpen(false)}
-              style={{ margin: "0px auto" }}
-
-              // style={{ backgroundColor: "#dc3545", width: "40px" }}
+              style={{ margin: "0px auto", marginTop: "20px" }}
             >
               Close
             </button>
@@ -1305,6 +1292,7 @@ function Subjects() {
                                     : [classroom],
                                 };
                               }
+                              // window.location.reload();
                               return subject;
                             });
                             setSubjects(updatedSubjects);

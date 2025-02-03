@@ -15,17 +15,17 @@ const getGradeColor = (grade) => {
 
   switch (gradeValue) {
     case 1:
-      return "#008080"; // Teal/Ciemny turkusowy
+      return "#DC143C"; // Crimson/Karmazynowy
     case 2:
-      return "#4682B4"; // Steel Blue/Stalowy niebieski
+      return "#FF4500"; // OrangeRed/Pomarańczowy z czerwonym
     case 3:
-      return "#66CDAA"; // Medium Aquamarine/Średni akwamarynowy
+      return "#FFA500"; // Orange/Pomarańczowy
     case 4:
-      return "#3CB371"; // Medium Sea Green/Średni morski zielony
+      return "#88b388"; // LightGreen/Jasnozielony
     case 5:
-      return "#FFD700"; // Gold/Złoty
+      return "#008000"; // Green/Zielony
     case 6:
-      return "#FF8C00"; // Dark Orange/Ciemny pomarańczowy
+      return "#FFC700"; // Gold/Złoty
     default:
       return "lightgray";
   }
@@ -190,7 +190,11 @@ function ClassRoomList() {
                           </td>
                         )}
                         {/* Kolumna "Subjects" */}
-                        <td>{subject.subjectName}</td>
+                        <td>
+                          <p style={{ fontWeight: "bold" }}>
+                            {subject.subjectName}
+                          </p>
+                        </td>
                         {/* Kolumna "Grades" */}
                         <td>
                           <div className="grades-list">
@@ -213,7 +217,7 @@ function ClassRoomList() {
                           </div>
                         </td>
                         {/* Kolumna "Average" */}
-                        <td>{subject.average?.toFixed(2) || "N/A"}</td>
+                        <td>{subject.average?.toFixed(2) || "--"}</td>
                         {/* Kolumna "Actions" - przycisk tylko dla danego przedmiotu */}
                         {isTeacher && (
                           <td>
@@ -271,7 +275,7 @@ function ClassRoomList() {
 
       <button
         className="create-classroom-button"
-        onClick={() => navigate("/subjects")}
+        onClick={() => navigate(-1)}
         style={{}}
       >
         Go back
@@ -468,7 +472,7 @@ const GradeDetailsPopup = ({
       }
       setEditMode(false);
     } catch (error) {
-      console.log(error.request.responseText);
+      // console.log(error.request.responseText);
       setUpdateError(error.request.responseText || "Error updating grade.");
     } finally {
       setUpdateLoading(false);
@@ -559,7 +563,7 @@ const GradeDetailsPopup = ({
               <strong>Weight:</strong> {gradeDetails.weight}
             </p>
             <p>
-              <strong>Description:</strong> {gradeDetails.description || "N/A"}
+              <strong>Description:</strong> {gradeDetails.description || "--"}
             </p>
             <p>
               <strong>Created at:</strong> {gradeDetails.createdAt}
@@ -667,6 +671,7 @@ const AddGradePopup = ({ studentId, subjectId, onClose, onGradeAdded }) => {
         <div className="form-group">
           <label>Description:</label>
           <textarea
+            style={{ width: "calc(100%)" }}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />

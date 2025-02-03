@@ -60,7 +60,7 @@ const AddGradePopup = ({ studentId, subjectId, onClose, onGradeAdded }) => {
       <div className="popup add-grade-popup">
         {" "}
         {/* Added add-grade-popup class */}
-        <h2 className="popup-title">Add New Grade</h2>{" "}
+        <h2 className="popup-title">Add new grade</h2>{" "}
         {/* Added popup-title class */}
         {addSuccess && (
           <p className="success-notification">Grade added successfully!</p>

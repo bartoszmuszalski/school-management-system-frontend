@@ -10,21 +10,22 @@ const ProfileContainer = styled.div`
   font-family: "Roboto Slab", serif;
   max-width: 800px;
   margin: 20px auto;
-  padding: 40px;
+  padding: 90px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  // background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  // box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-left: 140px; /* Adjust for the sidebar width */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: 0 auto;
+  padding-bottom: 20px;
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
-  }
+  // &:hover {
+  //   transform: translateY(-5px);
+  //   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  // }
 `;
 
 const ProfileTitle = styled.h2`
@@ -32,22 +33,10 @@ const ProfileTitle = styled.h2`
   text-align: center;
   color: #333;
   margin-bottom: 30px;
-  font-size: 2.5rem;
+  font-size: 25px;
   font-weight: 700;
   letter-spacing: -0.5px;
   position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 4px;
-    background-color: #007bff;
-    border-radius: 2px;
-  }
 `;
 
 const ProfileInfo = styled.p`
@@ -58,12 +47,6 @@ const ProfileInfo = styled.p`
   display: flex;
   align-items: center;
   gap: 10px;
-
-  &::before {
-    content: "•";
-    color: #007bff;
-    font-size: 1.5rem;
-  }
 `;
 
 const LoadingMessage = styled.p`
@@ -92,15 +75,11 @@ const SuccessNotification = styled.div`
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 1000; /* Zmień to na wyższą wartość */
+  z-index: 1100; /* Na przykład 1100, lub jeszcze wyżej jeśli potrzebujesz */
   display: flex;
   align-items: center;
   gap: 10px;
-
-  &::before {
-    content: "✔";
-    font-size: 1.2rem;
-  }
 `;
 
 const ChangeEmailForm = styled.form`
@@ -216,16 +195,6 @@ const ButtonContainer = styled.div`
   margin: 20px;
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-`;
-
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
   const { getAuthToken, logout } = useContext(AuthContext);
@@ -309,8 +278,10 @@ const UserProfile = () => {
       setNewEmail("");
       setShowEmailModal(false);
     } catch (error) {
-      console.error("Error changing email:", error);
-      showNotification(`Error changing email: ${error}`);
+      // console.log("Error changing password:", error);
+      if (error.message === "400") {
+        showNotification("VALIDATION.EMAIL_ALREADY_USED");
+      }
     }
   };
 
@@ -362,8 +333,10 @@ const UserProfile = () => {
       setConfirmNewPassword("");
       setShowPasswordModal(false);
     } catch (error) {
-      console.error("Error changing password:", error);
-      showNotification(`Error changing password: ${error}`);
+      // console.log("Error changing password:", error);
+      if (error.message === "400") {
+        showNotification("VALIDATION.PASSWORDS_DO_NOT_MATCH");
+      }
     }
   };
 
@@ -373,12 +346,17 @@ const UserProfile = () => {
         <ProfileTitle>Your profile information</ProfileTitle>
         {userData ? (
           <>
-            {/* <ProfileInfo>First name: {userData.firstName}</ProfileInfo> */}
             <ProfileInfo>
               Name: {userData.firstName + " " + userData.lastName}
             </ProfileInfo>
             <ProfileInfo>Email: {userData.email}</ProfileInfo>
-            <ProfileInfo>Role: {userData.roles}</ProfileInfo>
+            <ProfileInfo>
+              Role:{" "}
+              {userData.roles && userData.roles[0]
+                ? userData.roles[0].slice(5).charAt(0).toUpperCase() +
+                  userData.roles[0].slice(6).toLowerCase()
+                : "N/A"}
+            </ProfileInfo>
           </>
         ) : (
           <LoadingMessage>Loading data...</LoadingMessage>
@@ -409,9 +387,6 @@ const UserProfile = () => {
             show={showEmailModal}
             onClick={(e) => e.stopPropagation()}
           >
-            <CloseButton onClick={() => setShowEmailModal(false)}>
-              &times;
-            </CloseButton>
             <ChangeEmailForm onSubmit={handleEmailChange}>
               <FormTitle>Change email</FormTitle>
               <FormGroup>
@@ -425,6 +400,14 @@ const UserProfile = () => {
                 />
               </FormGroup>
               <SubmitButton type="submit">Change email</SubmitButton>
+              <button
+                type="button"
+                className="DeactivateButton"
+                onClick={() => setShowEmailModal(false)}
+                style={{ alignSelf: "center", marginTop: "15px" }}
+              >
+                Cancel
+              </button>
             </ChangeEmailForm>
           </ModalContent>
         </ModalOverlay>
@@ -439,9 +422,6 @@ const UserProfile = () => {
             show={showPasswordModal}
             onClick={(e) => e.stopPropagation()}
           >
-            <CloseButton onClick={() => setShowPasswordModal(false)}>
-              &times;
-            </CloseButton>
             <ChangePasswordForm onSubmit={handlePasswordChange}>
               <FormTitle>Change password</FormTitle>
               <FormGroup>
@@ -479,6 +459,14 @@ const UserProfile = () => {
                 />
               </FormGroup>
               <SubmitButton type="submit">Change password</SubmitButton>
+              <button
+                type="button"
+                className="DeactivateButton"
+                onClick={() => setShowPasswordModal(false)}
+                style={{ alignSelf: "center", marginTop: "15px" }}
+              >
+                Cancel
+              </button>
             </ChangePasswordForm>
           </ModalContent>
         </ModalOverlay>

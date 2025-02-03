@@ -30,7 +30,9 @@ const DashBoard = () => {
   return (
     <>
       <div>
-        <div className="hello-user">Hello, {getUserName()}</div>
+        <div style={{ marginLeft: "255px" }} className="hello-user">
+          Hello, {getUserName()}
+        </div>
       </div>
       {notification && (
         <SuccessNotification>

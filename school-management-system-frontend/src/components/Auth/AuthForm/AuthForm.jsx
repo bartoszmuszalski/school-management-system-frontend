@@ -276,7 +276,9 @@ function AuthForm({
                   Resend token
                 </button>
                 {verificationStatus && (
-                  <p className="message">{verificationStatus}</p>
+                  <p className="message" style={{ color: "red" }}>
+                    {verificationStatus}
+                  </p>
                 )}
               </div>
             </div>

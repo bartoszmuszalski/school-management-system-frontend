@@ -7,7 +7,7 @@ const AnnouncementEditSaveButton = ({
   announcementMessage,
 }) => {
   const handleEditSaveButton = async () => {
-    console.log(announcementId, announcementTitle, announcementMessage);
+    // console.log(announcementId, announcementTitle, announcementMessage);
     const token = localStorage.getItem("authToken");
 
     try {

@@ -137,7 +137,7 @@ function ClassRoom() {
             return;
           }
           data = await response.json();
-          console.log(data);
+          // console.log(data);
           // Check if data is an array or an object with a data property
           if (Array.isArray(data)) {
             setClassRooms(data); // If it's an array, use it directly
@@ -145,7 +145,7 @@ function ClassRoom() {
           } else if (data && Array.isArray(data.data)) {
             setClassRooms(data); // If data.data is an array
             setTotalPages(1);
-            console.log("XD");
+            // console.log("XD");
           } else {
             setClassRooms([]); // Set to empty array if no data
             setTotalPages(1);
@@ -601,12 +601,12 @@ function ClassRoom() {
       );
     } finally {
       setDeleteStudentLoading(false);
-      console.log("handleDeleteStudentSubmit finished.");
+      // console.log("handleDeleteStudentSubmit finished.");
     }
   };
 
   const handleGoToGrades = (studentId) => {
-    console.log(studentId);
+    // console.log(studentId);
     if (studentId) {
       navigate(`/student/${studentId}/grades`);
     }
@@ -615,7 +615,6 @@ function ClassRoom() {
 
   // State and Handlers for Details Popup
   const handleDetailsClassRoom = async (id) => {
-    // console.log("handleDetailsClassRoom called for classroom ID:", id);
     setDetailsClassRoom(null);
     setDetailsError(null);
     setIsDetailsPopupOpen(true);
@@ -633,42 +632,20 @@ function ClassRoom() {
         return;
       }
 
-      const classroomResponse = await fetch(
-        `${apiConfig.apiUrl}/api/v1/class_rooms/list?page=1&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      // Use classroom data from the already loaded state instead of re-fetching
+      const classroomDetails = classRooms.find(
+        (classroom) => classroom.id === id
       );
-
-      if (!classroomResponse.ok) {
-        const message = `Failed to fetch classroom list. Status: ${classroomResponse.status}`;
-        setDetailsError(message);
+      if (classroomDetails) {
+        setDetailsClassRoom(classroomDetails);
+      } else {
+        setDetailsError("Classroom details not found.");
         setDetailsLoading(false);
         setStudentListLoading(false);
         return;
       }
 
-      const classroomData = await classroomResponse.json();
-      // console.log(
-      //   "Classrooms fetched for details successfully:",
-      //   classroomData.data
-      // );
-      const classroomDetails = classroomData.data.find(
-        (classroom) => classroom.id === id
-      );
-
-      if (classroomDetails) {
-        // console.log("Classroom details found:", classroomDetails);
-        setDetailsClassRoom(classroomDetails);
-      } else {
-        setDetailsError("Classroom details not found.");
-        setDetailsClassRoom(null);
-        setStudentListLoading(false);
-        return;
-      }
-
+      // Fetch the student list for the selected classroom
       const studentResponse = await fetch(
         `${apiConfig.apiUrl}/api/v1/class_room/${id}/students`,
         {
@@ -687,20 +664,10 @@ function ClassRoom() {
       }
 
       const studentData = await studentResponse.json();
-      // console.log(
-      //   "Student list fetched successfully (with potential duplicates):",
-      //   studentData
-      // );
-
-      // Filtrowanie duplikatów po emailu
       const uniqueStudents = studentData.filter(
         (student, index, self) =>
           index === self.findIndex((t) => t.email === student.email)
       );
-      // console.log(
-      //   "Student list after removing duplicates (by email):",
-      //   uniqueStudents
-      // );
 
       setStudentList(uniqueStudents);
     } catch (err) {
@@ -710,7 +677,6 @@ function ClassRoom() {
     } finally {
       setDetailsLoading(false);
       setStudentListLoading(false);
-      // console.log("Classroom details loading finished.");
     }
   };
 
@@ -800,21 +766,21 @@ function ClassRoom() {
               </tr>
             ))
           )}
-          {isAdmin && (
-            <tr>
-              <td colSpan="4">
-                <button
-                  className="create-classroom-button"
-                  onClick={handleCreateClassRoom}
-                  style={{ width: "90%" }}
-                >
-                  Create a classroom
-                </button>
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
+      {isAdmin && (
+        <tr>
+          <td colSpan="4">
+            <button
+              className="create-classroom-button"
+              onClick={handleCreateClassRoom}
+              style={{ width: "auto" }}
+            >
+              Create a classroom
+            </button>
+          </td>
+        </tr>
+      )}
       {/* Pagination Controls */}
       {isAdmin && (
         <div className="pagination">

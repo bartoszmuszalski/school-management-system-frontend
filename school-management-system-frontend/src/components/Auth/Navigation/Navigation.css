@@ -65,6 +65,22 @@
   position: relative; /* Add this to make the tooltip positioning relative to this element */
 }
 
+.profile-logout-container button {
+  margin-top: auto; /* Sprawia, że Logout jest na samym dole w kontenerze */
+}
+
+.profile-logout-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto; /* Wypycha cały div na dół */
+}
+
+.sidebar-link-img-down {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
 .sidebar-link-img:hover::after {
   content: attr(data-tooltip);
   position: absolute;

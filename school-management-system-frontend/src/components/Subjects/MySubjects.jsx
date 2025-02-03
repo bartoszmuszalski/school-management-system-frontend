@@ -72,7 +72,7 @@ const MySubjects = () => {
             <tbody>
               {subjects.map((subject) => (
                 <tr key={subject.id}>
-                  <td>{subject.name}</td>
+                  <td style={{ fontWeight: "bold" }}>{subject.name}</td>
                   <td>
                     {subject.teacherFirstName} {subject.teacherLastName}
                   </td>
@@ -86,7 +86,7 @@ const MySubjects = () => {
       <Link to="/my_grades">
         <button
           className="create-classroom-button"
-          style={{ fontFamily: "Roboto Slab, serif", width: "300px" }}
+          style={{ fontFamily: "Roboto Slab, serif", width: "auto" }}
         >
           Display grades
         </button>

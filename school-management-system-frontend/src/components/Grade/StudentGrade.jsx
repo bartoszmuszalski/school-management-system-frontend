@@ -15,17 +15,17 @@ const getGradeColor = (grade) => {
 
   switch (gradeValue) {
     case 1:
-      return "#008080"; // Teal/Ciemny turkusowy
+      return "#DC143C"; // Crimson/Karmazynowy
     case 2:
-      return "#4682B4"; // Steel Blue/Stalowy niebieski
+      return "#FF4500"; // OrangeRed/Pomarańczowy z czerwonym
     case 3:
-      return "#66CDAA"; // Medium Aquamarine/Średni akwamarynowy
+      return "#FFA500"; // Orange/Pomarańczowy
     case 4:
-      return "#3CB371"; // Medium Sea Green/Średni morski zielony
+      return "#88b388"; // LightGreen/Jasnozielony
     case 5:
-      return "#FFD700"; // Gold/Złoty
+      return "#008000"; // Green/Zielony
     case 6:
-      return "#FF8C00"; // Dark Orange/Ciemny pomarańczowy
+      return "#FFC700"; // Gold/Złoty
     default:
       return "lightgray";
   }
@@ -122,12 +122,8 @@ const StudentGrade = () => {
   return (
     <div className="student-grades-container">
       <h1>Student's grades ID: {fullName}</h1>
-      {loadingSubjects && <p className="loading">Ładowanie przedmiotów...</p>}
-      {errorSubjects && (
-        <p className="error">
-          Błąd ładowania przedmiotów: {errorSubjects.message}
-        </p>
-      )}
+      {loadingSubjects && <p className="loading">Loading subjects...</p>}
+      {errorSubjects && <p className="error">{errorSubjects.message}</p>}
       {subjects.length > 0 && (
         <table className="grades-table">
           <thead>
@@ -142,7 +138,9 @@ const StudentGrade = () => {
           <tbody>
             {subjects.map((subject) => (
               <tr key={subject.id}>
-                <td>{subject.name}</td>
+                <td>
+                  <p style={{ fontWeight: "bold" }}>{subject.name}</p>
+                </td>
                 <td>{`${subject.teacherFirstName} ${subject.teacherLastName}`}</td>
                 <td>
                   <GradesDisplay
@@ -151,7 +149,7 @@ const StudentGrade = () => {
                     refreshGradesList={fetchSubjects} // Pass fetchSubjects function
                   />
                 </td>
-                <td>{subject.average ? subject.average.toFixed(2) : "N/A"}</td>{" "}
+                <td>{subject.average ? subject.average.toFixed(2) : "--"}</td>{" "}
                 {/* Display Average */}
                 {isTeacher && (
                   <td>
@@ -247,11 +245,11 @@ const GradesDisplay = ({ grades, subjectId, refreshGradesList }) => {
   };
 
   if (!grades) {
-    return <p className="loading">Ładowanie ocen...</p>;
+    return <p className="loading">Loading grades...</p>;
   }
 
   if (grades === null) {
-    return <p className="error">Błąd ładowania ocen</p>;
+    return <p className="error">Erorr while loading grades...</p>;
   }
 
   if (grades && grades.length > 0) {

@@ -13,7 +13,7 @@ const DashBoardAnnouncements = () => {
       .then((response) => response.json())
       .then((data) => {
         setAnnouncements(data);
-        console.log(data);
+        // console.log(data);
       })
       .catch((err) => {
         console.error(err);
@@ -24,42 +24,46 @@ const DashBoardAnnouncements = () => {
     <div className="announcement-container">
       {announcements.length > 0 ? (
         announcements.map((announcement) => (
-          <div key={announcement.id} className="announcement-item">
-            <div className="announcement-image">
-              <img src={announcement_pic} alt="Announcement" />
-            </div>
-            <div className="announcement-text">
-              <div className="announcement-title">
-                <h2>{announcement.title}</h2>
+          <>
+            <div key={announcement.id} className="announcement-item">
+              <div className="announcement-image">
+                <img src={announcement_pic} alt="Announcement" />
               </div>
-              <div className="announcement-message">
-                <td>
-                  {announcement.message && announcement.message.length > 30 ? (
-                    <>
-                      {announcement.message.substring(0, 150)}...
-                      <span
-                        style={{
-                          color: "blue",
-                          cursor: "pointer",
-                          marginLeft: "5px",
-                          textDecoration: "underline",
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpandedMessage(announcement.message);
-                          setIsMessageModalOpen(true);
-                        }}
-                      >
-                        [expand]
-                      </span>
-                    </>
-                  ) : (
-                    announcement.message
-                  )}
-                </td>
+              <div className="announcement-text">
+                <div className="announcement-title">
+                  <h2>{announcement.title}</h2>
+                </div>
+                <div className="announcement-message">
+                  <td>
+                    {announcement.message &&
+                    announcement.message.length > 30 ? (
+                      <>
+                        {announcement.message.substring(0, 150)}...
+                        <span
+                          style={{
+                            color: "blue",
+                            cursor: "pointer",
+                            marginLeft: "5px",
+                            textDecoration: "underline",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedMessage(announcement.message);
+                            setIsMessageModalOpen(true);
+                          }}
+                        >
+                          [expand]
+                        </span>
+                      </>
+                    ) : (
+                      announcement.message
+                    )}
+                  </td>
+                </div>
               </div>
             </div>
-          </div>
+            <div> </div>
+          </>
         ))
       ) : (
         <p>No announcements yet.</p>

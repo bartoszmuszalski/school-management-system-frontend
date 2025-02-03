@@ -69,7 +69,7 @@ const GradeDetailsPopup = ({
       }
     } catch (error) {
       console.error("Error updating grade details:", error);
-      console.log("CATCH BLOCK EXECUTED!"); // Add this line
+      // console.log("CATCH BLOCK EXECUTED!"); // Add this line
       setUpdateError(
         error.response?.data?.message || error.message || "An error occurred"
       ); // Access nested message if available, or fallback

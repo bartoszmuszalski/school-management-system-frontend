@@ -201,7 +201,8 @@ const DisplayUsers = () => {
         // Optionally, display an error message to the user
       }
     } catch (err) {
-      console.error("Error while changing user role:", err);
+      setSuccessMessage(`["VALIDATION.USER_NOT_ACTIVATED"]`);
+      setShowSuccess(true);
       // Optionally, display an error message to the user
     } finally {
       // Close the popup

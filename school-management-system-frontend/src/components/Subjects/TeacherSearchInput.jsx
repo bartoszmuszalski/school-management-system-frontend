@@ -3,20 +3,22 @@ import apiConfig from "../../config";
 import "./TeacherSearchInput.css";
 
 const TeacherSearchInput = ({
-  editTeacherId,
+  teacherName,
   setEditTeacherId,
-  searchPhrase,
   setEditTeacherName,
 }) => {
-  const [searchPhraseInput, setSearchPhrase] = useState(searchPhrase || "");
+  const [searchPhraseInput, setSearchPhrase] = useState(teacherName || "");
   const [teachers, setTeachers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Function to fetch teachers (moved out of useEffect for reusability)
-  const fetchTeachers = async (searchPhrase) => {
+  useEffect(() => {
+    setSearchPhrase(teacherName || ""); // Ustaw pusty ciąg, jeśli teacherName jest null
+  }, [teacherName]);
+
+  const fetchTeachers = async (phrase) => {
     setLoading(true);
     setError(null);
     try {
@@ -26,7 +28,7 @@ const TeacherSearchInput = ({
       }
 
       const response = await fetch(
-        `${apiConfig.apiUrl}/api/v1/teachers/list?searchPhrase=${searchPhrase}`,
+        `${apiConfig.apiUrl}/api/v1/teachers/list?searchPhrase=${phrase}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -40,7 +42,7 @@ const TeacherSearchInput = ({
 
       const data = await response.json();
       setTeachers(data.data);
-      setIsDropdownOpen(true); // Keep dropdown open after fetching
+      setIsDropdownOpen(true);
     } catch (err) {
       setError(err.message);
       setTeachers([]);
@@ -50,35 +52,30 @@ const TeacherSearchInput = ({
   };
 
   useEffect(() => {
-    // Fetch teachers on initial focus or when searchPhraseInput changes
-    if (isDropdownOpen) {
+    if (isDropdownOpen && searchPhraseInput.trim()) {
       fetchTeachers(searchPhraseInput);
     } else {
-      setTeachers([]); // Clear teachers when dropdown is closed
+      setTeachers([]); // Wyczyść listę nauczycieli, jeśli pole wyszukiwania jest puste
     }
   }, [searchPhraseInput, isDropdownOpen]);
 
   const handleTeacherSelect = (teacherId) => {
-    // Find the selected teacher by teacherId
     const selectedTeacher = teachers.find(
-      (teacher) => teacher.teacherId === teacherId // Ensure you're using the correct property here
+      (teacher) => teacher.teacherId === teacherId
     );
-
     if (selectedTeacher) {
-      setSearchPhrase(
-        `${selectedTeacher.firstName} ${selectedTeacher.lastName}`
-      );
-      setEditTeacherName(
-        `${selectedTeacher.firstName} ${selectedTeacher.lastName}`
-      );
+      const fullName = `${selectedTeacher.firstName} ${selectedTeacher.lastName}`;
+      setSearchPhrase(fullName);
+      setEditTeacherName(fullName);
+      setEditTeacherId(selectedTeacher.teacherId); // Ustaw ID nauczyciela
+      console.log("Teacher selected, teacherId:", teacherId);
+    } else {
+      setEditTeacherId(null); // Ustaw na null, jeśli nauczyciel nie został znaleziony
     }
-
-    setEditTeacherId(selectedTeacher?.teacherId); // Set the teacherId to the parent component's state
-    setIsDropdownOpen(false); // Close the dropdown after selecting
+    setIsDropdownOpen(false);
   };
 
   useEffect(() => {
-    // Close the dropdown if user clicks outside of it
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -86,10 +83,8 @@ const TeacherSearchInput = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className="teacher-search-container" ref={dropdownRef}>
@@ -97,8 +92,14 @@ const TeacherSearchInput = ({
         type="text"
         placeholder="Search for a teacher..."
         value={searchPhraseInput}
-        onChange={(e) => setSearchPhrase(e.target.value)}
-        onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
+        onChange={(e) => {
+          setSearchPhrase(e.target.value);
+          if (!e.target.value.trim()) {
+            setEditTeacherId(null); // Resetuj teacherId do null, jeśli pole jest puste
+            setEditTeacherName("");
+          }
+        }}
+        onFocus={() => setIsDropdownOpen(true)}
         className="teacher-search-input"
       />
       {loading && <p>Loading...</p>}
@@ -107,8 +108,8 @@ const TeacherSearchInput = ({
         <ul className="teacher-dropdown">
           {teachers.map((teacher) => (
             <li
-              key={teacher.teacherId} // Using teacherId for uniqueness
-              onClick={() => handleTeacherSelect(teacher.teacherId)} // Handle teacher selection
+              key={teacher.teacherId}
+              onClick={() => handleTeacherSelect(teacher.teacherId)}
             >
               {teacher.firstName} {teacher.lastName}
             </li>

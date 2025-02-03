@@ -61,10 +61,10 @@ const StudentGrade = () => {
   return (
     <div className="student-grades-container">
       <h1>Student's grades ID: {studentId}</h1>
-      {loadingSubjects && <p className="loading">Ładowanie przedmiotów...</p>}
+      {loadingSubjects && <p className="loading">Loading subjects...</p>}
       {errorSubjects && (
         <p className="error">
-          Błąd ładowania przedmiotów: {errorSubjects.message}
+          Erro while loading subjects: {errorSubjects.message}
         </p>
       )}
       {subjects.length > 0 && (
@@ -79,7 +79,9 @@ const StudentGrade = () => {
           <tbody>
             {subjects.map((subject) => (
               <tr key={subject.id}>
-                <td>{subject.name}</td>
+                <td>
+                  <p style={{ fontWeight: "bold" }}>{subject.name}</p>
+                </td>
                 <td>{`${subject.teacherFirstName} ${subject.teacherLastName}`}</td>
                 <td>
                   <GradesDisplay grades={subject.grades} />

@@ -10,17 +10,17 @@ const getGradeColor = (grade) => {
 
   switch (gradeValue) {
     case 1:
-      return "#008080";
+      return "#DC143C"; // Crimson/Karmazynowy
     case 2:
-      return "#4682B4";
+      return "#FF4500"; // OrangeRed/Pomarańczowy z czerwonym
     case 3:
-      return "#66CDAA";
+      return "#FFA500"; // Orange/Pomarańczowy
     case 4:
-      return "#3CB371";
+      return "#88b388"; // LightGreen/Jasnozielony
     case 5:
-      return "#FFD700";
+      return "#008000"; // Green/Zielony
     case 6:
-      return "#FF8C00";
+      return "#FFC700"; // Gold/Złoty
     default:
       return "lightgray";
   }
@@ -93,7 +93,9 @@ const MyGrades = () => {
           <tbody>
             {subjects.map((subject) => (
               <tr key={subject.subjectId}>
-                <td style={{ fontSize: "18px" }}>{subject.subjectName}</td>
+                <td style={{ fontSize: "18px", fontWeight: "bold" }}>
+                  {subject.subjectName}
+                </td>
                 <td>
                   {subject.grades && subject.grades.length > 0 ? (
                     <div className="grades-list">
@@ -108,7 +110,7 @@ const MyGrades = () => {
                             justifyContent: "center",
                             verticalAlign: "middle",
                           }}
-                          data-tooltip={`Weight: ${grade.weight}\nDescription: ${grade.description}\nCreated at: ${grade.createdAt}`}
+                          data-tooltip={`Weight: ${grade.weight}\nDescription: ${grade.description}\nCreated at: ${grade.createdAt}\nTeacher: ${grade.assignedBy}`}
                         >
                           {grade.grade}
                         </span>
@@ -119,7 +121,7 @@ const MyGrades = () => {
                   )}
                 </td>
                 <td style={{ fontSize: "18px" }}>
-                  {subject.average ? subject.average.toFixed(2) : "N/A"}
+                  {subject.average ? subject.average.toFixed(2) : "--"}
                 </td>
               </tr>
             ))}

@@ -6,7 +6,7 @@ const AnnouncementCreateButton = ({
   announcementMessage,
 }) => {
   const handleCreateButton = async () => {
-    console.log(announcementTitle, announcementMessage);
+    // console.log(announcementTitle, announcementMessage);
     const token = localStorage.getItem("authToken");
 
     try {

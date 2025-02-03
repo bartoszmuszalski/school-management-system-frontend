@@ -80,6 +80,8 @@
 }
 
 .grade-item {
+  min-width: 46px;
+  text-align: center;
   margin-right: 5px;
   cursor: pointer;
   padding: 8px 12px;
@@ -90,6 +92,8 @@
   display: inline-block; /* Allows for horizontal arrangement */
   transition: background-color 0.3s ease;
   flex: 0 0 calc(10% - 5px);
+  /* line-height: 1; Lub spróbuj mniejszą wartość np. 0.9, albo 'normal' */
+  box-sizing: border-box;
 }
 
 .grade-item:hover {
