@@ -27,55 +27,6 @@ This is the frontend repository for the School Management System (SMS) project. 
 *   **CSS:** Styling and layout of the application.
 *   **[Add any other libraries or frameworks you used, e.g., react-router-dom, axios, UI libraries]**
 
-## Backend Integration
-
-The frontend communicates with a backend REST API (separate repository: [link to backend repository, if public]) to fetch and manage data.
-
-*   **API Endpoints:** [Describe the key API endpoints the frontend uses (e.g., /users, /grades, /classes)]
-*   **Data Format:** JSON
-
-## Setup and Installation
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone [your repository URL]
-    cd school-management-system-frontend
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    npm install  # or yarn install
-    ```
-
-3.  **Configure API URL:**
-
-    *   Update the API base URL in `src/config.js` (or wherever you store your API configuration) to point to your backend server.  *(Adapt this instruction to your project's actual configuration)*
-
-4.  **Run the application:**
-
-    ```bash
-    npm start  # or yarn start
-    ```
-
-    This will start the development server, and the application should be accessible at `http://localhost:3000` (or the default address for your setup).
-
-## Development
-
-*   **Directory Structure:**  *(Briefly describe the main directories in your project (e.g., `components`, `pages`, `services`))*
-*   **Coding Conventions:**  *(If you followed specific coding conventions, mention them here)*
-
-## Contributing
-
-Contributions are welcome!  Please follow these steps:
-
-1.  Fork the repository.
-2.  Create a new branch for your feature or bug fix: `git checkout -b feature/your-feature-name`
-3.  Make your changes and commit them: `git commit -m "Add your commit message"`
-4.  Push to your forked repository: `git push origin feature/your-feature-name`
-5.  Submit a pull request to the main repository.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
