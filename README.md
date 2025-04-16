@@ -27,4 +27,6 @@ This is the frontend repository for the School Management System (SMS) project. 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Screenshots of my work
 
+Is at main branch
